@@ -1,6 +1,18 @@
 # Combat Sandbox Setup Guide
 
-This phase is a single-scene Unity graybox. It intentionally avoids final art, narrative, UI polish, save data, procedural rooms, and upgrades.
+This phase is a single-scene Unity graybox. It intentionally avoids final art, narrative, save data, and procedural rooms.
+
+## Automated Setup
+
+Use the editor menu instead of creating objects manually:
+
+```text
+Tools > Lost City > Create Combat Sandbox
+```
+
+The tool regenerates the Combat Sandbox scene, prefabs, ScriptableObjects, Input Actions, graybox sprites, HP bars, XP orb prefab, upgrade UI, and all serialized references.
+
+After adding Phase 2 code, rerun this menu item once before pressing Play.
 
 ## Packages
 
@@ -233,3 +245,9 @@ Option B, fallback:
 - Dead enemies disappear.
 - More enemies spawn over time.
 - Player death reloads the scene.
+- Player facing indicator follows aim direction.
+- Player and enemies show HP bars.
+- Enemies flash when hit.
+- Enemies drop XP orbs on death.
+- XP orbs collect into the player.
+- Level-up opens three upgrade choices: fire rate, projectile damage, or extra drone projectile.

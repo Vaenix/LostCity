@@ -12,6 +12,7 @@ namespace LostCity.CombatSandbox
 
         private Transform owner;
         private float nextAllowedFireTime;
+        private CombatUpgradeStats upgradeStats;
 
         private void Awake()
         {
@@ -21,6 +22,8 @@ namespace LostCity.CombatSandbox
             {
                 muzzle = transform;
             }
+
+            upgradeStats = GetComponentInParent<CombatUpgradeStats>();
         }
 
         private void LateUpdate()
@@ -54,9 +57,10 @@ namespace LostCity.CombatSandbox
                 return;
             }
 
-            Projectile projectile = Instantiate(weaponDefinition.ProjectilePrefab, muzzle.position, Quaternion.identity);
-            projectile.Launch(weaponDefinition.ProjectileDefinition, sourceTeam, direction, gameObject);
-            nextAllowedFireTime = Time.time + weaponDefinition.CooldownSeconds;
+            FireVolley(direction);
+
+            float fireRateMultiplier = upgradeStats != null ? upgradeStats.FireRateMultiplier : 1f;
+            nextAllowedFireTime = Time.time + weaponDefinition.CooldownSeconds / fireRateMultiplier;
         }
 
         private void FollowOwner()
@@ -100,6 +104,32 @@ namespace LostCity.CombatSandbox
             }
 
             return nearest;
+        }
+
+        private void FireVolley(Vector3 baseDirection)
+        {
+            int projectileCount = 1 + (upgradeStats != null ? upgradeStats.ExtraDroneProjectiles : 0);
+            float damageMultiplier = upgradeStats != null ? upgradeStats.ProjectileDamageMultiplier : 1f;
+
+            for (int i = 0; i < projectileCount; i++)
+            {
+                Vector3 shotDirection = GetVolleyDirection(baseDirection, i, projectileCount);
+                Projectile projectile = Instantiate(weaponDefinition.ProjectilePrefab, muzzle.position, Quaternion.identity);
+                projectile.Launch(weaponDefinition.ProjectileDefinition, sourceTeam, shotDirection, gameObject, damageMultiplier);
+            }
+        }
+
+        private static Vector3 GetVolleyDirection(Vector3 baseDirection, int index, int projectileCount)
+        {
+            if (projectileCount <= 1)
+            {
+                return baseDirection;
+            }
+
+            float totalSpreadDegrees = Mathf.Min(60f, 12f * (projectileCount - 1));
+            float step = totalSpreadDegrees / (projectileCount - 1);
+            float angle = -totalSpreadDegrees * 0.5f + step * index;
+            return Quaternion.Euler(0f, 0f, angle) * baseDirection;
         }
     }
 }

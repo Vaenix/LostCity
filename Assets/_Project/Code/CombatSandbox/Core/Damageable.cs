@@ -16,6 +16,7 @@ namespace LostCity.CombatSandbox
 
         public event Action<Damageable, DamageInfo> Damaged;
         public event Action<Damageable, DamageInfo> Died;
+        public event Action<Damageable> HealthChanged;
 
         public float MaxHealth => maxHealth;
         public float CurrentHealth => currentHealth;
@@ -38,6 +39,7 @@ namespace LostCity.CombatSandbox
             {
                 currentHealth = Mathf.Clamp(currentHealth, 0f, maxHealth);
                 onHealthChanged.Invoke(currentHealth, maxHealth);
+                HealthChanged?.Invoke(this);
             }
         }
 
@@ -46,6 +48,7 @@ namespace LostCity.CombatSandbox
             isDead = false;
             currentHealth = Mathf.Max(1f, maxHealth);
             onHealthChanged.Invoke(currentHealth, maxHealth);
+            HealthChanged?.Invoke(this);
         }
 
         public void ApplyDamage(DamageInfo damageInfo)
@@ -58,6 +61,7 @@ namespace LostCity.CombatSandbox
             currentHealth = Mathf.Max(0f, currentHealth - damageInfo.Amount);
             Damaged?.Invoke(this, damageInfo);
             onHealthChanged.Invoke(currentHealth, maxHealth);
+            HealthChanged?.Invoke(this);
 
             if (currentHealth <= 0f)
             {

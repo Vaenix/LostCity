@@ -12,6 +12,7 @@ namespace LostCity.CombatSandbox
         private ProjectileDefinition activeDefinition;
         private CombatTeam sourceTeam;
         private GameObject owner;
+        private float damageMultiplier = 1f;
         private bool hasLaunched;
 
         private void Awake()
@@ -21,11 +22,12 @@ namespace LostCity.CombatSandbox
             body.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
         }
 
-        public void Launch(ProjectileDefinition definition, CombatTeam team, Vector3 direction, GameObject sourceOwner)
+        public void Launch(ProjectileDefinition definition, CombatTeam team, Vector3 direction, GameObject sourceOwner, float sourceDamageMultiplier = 1f)
         {
             activeDefinition = definition != null ? definition : defaultDefinition;
             sourceTeam = team;
             owner = sourceOwner;
+            damageMultiplier = Mathf.Max(0.01f, sourceDamageMultiplier);
             hasLaunched = true;
 
             if (activeDefinition == null)
@@ -74,7 +76,8 @@ namespace LostCity.CombatSandbox
             Damageable damageable = other.GetComponentInParent<Damageable>();
             if (damageable != null && damageable.IsAlive)
             {
-                damageable.ApplyDamage(new DamageInfo(activeDefinition.Damage, sourceTeam, owner, other.ClosestPoint(transform.position)));
+                float damage = activeDefinition.Damage * damageMultiplier;
+                damageable.ApplyDamage(new DamageInfo(damage, sourceTeam, owner, other.ClosestPoint(transform.position)));
                 Destroy(gameObject);
                 return;
             }

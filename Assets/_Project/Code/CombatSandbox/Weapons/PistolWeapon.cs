@@ -11,6 +11,7 @@ namespace LostCity.CombatSandbox
         [SerializeField] private CombatTeam sourceTeam = CombatTeam.Player;
 
         private float nextAllowedFireTime;
+        private CombatUpgradeStats upgradeStats;
 
         private void Awake()
         {
@@ -28,6 +29,8 @@ namespace LostCity.CombatSandbox
             {
                 muzzle = transform;
             }
+
+            upgradeStats = GetComponentInParent<CombatUpgradeStats>();
         }
 
         private void Update()
@@ -53,8 +56,11 @@ namespace LostCity.CombatSandbox
 
             Vector3 fireDirection = playerAim != null ? playerAim.AimDirection : muzzle.right;
             Projectile projectile = Instantiate(weaponDefinition.ProjectilePrefab, muzzle.position, Quaternion.identity);
-            projectile.Launch(weaponDefinition.ProjectileDefinition, sourceTeam, fireDirection, gameObject);
-            nextAllowedFireTime = Time.time + weaponDefinition.CooldownSeconds;
+            float damageMultiplier = upgradeStats != null ? upgradeStats.ProjectileDamageMultiplier : 1f;
+            projectile.Launch(weaponDefinition.ProjectileDefinition, sourceTeam, fireDirection, gameObject, damageMultiplier);
+
+            float fireRateMultiplier = upgradeStats != null ? upgradeStats.FireRateMultiplier : 1f;
+            nextAllowedFireTime = Time.time + weaponDefinition.CooldownSeconds / fireRateMultiplier;
             return true;
         }
     }

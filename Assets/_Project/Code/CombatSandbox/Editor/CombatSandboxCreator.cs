@@ -7,6 +7,7 @@ using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 namespace LostCity.CombatSandbox.EditorTools
 {
@@ -29,6 +30,7 @@ namespace LostCity.CombatSandbox.EditorTools
         private const string PlayerProjectilePrefabPath = PrefabRoot + "/Projectile_Player.prefab";
         private const string OrbProjectilePrefabPath = PrefabRoot + "/Projectile_Orb.prefab";
         private const string EnemyPrefabPath = PrefabRoot + "/MemoryFragmentEnemy.prefab";
+        private const string XpOrbPrefabPath = PrefabRoot + "/XpOrb.prefab";
 
         private const string PistolProjectileDefinitionPath = ScriptableObjectRoot + "/PistolProjectileDefinition.asset";
         private const string OrbProjectileDefinitionPath = ScriptableObjectRoot + "/OrbProjectileDefinition.asset";
@@ -42,7 +44,7 @@ namespace LostCity.CombatSandbox.EditorTools
         [MenuItem(MenuPath)]
         public static void CreateCombatSandbox()
         {
-            if (!EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())
+            if (!Application.isBatchMode && !EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())
             {
                 return;
             }
@@ -85,6 +87,8 @@ namespace LostCity.CombatSandbox.EditorTools
                 radius: 0.1f,
                 orbProjectileDefinition);
 
+            XpOrb xpOrbPrefab = CreateXpOrbPrefab(XpOrbPrefabPath, circleSprite);
+
             WeaponDefinition pistolWeaponDefinition = CreateWeaponDefinition(
                 PistolWeaponDefinitionPath,
                 "Pistol",
@@ -101,8 +105,8 @@ namespace LostCity.CombatSandbox.EditorTools
                 cooldownSeconds: 0.8f,
                 range: 12f);
 
-            GameObject enemyPrefab = CreateEnemyPrefab(EnemyPrefabPath, circleSprite, enemyDefinition);
-            GameObject playerPrefab = CreatePlayerPrefab(PlayerPrefabPath, circleSprite, inputReferences, pistolWeaponDefinition, orbWeaponDefinition);
+            GameObject enemyPrefab = CreateEnemyPrefab(EnemyPrefabPath, circleSprite, squareSprite, enemyDefinition, xpOrbPrefab);
+            GameObject playerPrefab = CreatePlayerPrefab(PlayerPrefabPath, circleSprite, squareSprite, inputReferences, pistolWeaponDefinition, orbWeaponDefinition);
 
             CreateScene(squareSprite, playerPrefab, enemyPrefab);
 
@@ -136,21 +140,6 @@ namespace LostCity.CombatSandbox.EditorTools
             inputActions.name = "CombatSandbox";
 
             InputActionMap playerMap = inputActions.AddActionMap("Player");
-
-            // InputAction moveAction = playerMap.AddAction("Move", InputActionType.Value, expectedControlType: "Vector2");
-            // moveAction.AddCompositeBinding("2DVector")
-            //     .With("Up", "<Keyboard>/w")
-            //     .With("Down", "<Keyboard>/s")
-            //     .With("Left", "<Keyboard>/a")
-            //     .With("Right", "<Keyboard>/d");
-            // moveAction.AddCompositeBinding("2DVector")
-            //     .With("Up", "<Keyboard>/upArrow")
-            //     .With("Down", "<Keyboard>/downArrow")
-            //     .With("Left", "<Keyboard>/leftArrow")
-            //     .With("Right", "<Keyboard>/rightArrow");
-
-            // playerMap.AddAction("Fire", InputActionType.Button, "<Mouse>/leftButton", expectedControlType: "Button");
-            // playerMap.AddAction("Aim", InputActionType.Value, "<Mouse>/position", expectedControlType: "Vector2");
 
             InputAction moveAction = playerMap.AddAction(
                     "Move",
@@ -284,7 +273,37 @@ namespace LostCity.CombatSandbox.EditorTools
             return prefab.GetComponent<Projectile>();
         }
 
-        private static GameObject CreateEnemyPrefab(string path, Sprite sprite, EnemyDefinition definition)
+        private static XpOrb CreateXpOrbPrefab(string path, Sprite sprite)
+        {
+            DeleteAssetIfExists(path);
+
+            GameObject xpOrbObject = new GameObject("XpOrb");
+            xpOrbObject.transform.localScale = new Vector3(0.28f, 0.28f, 1f);
+
+            SpriteRenderer spriteRenderer = xpOrbObject.AddComponent<SpriteRenderer>();
+            spriteRenderer.sprite = sprite;
+            spriteRenderer.color = new Color(0.35f, 1f, 0.45f, 1f);
+            spriteRenderer.sortingOrder = 4;
+
+            Rigidbody2D body = xpOrbObject.AddComponent<Rigidbody2D>();
+            body.bodyType = RigidbodyType2D.Kinematic;
+            body.gravityScale = 0f;
+            body.interpolation = RigidbodyInterpolation2D.Interpolate;
+
+            CircleCollider2D circleCollider = xpOrbObject.AddComponent<CircleCollider2D>();
+            circleCollider.isTrigger = true;
+            circleCollider.radius = 0.35f;
+
+            XpOrb xpOrb = xpOrbObject.AddComponent<XpOrb>();
+            SetInt(xpOrb, "experienceValue", 1);
+            SetFloat(xpOrb, "attractionRadius", 3.5f);
+            SetFloat(xpOrb, "moveSpeed", 8f);
+
+            GameObject prefab = SavePrefab(xpOrbObject, path);
+            return prefab.GetComponent<XpOrb>();
+        }
+
+        private static GameObject CreateEnemyPrefab(string path, Sprite sprite, Sprite squareSprite, EnemyDefinition definition, XpOrb xpOrbPrefab)
         {
             DeleteAssetIfExists(path);
 
@@ -317,12 +336,24 @@ namespace LostCity.CombatSandbox.EditorTools
             SetObject(enemy, "definition", definition);
             SetObject(enemy, "target", null);
 
+            HitFlash hitFlash = enemyObject.AddComponent<HitFlash>();
+            SetObject(hitFlash, "targetRenderer", spriteRenderer);
+            SetColor(hitFlash, "flashColor", Color.white);
+            SetFloat(hitFlash, "flashSeconds", 0.08f);
+
+            AddWorldHealthBar(enemyObject, squareSprite, new Vector3(0f, 0.72f, 0f), new Color(1f, 0.2f, 0.2f, 1f), hideWhenFull: false);
+
+            XpDropper xpDropper = enemyObject.AddComponent<XpDropper>();
+            SetObject(xpDropper, "xpOrbPrefab", xpOrbPrefab);
+            SetInt(xpDropper, "experienceValue", 1);
+
             return SavePrefab(enemyObject, path);
         }
 
         private static GameObject CreatePlayerPrefab(
             string path,
             Sprite sprite,
+            Sprite squareSprite,
             InputReferences inputReferences,
             WeaponDefinition pistolWeaponDefinition,
             WeaponDefinition orbWeaponDefinition)
@@ -354,6 +385,11 @@ namespace LostCity.CombatSandbox.EditorTools
             SetFloat(damageable, "maxHealth", 100f);
             SetBool(damageable, "destroyOnDeath", false);
 
+            CombatUpgradeStats upgradeStats = playerObject.AddComponent<CombatUpgradeStats>();
+            SetFloat(upgradeStats, "fireRateMultiplier", 1f);
+            SetFloat(upgradeStats, "projectileDamageMultiplier", 1f);
+            SetInt(upgradeStats, "extraDroneProjectiles", 0);
+
             PlayerInputReader inputReader = playerObject.AddComponent<PlayerInputReader>();
             SetObject(inputReader, "moveActionReference", inputReferences.Move);
             SetObject(inputReader, "fireActionReference", inputReferences.Fire);
@@ -369,6 +405,16 @@ namespace LostCity.CombatSandbox.EditorTools
             GameObject muzzleObject = new GameObject("Muzzle");
             muzzleObject.transform.SetParent(aimRootObject.transform);
             muzzleObject.transform.localPosition = new Vector3(0.8f, 0f, 0f);
+
+            GameObject facingIndicatorObject = new GameObject("FacingIndicator");
+            facingIndicatorObject.transform.SetParent(aimRootObject.transform);
+            facingIndicatorObject.transform.localPosition = new Vector3(0.55f, 0f, 0f);
+            facingIndicatorObject.transform.localScale = new Vector3(0.8f, 0.14f, 1f);
+
+            SpriteRenderer facingIndicatorRenderer = facingIndicatorObject.AddComponent<SpriteRenderer>();
+            facingIndicatorRenderer.sprite = squareSprite;
+            facingIndicatorRenderer.color = new Color(0.8f, 1f, 1f, 1f);
+            facingIndicatorRenderer.sortingOrder = 6;
 
             PlayerAim playerAim = playerObject.AddComponent<PlayerAim>();
             SetObject(playerAim, "yawRoot", aimRootObject.transform);
@@ -401,6 +447,16 @@ namespace LostCity.CombatSandbox.EditorTools
             PlayerDeathHandler deathHandler = playerObject.AddComponent<PlayerDeathHandler>();
             SetFloat(deathHandler, "restartDelaySeconds", 1.25f);
             SetObjectArray(deathHandler, "disableOnDeath", new UnityEngine.Object[] { playerMotor, pistolWeapon, orbWeapon });
+
+            PlayerExperience playerExperience = playerObject.AddComponent<PlayerExperience>();
+            SetObject(playerExperience, "upgradeStats", upgradeStats);
+            SetObject(playerExperience, "upgradeSelectionController", null);
+            SetInt(playerExperience, "currentLevel", 1);
+            SetInt(playerExperience, "currentExperience", 0);
+            SetInt(playerExperience, "experienceToNextLevel", 5);
+            SetFloat(playerExperience, "nextLevelExperienceMultiplier", 1.35f);
+
+            AddWorldHealthBar(playerObject, squareSprite, new Vector3(0f, 0.78f, 0f), new Color(0.2f, 1f, 0.35f, 1f), hideWhenFull: false);
 
             return SavePrefab(playerObject, path);
         }
@@ -444,6 +500,10 @@ namespace LostCity.CombatSandbox.EditorTools
             PlayerAim playerAim = playerObject.GetComponent<PlayerAim>();
             SetObject(playerAim, "aimCamera", camera);
 
+            UpgradeSelectionController upgradeSelectionController = CreateUpgradeChoiceUi(root.transform);
+            PlayerExperience playerExperience = playerObject.GetComponent<PlayerExperience>();
+            SetObject(playerExperience, "upgradeSelectionController", upgradeSelectionController);
+
             SimpleTopDownCameraFollow cameraFollow = cameraObject.AddComponent<SimpleTopDownCameraFollow>();
             SetObject(cameraFollow, "target", playerObject.transform);
             SetVector3(cameraFollow, "offset", new Vector3(0f, 0f, -10f));
@@ -466,6 +526,134 @@ namespace LostCity.CombatSandbox.EditorTools
             EditorSceneManager.SaveScene(scene, ScenePath);
             AddSceneToBuildSettings(ScenePath);
             EditorSceneManager.OpenScene(ScenePath);
+        }
+
+        private static void AddWorldHealthBar(GameObject owner, Sprite squareSprite, Vector3 localPosition, Color fillColor, bool hideWhenFull)
+        {
+            GameObject barRoot = new GameObject("HealthBar");
+            barRoot.transform.SetParent(owner.transform);
+            barRoot.transform.localPosition = localPosition;
+            barRoot.transform.localScale = Vector3.one;
+
+            GameObject backgroundObject = new GameObject("Background");
+            backgroundObject.transform.SetParent(barRoot.transform);
+            backgroundObject.transform.localPosition = Vector3.zero;
+            backgroundObject.transform.localScale = new Vector3(1.1f, 0.14f, 1f);
+
+            SpriteRenderer backgroundRenderer = backgroundObject.AddComponent<SpriteRenderer>();
+            backgroundRenderer.sprite = squareSprite;
+            backgroundRenderer.color = new Color(0.05f, 0.05f, 0.05f, 1f);
+            backgroundRenderer.sortingOrder = 20;
+
+            GameObject fillObject = new GameObject("Fill");
+            fillObject.transform.SetParent(barRoot.transform);
+            fillObject.transform.localPosition = new Vector3(-0.01f, 0f, 0f);
+            fillObject.transform.localScale = new Vector3(1f, 0.08f, 1f);
+
+            SpriteRenderer fillRenderer = fillObject.AddComponent<SpriteRenderer>();
+            fillRenderer.sprite = squareSprite;
+            fillRenderer.color = fillColor;
+            fillRenderer.sortingOrder = 21;
+
+            WorldHealthBar healthBar = owner.AddComponent<WorldHealthBar>();
+            SetObject(healthBar, "barRoot", barRoot.transform);
+            SetObject(healthBar, "fill", fillObject.transform);
+            SetBool(healthBar, "hideWhenFull", hideWhenFull);
+        }
+
+        private static UpgradeSelectionController CreateUpgradeChoiceUi(Transform root)
+        {
+            Font font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            if (font == null)
+            {
+                font = Resources.GetBuiltinResource<Font>("Arial.ttf");
+            }
+
+            GameObject canvasObject = new GameObject("UpgradeChoiceUI");
+            canvasObject.transform.SetParent(root);
+
+            Canvas canvas = canvasObject.AddComponent<Canvas>();
+            canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+            canvas.sortingOrder = 100;
+            canvasObject.AddComponent<CanvasScaler>();
+            canvasObject.AddComponent<GraphicRaycaster>();
+
+            UpgradeSelectionController controller = canvasObject.AddComponent<UpgradeSelectionController>();
+
+            GameObject panelObject = CreateUiRect("Panel", canvasObject.transform, new Vector2(520f, 260f), Vector2.zero);
+            Image panelImage = panelObject.AddComponent<Image>();
+            panelImage.color = new Color(0.04f, 0.05f, 0.06f, 0.92f);
+
+            Text titleText = CreateText("Title", panelObject.transform, font, "LEVEL UP", 28, TextAnchor.MiddleCenter, new Vector2(420f, 42f), new Vector2(0f, 88f));
+
+            Button fireRateButton = CreateUpgradeButton(panelObject.transform, font, "+20% Fire Rate", new Vector2(0f, 32f), out Text fireRateText);
+            Button damageButton = CreateUpgradeButton(panelObject.transform, font, "+20% Projectile Damage", new Vector2(0f, -28f), out Text damageText);
+            Button droneButton = CreateUpgradeButton(panelObject.transform, font, "+1 Drone Projectile", new Vector2(0f, -88f), out Text droneText);
+
+            SetObject(controller, "panelRoot", panelObject);
+            SetObject(controller, "titleText", titleText);
+            SetObject(controller, "fireRateButton", fireRateButton);
+            SetObject(controller, "fireRateButtonText", fireRateText);
+            SetObject(controller, "damageButton", damageButton);
+            SetObject(controller, "damageButtonText", damageText);
+            SetObject(controller, "droneButton", droneButton);
+            SetObject(controller, "droneButtonText", droneText);
+            SetBool(controller, "pauseWhileChoosing", true);
+
+            panelObject.SetActive(false);
+            return controller;
+        }
+
+        private static Button CreateUpgradeButton(Transform parent, Font font, string label, Vector2 anchoredPosition, out Text labelText)
+        {
+            GameObject buttonObject = CreateUiRect(label, parent, new Vector2(420f, 46f), anchoredPosition);
+            Image image = buttonObject.AddComponent<Image>();
+            image.color = new Color(0.16f, 0.18f, 0.21f, 1f);
+
+            Button button = buttonObject.AddComponent<Button>();
+            ColorBlock colors = button.colors;
+            colors.normalColor = image.color;
+            colors.highlightedColor = new Color(0.24f, 0.28f, 0.32f, 1f);
+            colors.pressedColor = new Color(0.1f, 0.12f, 0.15f, 1f);
+            colors.selectedColor = colors.highlightedColor;
+            button.colors = colors;
+
+            labelText = CreateText("Label", buttonObject.transform, font, label, 18, TextAnchor.MiddleCenter, new Vector2(400f, 34f), Vector2.zero);
+            return button;
+        }
+
+        private static Text CreateText(
+            string name,
+            Transform parent,
+            Font font,
+            string text,
+            int fontSize,
+            TextAnchor alignment,
+            Vector2 size,
+            Vector2 anchoredPosition)
+        {
+            GameObject textObject = CreateUiRect(name, parent, size, anchoredPosition);
+            Text uiText = textObject.AddComponent<Text>();
+            uiText.font = font;
+            uiText.text = text;
+            uiText.fontSize = fontSize;
+            uiText.alignment = alignment;
+            uiText.color = Color.white;
+            return uiText;
+        }
+
+        private static GameObject CreateUiRect(string name, Transform parent, Vector2 size, Vector2 anchoredPosition)
+        {
+            GameObject gameObject = new GameObject(name);
+            gameObject.transform.SetParent(parent, worldPositionStays: false);
+
+            RectTransform rectTransform = gameObject.AddComponent<RectTransform>();
+            rectTransform.anchorMin = new Vector2(0.5f, 0.5f);
+            rectTransform.anchorMax = new Vector2(0.5f, 0.5f);
+            rectTransform.pivot = new Vector2(0.5f, 0.5f);
+            rectTransform.sizeDelta = size;
+            rectTransform.anchoredPosition = anchoredPosition;
+            return gameObject;
         }
 
         private static Sprite CreateSpriteTexture(string path, bool circle)
@@ -586,6 +774,11 @@ namespace LostCity.CombatSandbox.EditorTools
         private static void SetVector3(UnityEngine.Object target, string propertyName, Vector3 value)
         {
             SetSerializedProperty(target, propertyName, property => property.vector3Value = value);
+        }
+
+        private static void SetColor(UnityEngine.Object target, string propertyName, Color value)
+        {
+            SetSerializedProperty(target, propertyName, property => property.colorValue = value);
         }
 
         private static void SetEnum<TEnum>(UnityEngine.Object target, string propertyName, TEnum value) where TEnum : Enum
