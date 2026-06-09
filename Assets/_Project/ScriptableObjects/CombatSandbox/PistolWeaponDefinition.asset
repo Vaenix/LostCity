@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: PistolWeaponDefinition
   m_EditorClassIdentifier: 
   displayName: Pistol
-  projectilePrefab: {fileID: 7458881544111569854, guid: 5ce2c582b882f4869807b8db78128920, type: 3}
+  projectilePrefab: {fileID: 4986290476498056397, guid: 5ce2c582b882f4869807b8db78128920, type: 3}
   projectileDefinition: {fileID: 11400000, guid: 395a90cd91f1c4f368f5031770976a61, type: 2}
   cooldownSeconds: 0.25
   range: 14

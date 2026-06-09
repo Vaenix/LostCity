@@ -205,7 +205,7 @@ namespace LostCity.CombatSandbox.EditorTools
             SetFloat(definition, "damage", damage);
             SetFloat(definition, "speed", speed);
             SetFloat(definition, "lifetimeSeconds", lifetimeSeconds);
-            return definition;
+            return SaveAndReloadAsset(definition, path);
         }
 
         private static EnemyDefinition CreateEnemyDefinition(string path)
@@ -233,6 +233,13 @@ namespace LostCity.CombatSandbox.EditorTools
             SetObject(definition, "projectileDefinition", projectileDefinition);
             SetFloat(definition, "cooldownSeconds", cooldownSeconds);
             SetFloat(definition, "range", range);
+            definition = SaveAndReloadAsset(definition, path);
+
+            if (definition.ProjectilePrefab == null || definition.ProjectileDefinition == null)
+            {
+                throw new InvalidOperationException($"{path} was created without projectile references.");
+            }
+
             return definition;
         }
 
@@ -699,14 +706,45 @@ namespace LostCity.CombatSandbox.EditorTools
             DeleteAssetIfExists(path);
             T asset = ScriptableObject.CreateInstance<T>();
             AssetDatabase.CreateAsset(asset, path);
-            return AssetDatabase.LoadAssetAtPath<T>(path);
+            AssetDatabase.ImportAsset(path, ImportAssetOptions.ForceSynchronousImport);
+
+            T loadedAsset = AssetDatabase.LoadAssetAtPath<T>(path);
+            if (loadedAsset == null)
+            {
+                throw new InvalidOperationException($"Failed to create asset at {path}.");
+            }
+
+            return loadedAsset;
         }
 
         private static GameObject SavePrefab(GameObject source, string path)
         {
-            GameObject prefab = PrefabUtility.SaveAsPrefabAsset(source, path);
+            PrefabUtility.SaveAsPrefabAsset(source, path);
             UnityEngine.Object.DestroyImmediate(source);
+            AssetDatabase.ImportAsset(path, ImportAssetOptions.ForceSynchronousImport);
+
+            GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(path);
+            if (prefab == null)
+            {
+                throw new InvalidOperationException($"Failed to save prefab at {path}.");
+            }
+
             return prefab;
+        }
+
+        private static T SaveAndReloadAsset<T>(T asset, string path) where T : UnityEngine.Object
+        {
+            EditorUtility.SetDirty(asset);
+            AssetDatabase.SaveAssets();
+            AssetDatabase.ImportAsset(path, ImportAssetOptions.ForceSynchronousImport);
+
+            T loadedAsset = AssetDatabase.LoadAssetAtPath<T>(path);
+            if (loadedAsset == null)
+            {
+                throw new InvalidOperationException($"Failed to reload asset at {path}.");
+            }
+
+            return loadedAsset;
         }
 
         private static void AddSceneToBuildSettings(string scenePath)
