@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: OrbWeaponDefinition
   m_EditorClassIdentifier: 
   displayName: Memory Orb
-  projectilePrefab: {fileID: 3507521538396241685, guid: 3af817c35913942c5aabc01fbe1b9143, type: 3}
+  projectilePrefab: {fileID: 4754955396116735139, guid: 3af817c35913942c5aabc01fbe1b9143, type: 3}
   projectileDefinition: {fileID: 11400000, guid: 1453c9e620bef4932a538224f330dfe4, type: 2}
   cooldownSeconds: 0.8
   range: 12

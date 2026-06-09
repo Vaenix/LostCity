@@ -5,6 +5,7 @@ using LostCity.CombatSandbox;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -478,6 +479,8 @@ namespace LostCity.CombatSandbox.EditorTools
             managerObject.transform.SetParent(root.transform);
             managerObject.AddComponent<CombatGameManager>();
 
+            CreateEventSystem(root.transform);
+
             GameObject cameraObject = new GameObject("Main Camera");
             cameraObject.transform.SetParent(root.transform);
             cameraObject.transform.position = new Vector3(0f, 0f, -10f);
@@ -533,6 +536,14 @@ namespace LostCity.CombatSandbox.EditorTools
             EditorSceneManager.SaveScene(scene, ScenePath);
             AddSceneToBuildSettings(ScenePath);
             EditorSceneManager.OpenScene(ScenePath);
+        }
+
+        private static void CreateEventSystem(Transform root)
+        {
+            GameObject eventSystemObject = new GameObject("EventSystem");
+            eventSystemObject.transform.SetParent(root);
+            eventSystemObject.AddComponent<EventSystem>();
+            eventSystemObject.AddComponent<StandaloneInputModule>();
         }
 
         private static void AddWorldHealthBar(GameObject owner, Sprite squareSprite, Vector3 localPosition, Color fillColor, bool hideWhenFull)
