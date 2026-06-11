@@ -1,363 +1,183 @@
-<div align="center">
-
 # Lost City
 
-**Mystery Puzzle + Roguelike Action**
+**Genre:** Mystery Puzzle + Roguelike Action
+**Engine:** Unity 2022 LTS
+**Current Development Phase:** Room 304 gameplay loop validation, Phase 3 completion plus Phase 4 foundation
 
-Lost City is an indie Unity project about exploring unstable memory spaces, solving layered mysteries, and surviving lightweight top-down combat encounters.
+Lost City is a Unity prototype for a single-player game that combines investigation, deduction, and lightweight roguelike combat. The current goal is not final content or polish. The current goal is to validate whether one complete chapter loop can move cleanly from exploration to clue collection, deduction, combat, reward, and chapter completion.
 
-Current prototype: **Combat Sandbox Phase 2**
+## Project Overview
 
-```text
-Status: Playable combat prototype
-Engine: Unity 2022 LTS
-Target: PC first, mobile later
-Repository: Unity + C# + GitHub
-```
+Lost City is built around unstable memory spaces. Players explore a location, collect clues, reconstruct a truth, fight a manifestation of that truth, then carry progression forward.
 
-</div>
+The first playable chapter prototype is **Room 304**. It uses graybox assets and placeholder UI to validate architecture before expanding story, art, or puzzle complexity.
 
----
+## Current Playable Features
 
-## Game Vision
-
-Lost City is a roguelike mystery game that combines exploration, environmental storytelling, deduction, and light combat.
-
-Players enter procedurally generated locations such as abandoned cities, ancient ruins, futuristic facilities, and forgotten settlements. Each run reshuffles the physical experience while preserving long-term player knowledge and progression.
-
-The intended experience is not only about defeating enemies. The player investigates fragmented stories, collects clues, reconstructs hidden truths, and gradually discovers that the deeper mystery is personal.
-
-### Core Pillars
-
-**1. Mystery & Deduction**
-
-- Inspired by lateral-thinking puzzles, including Sea Turtle Soup-style deduction.
-- Players collect clues and reconstruct hidden stories.
-- Scenarios can contain multiple layers of truth.
-
-**2. Lightweight Roguelike Combat**
-
-- Hades-style top-down perspective.
-- Lower mechanical difficulty than traditional action games.
-- One manually controlled weapon.
-- One or more automatic companion/drone weapons.
-- Upgrade choices during runs.
-
-**3. Emotional Narrative**
-
-- Surface goal: escape, survive, defeat a boss, recover memories.
-- Hidden goal: personal growth, emotional healing, self-discovery.
-
----
-
-## Core Gameplay Loop
-
-```text
-Enter run
-   |
-   v
-Explore location
-   |
-   +--> Fight enemies
-   |       |
-   |       +--> Gain XP
-   |       +--> Level up
-   |       +--> Choose upgrades
-   |
-   +--> Discover clues
-   |       |
-   |       +--> Reconstruct story
-   |       +--> Form deductions
-   |
-   v
-Unlock deeper area or encounter
-   |
-   v
-Face boss / reveal truth
-   |
-   v
-Carry knowledge and progression forward
-```
-
-The current prototype validates only the combat and upgrade loop. Mystery, exploration rooms, clue logic, story progression, and save systems are planned but not yet implemented.
-
----
-
-## Current Progress
-
-### Completed
-
-- Unity project setup.
-- Top-down player movement.
-- Mouse aiming.
+- Top-down player movement and mouse aiming.
 - Manual pistol weapon.
-- Automatic drone weapon.
-- Enemy spawning.
-- Enemy chasing AI.
-- Enemy health system.
-- World-space health bars.
-- XP drops.
-- XP collection.
-- Player leveling.
-- Upgrade selection UI.
-- Fire Rate upgrade.
-- Damage upgrade.
-- Drone Projectile upgrade.
+- Automatic memory orb weapon.
+- Enemy spawning and enemy archetypes.
+- The Warden boss prototype.
+- Health, damage, crit, dodge, XP, and level data through `PlayerStats`.
+- World-space health bars and combat HUD.
+- Room 304 clue pickups.
+- Evidence journal.
+- Deduction board.
+- Truth reconstruction event.
+- Boss spawn after deduction success.
+- Boss death flow.
+- Reward selection after boss death.
+- Chapter complete screen.
+- Placeholder next chapter state.
 
-### Current Prototype
+## Controls
 
-**Combat Sandbox Phase 2**
-
-The current scene is a graybox arena designed to test the basic feel of:
-
-- Movement.
-- Manual shooting.
-- Automatic companion fire.
-- Enemy pressure.
-- XP collection.
-- Level-up upgrade choices.
-
-This prototype does not include final art, narrative content, exploration rooms, clues, save data, or boss encounters.
-
----
-
-## Repository Structure
-
-```text
-Lost City/
-|-- Assets/
-|   `-- _Project/
-|       |-- Art/
-|       |   `-- CombatSandbox/
-|       |-- Code/
-|       |   `-- CombatSandbox/
-|       |       |-- Camera/
-|       |       |-- Core/
-|       |       |-- Editor/
-|       |       |-- Enemies/
-|       |       |-- Feedback/
-|       |       |-- Pickups/
-|       |       |-- Player/
-|       |       |-- Progression/
-|       |       |-- Spawning/
-|       |       |-- UI/
-|       |       `-- Weapons/
-|       |-- Prefabs/
-|       |   `-- CombatSandbox/
-|       |-- Scenes/
-|       |-- ScriptableObjects/
-|       |   `-- CombatSandbox/
-|       `-- Settings/
-|           `-- Input/
-|-- Packages/
-|-- ProjectSettings/
-`-- README.md
-```
-
-### Key Runtime Areas
-
-- `Camera/` - simple top-down camera follow behavior.
-- `Core/` - combat teams, damage data, health/damage handling.
-- `Enemies/` - current Memory Fragment enemy definition and behavior.
-- `Feedback/` - hit flash and world-space health bars.
-- `Pickups/` - XP orb drop and collection logic.
-- `Player/` - input reading, movement, aiming, and death handling.
-- `Progression/` - XP, levels, and combat upgrade stats.
-- `Spawning/` - enemy wave spawning for the sandbox arena.
-- `UI/` - upgrade selection UI.
-- `Weapons/` - pistol, memory orb, projectile, and weapon definitions.
-- `Editor/` - automation for generating the Combat Sandbox scene and assets.
-
----
-
-## Getting Started
-
-### Requirements
-
-- Unity **2022.3.32f1** or compatible Unity 2022 LTS version.
-- Git.
-- A local clone of this repository.
-
-### Unity Packages
-
-The project currently uses:
-
-- Unity Input System.
-- Unity 2D feature set.
-- Unity UI.
-- Cinemachine.
-- TextMeshPro.
-- Unity Test Framework.
-
-Unity should restore packages automatically from `Packages/manifest.json` when the project opens.
-
----
+| Action | Input |
+| --- | --- |
+| Move | WASD or Arrow Keys |
+| Aim | Mouse position |
+| Fire pistol | Left Mouse Button |
+| Interact with clue | E |
+| Toggle evidence journal | J |
+| Toggle deduction board | Tab |
+| Continue after chapter complete | Space |
+| Debug: unlock all clues | F1 |
+| Debug: spawn boss | F2 |
+| Debug: kill boss | F3 |
 
 ## How To Run
 
-1. Clone the repository.
+1. Open the project with Unity 2022 LTS. The last used editor version is `2022.3.32f1`.
+2. Regenerate the playable sandbox:
 
-   ```bash
-   git clone git@github.com:Vaenix/LostCity.git
+   ```text
+   Tools > Lost City > Create Combat Sandbox
    ```
 
-2. Open the project folder in Unity Hub.
-
-3. Use Unity **2022.3.32f1** or another compatible Unity 2022 LTS editor.
-
-4. Open the sandbox scene:
+3. Open the generated scene:
 
    ```text
    Assets/_Project/Scenes/CombatSandbox.unity
    ```
 
-5. Press **Play**.
+4. Press Play.
 
-### Regenerating The Sandbox
+The generator rebuilds the Combat Sandbox scene, prefabs, ScriptableObjects, input actions, UI references, and Room 304 flow objects.
 
-The project includes an editor automation tool for rebuilding the combat sandbox assets and scene:
+## Latest Architecture Diagram
 
-```text
-Tools > Lost City > Create Combat Sandbox
+```mermaid
+flowchart TD
+    Player["Player"]
+    Stats["PlayerStats"]
+    Flow["GameFlowManager"]
+    Investigation["InvestigationProgress"]
+    Journal["EvidenceJournal"]
+    Deduction["DeductionBoard"]
+    Spawner["EnemySpawner"]
+    BossSpawn["BossSpawnController"]
+    Boss["The Warden"]
+    Reward["Room304RewardSelectionUI"]
+    Complete["Room304CompletionUI"]
+
+    Player --> Stats
+    Investigation --> Journal
+    Investigation --> Deduction
+    Investigation -- "AllRequiredCluesCollected" --> Flow
+    Deduction -- "CaseSolved" --> Flow
+    Flow --> Spawner
+    Flow --> BossSpawn
+    BossSpawn --> Boss
+    Boss -- "Died" --> Flow
+    Flow --> Reward
+    Reward -- "RewardSelected" --> Flow
+    Reward --> Stats
+    Flow --> Complete
 ```
 
-After running the tool, the generated `CombatSandbox` scene should be playable immediately.
-
----
-
-## Collaboration Workflow
-
-This project is currently structured for a solo developer, but the repository is organized so collaborators can safely join later.
-
-Recommended workflow:
-
-1. Pull the latest `master`.
-2. Create a feature branch.
-3. Keep changes focused on one feature, bug fix, or content slice.
-4. Test in Unity before opening a pull request.
-5. Include a short summary of what changed and how it was verified.
-
-Before merging, verify:
-
-- Unity compiles without console errors.
-- `CombatSandbox` still enters Play Mode.
-- Player movement, pistol fire, drone fire, enemy spawning, XP collection, and upgrade selection still work.
-
----
-
-## Git Branch Strategy
+## Core Gameplay Loop
 
 ```text
-master
-  |
-  +-- feature/combat-elite-enemies
-  |
-  +-- feature/boss-prototype
-  |
-  +-- feature/clue-system
-  |
-  +-- fix/ui-upgrade-clicks
+探索
+  -> 收集线索
+  -> 推理
+  -> 真相重现
+  -> Boss生成
+  -> Boss战
+  -> Boss死亡
+  -> 奖励选择
+  -> 章节完成
+  -> 下一章节开发中
 ```
 
-### Branch Guidelines
-
-- `master` should remain playable.
-- Use `feature/<name>` for new systems.
-- Use `fix/<name>` for bug fixes.
-- Use `prototype/<name>` for experiments that may be thrown away.
-- Avoid large mixed commits that combine gameplay, art, scenes, and unrelated refactors.
-
----
-
-## Roadmap
-
-### Current Milestone
-
-**Combat Sandbox Phase 2**
-
-Goal: validate whether the dual-weapon combat loop feels good enough to support the future mystery/exploration game.
-
-### Planned Next Milestones
-
-- Multiple enemy archetypes.
-- Elite enemies.
-- Boss encounters.
-- Exploration rooms.
-- Interactive clue system.
-- Story fragments.
-- Deduction board.
-- Procedural mystery generation.
-- Save/progression system.
-
-### Roadmap Shape
+## Folder Structure Summary
 
 ```text
-Phase 1 - Combat Foundation
-    Done: movement, aiming, pistol, drone, enemies, spawning
+Assets/_Project/
+|-- Art/CombatSandbox/Generated
+|-- Code/CombatSandbox
+|   |-- Camera
+|   |-- Core
+|   |-- Debug
+|   |-- Editor
+|   |-- Enemies
+|   |-- Feedback
+|   |-- Investigation
+|   |-- Pickups
+|   |-- Player
+|   |-- Progression
+|   |-- Spawning
+|   |-- UI
+|   `-- Weapons
+|-- Prefabs/CombatSandbox
+|-- Scenes
+|-- ScriptableObjects/CombatSandbox
+`-- Settings/Input
 
-Phase 2 - Combat Feedback & Progression
-    Done: HP bars, XP, leveling, upgrade choices
-
-Phase 3 - Enemy Variety
-    Planned: new enemy archetypes, elites, encounter tuning
-
-Phase 4 - Boss Prototype
-    Planned: one boss encounter with readable attack patterns
-
-Phase 5 - Exploration Prototype
-    Planned: connected rooms, interactables, clue placement
-
-Phase 6 - Mystery Prototype
-    Planned: clue collection, deduction board, story fragments
-
-Phase 7 - Progression Prototype
-    Planned: persistent progression and run-to-run structure
+Docs/
+|-- API
+|-- Architecture.md
+|-- DeveloperOnboarding.md
+|-- EventFlow.md
+|-- FolderStructure.md
+|-- GameplayLoop.md
+|-- README.md
+`-- Roadmap.md
 ```
 
----
+Full folder documentation lives in [Docs/FolderStructure.md](Docs/FolderStructure.md).
 
-## Team Roles
+## Current Roadmap
 
-Current expected structure:
+1. Complete Room 304 gameplay loop validation.
+2. Verify generated scene and all UI interactions in Unity Play Mode.
+3. Clean stale generated scene and prefab changes after successful regeneration.
+4. Add stronger automated validation for generator-created references.
+5. Expand combat readability only after the current loop is stable.
+6. Add Chapter 2 content only after Room 304 is validated end to end.
 
-```text
-Solo Developer
-  |-- Gameplay programming
-  |-- Systems architecture
-  |-- Graybox level design
-  |-- Prototype UI
-  `-- Build/test ownership
-```
+See [Docs/Roadmap.md](Docs/Roadmap.md) for details.
 
-Potential future collaborators:
+## Known Issues
 
-- **Gameplay Programmer** - combat feel, enemy behavior, boss implementation.
-- **Narrative Designer** - mysteries, clue chains, emotional story structure.
-- **Level Designer** - exploration spaces, encounter layout, pacing.
-- **Technical Artist / VFX Artist** - combat feedback, readability, atmosphere.
-- **UI/UX Designer** - deduction board, clue organization, upgrade presentation.
-- **Composer / Sound Designer** - mood, combat feedback, environmental audio.
+- Unity batchmode scene generation can fail locally if Unity licensing IPC is unavailable. Use the Unity Editor menu generator when that happens.
+- Current generated assets may be stale until `Tools > Lost City > Create Combat Sandbox` is run after code updates.
+- `Room304GameStateController` is legacy and should not be used by newly generated scenes.
+- No save system exists yet, so progression persists only during the current play session.
+- Room 304 is architecture validation content, not final story content.
 
----
+## Documentation
 
-## Future Vision
+Documentation is a first-class deliverable for this project. Start here:
 
-Lost City is intended to become a replayable mystery-action game where every run provides tension, discovery, and emotional context.
-
-The long-term goal is to combine:
-
-- Roguelike replayability.
-- Layered mystery and clue systems.
-- Environmental storytelling.
-- Accessible top-down combat.
-- Emotional narrative progression that persists beyond individual runs.
-
-The current repository is intentionally small and prototype-focused. The priority is to prove the core game feel first, then expand into mystery, exploration, and story systems only after the combat foundation is stable.
-
----
+- [Docs/README.md](Docs/README.md)
+- [Docs/Architecture.md](Docs/Architecture.md)
+- [Docs/GameplayLoop.md](Docs/GameplayLoop.md)
+- [Docs/EventFlow.md](Docs/EventFlow.md)
+- [Docs/DeveloperOnboarding.md](Docs/DeveloperOnboarding.md)
+- [Docs/Roadmap.md](Docs/Roadmap.md)
 
 ## License
 
-License placeholder.
-
-No final license has been selected yet. All rights are reserved until a license is added.
+License placeholder. No final license has been selected.
