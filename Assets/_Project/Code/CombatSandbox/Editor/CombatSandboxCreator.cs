@@ -970,6 +970,7 @@ namespace LostCity.CombatSandbox.EditorTools
             eventSystemObject.AddComponent<EventSystem>();
 
             InputSystemUIInputModule inputModule = eventSystemObject.AddComponent<InputSystemUIInputModule>();
+            inputModule.UnassignActions();
             inputModule.actionsAsset = inputReferences.Asset;
             inputModule.point = inputReferences.UiPoint;
             inputModule.leftClick = inputReferences.UiClick;
