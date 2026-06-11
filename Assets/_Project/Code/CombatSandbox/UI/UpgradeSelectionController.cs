@@ -88,22 +88,22 @@ namespace LostCity.CombatSandbox
 
             if (titleText != null)
             {
-                titleText.text = $"LEVEL {level}";
+                titleText.text = $"等级 {level}";
             }
 
             if (fireRateButtonText != null)
             {
-                fireRateButtonText.text = "+20% Fire Rate";
+                fireRateButtonText.text = "+20%攻击速度";
             }
 
             if (damageButtonText != null)
             {
-                damageButtonText.text = "+20% Projectile Damage";
+                damageButtonText.text = "+20%攻击力";
             }
 
             if (droneButtonText != null)
             {
-                droneButtonText.text = "+1 Drone Projectile";
+                droneButtonText.text = "+1 记忆浮游炮";
             }
 
             if (pauseWhileChoosing)

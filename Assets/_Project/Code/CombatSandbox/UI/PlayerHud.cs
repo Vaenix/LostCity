@@ -59,17 +59,17 @@ namespace LostCity.CombatSandbox
             ResolveReferences();
             if (playerStats == null || playerExperience == null)
             {
-                statsText.text = "LV -\nHP -\nATK -\nDEF -\nCRIT -\nDODGE -";
+                statsText.text = "等级 -\n生命 -\n攻击 -\n防御 -\n暴击 -\n闪避 -";
                 return;
             }
 
             statsText.text =
-                $"LV {playerExperience.CurrentLevel}\n" +
-                $"HP {Mathf.CeilToInt(playerStats.CurrentHp)}/{Mathf.CeilToInt(playerStats.MaxHp)}\n" +
-                $"ATK x{playerStats.Attack:0.00}\n" +
-                $"DEF {playerStats.Defense:0}\n" +
-                $"CRIT {playerStats.CritChance * 100f:0}% x{playerStats.CritDamage:0.0}\n" +
-                $"DODGE {playerStats.DodgeChance * 100f:0}%";
+                $"等级 {playerExperience.CurrentLevel}\n" +
+                $"生命 {Mathf.CeilToInt(playerStats.CurrentHp)}/{Mathf.CeilToInt(playerStats.MaxHp)}\n" +
+                $"攻击 x{playerStats.Attack:0.00}\n" +
+                $"防御 {playerStats.Defense:0}\n" +
+                $"暴击 {playerStats.CritChance * 100f:0}% x{playerStats.CritDamage:0.0}\n" +
+                $"闪避 {playerStats.DodgeChance * 100f:0}%";
         }
     }
 }

@@ -143,26 +143,26 @@ namespace LostCity.CombatSandbox.EditorTools
             ClueDefinition visitorLogClue = CreateClueDefinition(
                 VisitorLogCluePath,
                 "room304_visitor_log",
-                "Visitor Log",
-                "Hospital Record",
-                "The last visitor entry for Room 304 is blank.",
-                "The visitor log lists expected family visits for every room except Room 304. The final line has a name erased, leaving only the time and an empty signature box.");
+                "访客登记表",
+                "医院记录",
+                "304号病房最后一条访客记录是空白的。",
+                "访客登记表记录了每个病房的家属探访，唯独304号病房的最后一行被擦掉了姓名，只留下时间和空白签名栏。");
 
             ClueDefinition apologyNoteClue = CreateClueDefinition(
                 ApologyNoteCluePath,
                 "room304_apology_note",
-                "Crumpled Apology Note",
-                "Personal Note",
-                "An apology that was never delivered.",
-                "The note says the writer wanted to come sooner, but kept waiting for the right moment. It is signed only with the player's initial.");
+                "揉皱的道歉信",
+                "私人便条",
+                "一封从未送出的道歉信。",
+                "信里写着写信人本想早点来，却一直等待所谓合适的时机。落款只剩下玩家名字的首字。");
 
             ClueDefinition patientBraceletClue = CreateClueDefinition(
                 PatientBraceletCluePath,
                 "room304_patient_bracelet",
-                "Patient Bracelet",
-                "Personal Item",
-                "The patient name matches the player.",
-                "A faded bracelet from Room 304 carries the player's name. The sealed room was not hiding someone else's regret.");
+                "病人手环",
+                "个人物品",
+                "手环上的病人姓名与玩家一致。",
+                "这只褪色的304号病房手环写着玩家的名字。被封锁的房间隐藏的并不是别人的遗憾。");
 
             DeleteAssetIfExists(LegacyEnemyPrefabPath);
             DeleteAssetIfExists(LegacyEnemyDefinitionPath);
@@ -845,10 +845,11 @@ namespace LostCity.CombatSandbox.EditorTools
             managerObject.transform.SetParent(root.transform);
             managerObject.AddComponent<CombatGameManager>();
             InvestigationProgress investigationProgress = managerObject.AddComponent<InvestigationProgress>();
-            SetString(investigationProgress, "caseTitle", "Room 304");
-            SetString(investigationProgress, "mysteryQuestion", "Why was Room 304 sealed?");
+            SetString(investigationProgress, "caseTitle", "304号病房");
+            SetString(investigationProgress, "mysteryQuestion", "304号病房为什么被封锁？");
             SetObjectArray(investigationProgress, "requiredClues", room304Clues);
-            Room304GameStateController gameStateController = managerObject.AddComponent<Room304GameStateController>();
+            GameFlowManager gameFlowManager = managerObject.AddComponent<GameFlowManager>();
+            Room304DebugTools debugTools = managerObject.AddComponent<Room304DebugTools>();
 
             CreateEventSystem(root.transform, inputReferences);
 
@@ -889,9 +890,10 @@ namespace LostCity.CombatSandbox.EditorTools
 
             PlayerStats playerStats = playerObject.GetComponent<PlayerStats>();
             CreateCombatHud(root.transform, squareSprite, playerStats, playerExperience);
-            EvidenceJournal evidenceJournal = CreateEvidenceJournalUi(root.transform, squareSprite, investigationProgress);
+            CreateEvidenceJournalUi(root.transform, squareSprite, investigationProgress);
             DeductionBoard deductionBoard = CreateDeductionBoardUi(root.transform, squareSprite, investigationProgress);
-            MemoryFragmentPanel memoryFragmentPanel = CreateMemoryFragmentPanelUi(root.transform, squareSprite);
+            Room304RewardSelectionUI rewardSelectionUI = CreateRoom304RewardSelectionUi(root.transform, squareSprite);
+            Room304CompletionUI completionUI = CreateRoom304CompletionUi(root.transform, squareSprite);
 
             CreateCluePickup(
                 root.transform,
@@ -952,11 +954,14 @@ namespace LostCity.CombatSandbox.EditorTools
             bossSpawnController.enabled = false;
             EditorUtility.SetDirty(bossSpawnController);
 
-            SetObject(gameStateController, "investigationProgress", investigationProgress);
-            SetObject(gameStateController, "deductionBoard", deductionBoard);
-            SetObject(gameStateController, "enemySpawner", spawner);
-            SetObject(gameStateController, "bossSpawnController", bossSpawnController);
-            SetObject(gameStateController, "memoryFragmentPanel", memoryFragmentPanel);
+            SetObject(gameFlowManager, "investigationProgress", investigationProgress);
+            SetObject(gameFlowManager, "deductionBoard", deductionBoard);
+            SetObject(gameFlowManager, "enemySpawner", spawner);
+            SetObject(gameFlowManager, "bossSpawnController", bossSpawnController);
+            SetObject(gameFlowManager, "rewardSelectionUI", rewardSelectionUI);
+            SetObject(gameFlowManager, "completionUI", completionUI);
+            SetObject(gameFlowManager, "playerStats", playerStats);
+            SetObject(debugTools, "gameFlowManager", gameFlowManager);
 
             EditorSceneManager.SaveScene(scene, ScenePath);
             AddSceneToBuildSettings(ScenePath);
@@ -1011,7 +1016,7 @@ namespace LostCity.CombatSandbox.EditorTools
             statsPanelImage.color = new Color(0.03f, 0.04f, 0.05f, 0.78f);
             statsPanelImage.raycastTarget = false;
 
-            Text statsText = CreateText("StatsText", statsPanel.transform, font, "LV 1", 16, TextAnchor.UpperLeft, new Vector2(160f, 124f), new Vector2(0f, -6f));
+            Text statsText = CreateText("StatsText", statsPanel.transform, font, "等级 1", 16, TextAnchor.UpperLeft, new Vector2(160f, 124f), new Vector2(0f, -6f));
             statsText.raycastTarget = false;
 
             SetObject(playerHud, "playerStats", playerStats);
@@ -1108,7 +1113,7 @@ namespace LostCity.CombatSandbox.EditorTools
                 new Color(0.12f, 0.09f, 0.12f, 1f),
                 -8);
 
-            CreateWorldLabel(sealedRoom.transform, "ROOM 304\nSEALED", new Vector3(0f, 0f, 0f), new Vector2(420f, 80f), 22, Color.white);
+            CreateWorldLabel(sealedRoom.transform, "304号病房\n已封锁", new Vector3(0f, 0f, 0f), new Vector2(420f, 80f), 22, Color.white);
         }
 
         private static GameObject CreateSpriteBlock(
@@ -1156,7 +1161,7 @@ namespace LostCity.CombatSandbox.EditorTools
 
             GameObject promptObject = CreateWorldLabel(
                 clueObject.transform,
-                clue != null ? "Press E\n" + clue.Title : "Press E",
+                clue != null ? "按 E\n" + clue.Title : "按 E",
                 new Vector3(0f, 1.15f, 0f),
                 new Vector2(320f, 80f),
                 18,
@@ -1223,8 +1228,8 @@ namespace LostCity.CombatSandbox.EditorTools
             panelImage.sprite = squareSprite;
             panelImage.color = new Color(0.04f, 0.05f, 0.06f, 0.94f);
 
-            Text titleText = CreateText("Title", panelObject.transform, font, "Room 304 Evidence", 28, TextAnchor.MiddleCenter, new Vector2(560f, 40f), new Vector2(0f, 175f));
-            Text clueListText = CreateText("ClueList", panelObject.transform, font, "No evidence collected.", 17, TextAnchor.UpperLeft, new Vector2(540f, 300f), new Vector2(0f, -10f));
+            Text titleText = CreateText("Title", panelObject.transform, font, "304号病房线索", 28, TextAnchor.MiddleCenter, new Vector2(560f, 40f), new Vector2(0f, 175f));
+            Text clueListText = CreateText("ClueList", panelObject.transform, font, "尚未收集线索。", 17, TextAnchor.UpperLeft, new Vector2(540f, 300f), new Vector2(0f, -10f));
 
             SetObject(journal, "investigationProgress", investigationProgress);
             SetObject(journal, "panelRoot", panelObject);
@@ -1258,8 +1263,8 @@ namespace LostCity.CombatSandbox.EditorTools
             panelImage.sprite = squareSprite;
             panelImage.color = new Color(0.04f, 0.05f, 0.06f, 0.95f);
 
-            Text titleText = CreateText("Title", panelObject.transform, font, "ROOM 304", 28, TextAnchor.MiddleCenter, new Vector2(560f, 38f), new Vector2(0f, 218f));
-            Text questionText = CreateText("Question", panelObject.transform, font, "Why was Room 304 sealed?", 20, TextAnchor.MiddleCenter, new Vector2(600f, 34f), new Vector2(0f, 178f));
+            Text titleText = CreateText("Title", panelObject.transform, font, "304号病房", 28, TextAnchor.MiddleCenter, new Vector2(560f, 38f), new Vector2(0f, 218f));
+            Text questionText = CreateText("Question", panelObject.transform, font, "304号病房为什么被封锁？", 20, TextAnchor.MiddleCenter, new Vector2(600f, 34f), new Vector2(0f, 178f));
 
             GameObject clueRootObject = CreateUiRect("CollectedClues", panelObject.transform, new Vector2(500f, 180f), new Vector2(0f, 60f));
             VerticalLayoutGroup layoutGroup = clueRootObject.AddComponent<VerticalLayoutGroup>();
@@ -1271,9 +1276,9 @@ namespace LostCity.CombatSandbox.EditorTools
             Button clueButtonTemplate = CreateDeductionButton(clueRootObject.transform, font, "Clue", new Vector2(500f, 52f));
             clueButtonTemplate.gameObject.SetActive(false);
 
-            Text selectedText = CreateText("SelectedClues", panelObject.transform, font, "Selected clues: none", 16, TextAnchor.UpperLeft, new Vector2(500f, 80f), new Vector2(0f, -110f));
-            Text feedbackText = CreateText("Feedback", panelObject.transform, font, "Select the evidence that answers the question.", 17, TextAnchor.MiddleCenter, new Vector2(560f, 34f), new Vector2(0f, -175f));
-            Button submitButton = CreateDeductionButton(panelObject.transform, font, "Submit Deduction", new Vector2(320f, 44f));
+            Text selectedText = CreateText("SelectedClues", panelObject.transform, font, "已选择线索：无", 16, TextAnchor.UpperLeft, new Vector2(500f, 80f), new Vector2(0f, -110f));
+            Text feedbackText = CreateText("Feedback", panelObject.transform, font, "选择能回答问题的证据。", 17, TextAnchor.MiddleCenter, new Vector2(560f, 34f), new Vector2(0f, -175f));
+            Button submitButton = CreateDeductionButton(panelObject.transform, font, "提交推理", new Vector2(320f, 44f));
             ((RectTransform)submitButton.transform).anchoredPosition = new Vector2(0f, -220f);
 
             SetObject(board, "investigationProgress", investigationProgress);
@@ -1330,12 +1335,12 @@ namespace LostCity.CombatSandbox.EditorTools
             panelImage.sprite = squareSprite;
             panelImage.color = new Color(0.04f, 0.05f, 0.06f, 0.96f);
 
-            Text titleText = CreateText("Title", panelObject.transform, font, "Memory Fragment", 28, TextAnchor.MiddleCenter, new Vector2(560f, 42f), new Vector2(0f, 84f));
+            Text titleText = CreateText("Title", panelObject.transform, font, "记忆片段", 28, TextAnchor.MiddleCenter, new Vector2(560f, 42f), new Vector2(0f, 84f));
             Text bodyText = CreateText(
                 "Body",
                 panelObject.transform,
                 font,
-                "Room 304 was sealed because the visitor never came. The regret belongs to you.",
+                "304号病房被封锁，因为访客从未到来。遗憾属于你。",
                 20,
                 TextAnchor.MiddleCenter,
                 new Vector2(540f, 130f),
@@ -1344,10 +1349,90 @@ namespace LostCity.CombatSandbox.EditorTools
             SetObject(panel, "panelRoot", panelObject);
             SetObject(panel, "titleText", titleText);
             SetObject(panel, "bodyText", bodyText);
-            SetString(panel, "title", "Memory Fragment");
-            SetString(panel, "body", "Room 304 was sealed because the visitor never came. The regret belongs to the player.");
+            SetString(panel, "title", "记忆片段");
+            SetString(panel, "body", "304号病房被封锁，因为访客从未到来。遗憾属于玩家。");
             panelObject.SetActive(false);
             return panel;
+        }
+
+        private static Room304RewardSelectionUI CreateRoom304RewardSelectionUi(Transform root, Sprite squareSprite)
+        {
+            Font font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            if (font == null)
+            {
+                font = Resources.GetBuiltinResource<Font>("Arial.ttf");
+            }
+
+            GameObject canvasObject = new GameObject("Room304RewardSelectionUI");
+            canvasObject.transform.SetParent(root);
+
+            Canvas canvas = canvasObject.AddComponent<Canvas>();
+            canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+            canvas.sortingOrder = 115;
+            canvasObject.AddComponent<CanvasScaler>();
+            canvasObject.AddComponent<GraphicRaycaster>();
+
+            Room304RewardSelectionUI rewardSelectionUI = canvasObject.AddComponent<Room304RewardSelectionUI>();
+
+            GameObject panelObject = CreateUiRect("Panel", canvasObject.transform, new Vector2(560f, 330f), Vector2.zero);
+            Image panelImage = panelObject.AddComponent<Image>();
+            panelImage.sprite = squareSprite;
+            panelImage.color = new Color(0.04f, 0.05f, 0.06f, 0.96f);
+
+            Text titleText = CreateText("Title", panelObject.transform, font, "真相已揭开", 30, TextAnchor.MiddleCenter, new Vector2(500f, 46f), new Vector2(0f, 120f));
+            Text bodyText = CreateText("Body", panelObject.transform, font, "304号病房已解封\n选择一项奖励", 20, TextAnchor.MiddleCenter, new Vector2(500f, 72f), new Vector2(0f, 62f));
+
+            Button attackButton = CreateUpgradeButton(panelObject.transform, font, "+10%攻击力", new Vector2(0f, -12f), out Text attackText);
+            Button maxHpButton = CreateUpgradeButton(panelObject.transform, font, "+10%生命值", new Vector2(0f, -72f), out Text maxHpText);
+            Button critButton = CreateUpgradeButton(panelObject.transform, font, "+5%暴击率", new Vector2(0f, -132f), out Text critText);
+
+            SetObject(rewardSelectionUI, "panelRoot", panelObject);
+            SetObject(rewardSelectionUI, "titleText", titleText);
+            SetObject(rewardSelectionUI, "bodyText", bodyText);
+            SetObject(rewardSelectionUI, "attackButton", attackButton);
+            SetObject(rewardSelectionUI, "attackButtonText", attackText);
+            SetObject(rewardSelectionUI, "maxHpButton", maxHpButton);
+            SetObject(rewardSelectionUI, "maxHpButtonText", maxHpText);
+            SetObject(rewardSelectionUI, "critButton", critButton);
+            SetObject(rewardSelectionUI, "critButtonText", critText);
+
+            panelObject.SetActive(false);
+            return rewardSelectionUI;
+        }
+
+        private static Room304CompletionUI CreateRoom304CompletionUi(Transform root, Sprite squareSprite)
+        {
+            Font font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            if (font == null)
+            {
+                font = Resources.GetBuiltinResource<Font>("Arial.ttf");
+            }
+
+            GameObject canvasObject = new GameObject("Room304CompletionUI");
+            canvasObject.transform.SetParent(root);
+
+            Canvas canvas = canvasObject.AddComponent<Canvas>();
+            canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+            canvas.sortingOrder = 120;
+            canvasObject.AddComponent<CanvasScaler>();
+
+            Room304CompletionUI completionUI = canvasObject.AddComponent<Room304CompletionUI>();
+
+            GameObject panelObject = CreateUiRect("Panel", canvasObject.transform, new Vector2(560f, 260f), Vector2.zero);
+            Image panelImage = panelObject.AddComponent<Image>();
+            panelImage.sprite = squareSprite;
+            panelImage.color = new Color(0.04f, 0.05f, 0.06f, 0.96f);
+            panelImage.raycastTarget = false;
+
+            Text titleText = CreateText("Title", panelObject.transform, font, "章节完成", 32, TextAnchor.MiddleCenter, new Vector2(500f, 54f), new Vector2(0f, 66f));
+            Text bodyText = CreateText("Body", panelObject.transform, font, "304号病房\n按空格继续", 22, TextAnchor.MiddleCenter, new Vector2(500f, 96f), new Vector2(0f, -24f));
+
+            SetObject(completionUI, "panelRoot", panelObject);
+            SetObject(completionUI, "titleText", titleText);
+            SetObject(completionUI, "bodyText", bodyText);
+
+            panelObject.SetActive(false);
+            return completionUI;
         }
 
         private static void AddWorldHealthBar(GameObject owner, Sprite squareSprite, Vector3 localPosition, Color fillColor, bool hideWhenFull, float width = 1f)
@@ -1424,11 +1509,11 @@ namespace LostCity.CombatSandbox.EditorTools
             Image panelImage = panelObject.AddComponent<Image>();
             panelImage.color = new Color(0.04f, 0.05f, 0.06f, 0.92f);
 
-            Text titleText = CreateText("Title", panelObject.transform, font, "LEVEL UP", 28, TextAnchor.MiddleCenter, new Vector2(420f, 42f), new Vector2(0f, 88f));
+            Text titleText = CreateText("Title", panelObject.transform, font, "等级提升", 28, TextAnchor.MiddleCenter, new Vector2(420f, 42f), new Vector2(0f, 88f));
 
-            Button fireRateButton = CreateUpgradeButton(panelObject.transform, font, "+20% Fire Rate", new Vector2(0f, 32f), out Text fireRateText);
-            Button damageButton = CreateUpgradeButton(panelObject.transform, font, "+20% Projectile Damage", new Vector2(0f, -28f), out Text damageText);
-            Button droneButton = CreateUpgradeButton(panelObject.transform, font, "+1 Drone Projectile", new Vector2(0f, -88f), out Text droneText);
+            Button fireRateButton = CreateUpgradeButton(panelObject.transform, font, "+20%攻击速度", new Vector2(0f, 32f), out Text fireRateText);
+            Button damageButton = CreateUpgradeButton(panelObject.transform, font, "+20%攻击力", new Vector2(0f, -28f), out Text damageText);
+            Button droneButton = CreateUpgradeButton(panelObject.transform, font, "+1 记忆浮游炮", new Vector2(0f, -88f), out Text droneText);
 
             SetObject(controller, "panelRoot", panelObject);
             SetObject(controller, "titleText", titleText);
@@ -1451,6 +1536,7 @@ namespace LostCity.CombatSandbox.EditorTools
             image.color = new Color(0.16f, 0.18f, 0.21f, 1f);
 
             Button button = buttonObject.AddComponent<Button>();
+            button.targetGraphic = image;
             ColorBlock colors = button.colors;
             colors.normalColor = image.color;
             colors.highlightedColor = new Color(0.24f, 0.28f, 0.32f, 1f);

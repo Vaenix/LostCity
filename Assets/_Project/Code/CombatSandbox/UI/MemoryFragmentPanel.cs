@@ -8,8 +8,8 @@ namespace LostCity.CombatSandbox
         [SerializeField] private GameObject panelRoot;
         [SerializeField] private Text titleText;
         [SerializeField] private Text bodyText;
-        [SerializeField] private string title = "Memory Fragment";
-        [SerializeField] private string body = "Room 304 was sealed because the visitor never came. The regret belongs to you.";
+        [SerializeField] private string title = "记忆片段";
+        [SerializeField] private string body = "304号病房被封锁，因为访客从未到来。遗憾属于你。";
 
         private void Awake()
         {

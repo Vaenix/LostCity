@@ -74,6 +74,22 @@ namespace LostCity.CombatSandbox
             aliveEnemies.Add(enemy);
         }
 
+        public void StopAndClearEnemies()
+        {
+            enabled = false;
+            CleanupDestroyedEnemies();
+
+            for (int i = aliveEnemies.Count - 1; i >= 0; i--)
+            {
+                if (aliveEnemies[i] != null)
+                {
+                    Destroy(aliveEnemies[i]);
+                }
+            }
+
+            aliveEnemies.Clear();
+        }
+
         private GameObject SelectEnemyPrefab()
         {
             if (spawnEntries == null || spawnEntries.Length == 0)

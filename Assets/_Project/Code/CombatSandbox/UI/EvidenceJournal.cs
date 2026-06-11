@@ -81,7 +81,7 @@ namespace LostCity.CombatSandbox
 
             if (titleText != null)
             {
-                titleText.text = investigationProgress.CaseTitle + " Evidence";
+                titleText.text = investigationProgress.CaseTitle + "线索";
             }
 
             if (clueListText == null)
@@ -91,7 +91,7 @@ namespace LostCity.CombatSandbox
 
             if (investigationProgress.CollectedClues.Count == 0)
             {
-                clueListText.text = "No evidence collected.";
+                clueListText.text = "尚未收集线索。";
                 return;
             }
 

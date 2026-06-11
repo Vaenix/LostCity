@@ -1,6 +1,6 @@
+using System.Collections;
 using System.Collections.Generic;
 using System.Text;
-using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
@@ -120,7 +120,7 @@ namespace LostCity.CombatSandbox
             RefreshSelectedText();
             if (feedbackText != null && string.IsNullOrWhiteSpace(feedbackText.text))
             {
-                feedbackText.text = "Select the evidence that answers the question.";
+                feedbackText.text = "选择能回答问题的证据。";
             }
         }
 
@@ -183,7 +183,7 @@ namespace LostCity.CombatSandbox
             {
                 if (feedbackText != null)
                 {
-                    feedbackText.text = "Truth Reconstructed";
+                    feedbackText.text = "真相重现";
                 }
 
                 if (submitButton != null)
@@ -197,7 +197,7 @@ namespace LostCity.CombatSandbox
 
             if (feedbackText != null)
             {
-                feedbackText.text = "The evidence does not fit yet.";
+                feedbackText.text = "证据还无法成立。";
             }
         }
 
@@ -217,12 +217,12 @@ namespace LostCity.CombatSandbox
 
             if (selectedClues.Count == 0)
             {
-                selectedCluesText.text = "Selected clues: none";
+                selectedCluesText.text = "已选择线索：无";
                 return;
             }
 
             textBuilder.Clear();
-            textBuilder.Append("Selected clues:\n");
+            textBuilder.Append("已选择线索：\n");
             for (int i = 0; i < selectedClues.Count; i++)
             {
                 textBuilder.Append("- ").Append(selectedClues[i].Title).Append('\n');

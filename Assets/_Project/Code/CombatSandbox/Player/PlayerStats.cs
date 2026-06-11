@@ -59,9 +59,33 @@ namespace LostCity.CombatSandbox
             NotifyChanged();
         }
 
+        public void MultiplyMaxHp(float multiplier)
+        {
+            maxHp = Mathf.Max(1f, maxHp * Mathf.Max(0.01f, multiplier));
+            if (damageable != null)
+            {
+                damageable.SetMaxHealth(maxHp, resetCurrentHealth: true);
+                currentHp = damageable.CurrentHealth;
+            }
+
+            NotifyChanged();
+        }
+
         public void MultiplyFireRate(float multiplier)
         {
             fireRate = Mathf.Max(0.01f, fireRate * Mathf.Max(0.01f, multiplier));
+            NotifyChanged();
+        }
+
+        public void AddCritChance(float amount)
+        {
+            critChance = Mathf.Clamp01(critChance + amount);
+            NotifyChanged();
+        }
+
+        public void AddDodgeChance(float amount)
+        {
+            dodgeChance = Mathf.Clamp01(dodgeChance + amount);
             NotifyChanged();
         }
 

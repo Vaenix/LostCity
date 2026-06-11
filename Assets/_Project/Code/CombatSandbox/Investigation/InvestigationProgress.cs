@@ -6,8 +6,8 @@ namespace LostCity.CombatSandbox
 {
     public sealed class InvestigationProgress : MonoBehaviour
     {
-        [SerializeField] private string caseTitle = "Room 304";
-        [SerializeField] private string mysteryQuestion = "Why was Room 304 sealed?";
+        [SerializeField] private string caseTitle = "304号病房";
+        [SerializeField] private string mysteryQuestion = "304号病房为什么被封锁？";
         [SerializeField] private ClueDefinition[] requiredClues;
 
         private readonly List<ClueDefinition> collectedClues = new List<ClueDefinition>();
@@ -83,6 +83,19 @@ namespace LostCity.CombatSandbox
 
             caseSolved = true;
             CaseSolved?.Invoke();
+        }
+
+        public void CollectAllRequiredClues()
+        {
+            if (requiredClues == null)
+            {
+                return;
+            }
+
+            for (int i = 0; i < requiredClues.Length; i++)
+            {
+                TryCollectClue(requiredClues[i]);
+            }
         }
 
         private static bool ContainsClue(IReadOnlyList<ClueDefinition> clues, ClueDefinition target)
