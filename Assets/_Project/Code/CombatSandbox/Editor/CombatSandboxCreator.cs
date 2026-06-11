@@ -56,6 +56,9 @@ namespace LostCity.CombatSandbox.EditorTools
         private const string ShooterEnemyDefinitionPath = ScriptableObjectRoot + "/ShooterEnemyDefinition.asset";
         private const string TankEnemyDefinitionPath = ScriptableObjectRoot + "/TankEnemyDefinition.asset";
         private const string LegacyEnemyDefinitionPath = ScriptableObjectRoot + "/MemoryFragmentEnemyDefinition.asset";
+        private const string VisitorLogCluePath = ScriptableObjectRoot + "/Room304_VisitorLog.asset";
+        private const string ApologyNoteCluePath = ScriptableObjectRoot + "/Room304_CrumpledApologyNote.asset";
+        private const string PatientBraceletCluePath = ScriptableObjectRoot + "/Room304_PatientBracelet.asset";
 
         private const string SquareSpritePath = GeneratedArtRoot + "/SandboxSquare.png";
         private const string CircleSpritePath = GeneratedArtRoot + "/SandboxCircle.png";
@@ -136,6 +139,30 @@ namespace LostCity.CombatSandbox.EditorTools
                 orbProjectileDefinition,
                 cooldownSeconds: 0.8f,
                 range: 12f);
+
+            ClueDefinition visitorLogClue = CreateClueDefinition(
+                VisitorLogCluePath,
+                "room304_visitor_log",
+                "Visitor Log",
+                "Hospital Record",
+                "The last visitor entry for Room 304 is blank.",
+                "The visitor log lists expected family visits for every room except Room 304. The final line has a name erased, leaving only the time and an empty signature box.");
+
+            ClueDefinition apologyNoteClue = CreateClueDefinition(
+                ApologyNoteCluePath,
+                "room304_apology_note",
+                "Crumpled Apology Note",
+                "Personal Note",
+                "An apology that was never delivered.",
+                "The note says the writer wanted to come sooner, but kept waiting for the right moment. It is signed only with the player's initial.");
+
+            ClueDefinition patientBraceletClue = CreateClueDefinition(
+                PatientBraceletCluePath,
+                "room304_patient_bracelet",
+                "Patient Bracelet",
+                "Personal Item",
+                "The patient name matches the player.",
+                "A faded bracelet from Room 304 carries the player's name. The sealed room was not hiding someone else's regret.");
 
             DeleteAssetIfExists(LegacyEnemyPrefabPath);
             DeleteAssetIfExists(LegacyEnemyDefinitionPath);
@@ -219,13 +246,19 @@ namespace LostCity.CombatSandbox.EditorTools
             GameObject wardenBossPrefab = CreateWardenBossPrefab(WardenBossPrefabPath, squareSprite, enemyProjectilePrefab, enemyProjectileDefinition, xpOrbPrefab, new[] { chaserPrefab, chargerPrefab, shooterPrefab });
             GameObject playerPrefab = CreatePlayerPrefab(PlayerPrefabPath, circleSprite, squareSprite, inputReferences, pistolWeaponDefinition, orbWeaponDefinition);
 
-            CreateScene(squareSprite, playerPrefab, wardenBossPrefab, inputReferences, new[]
-            {
-                new SpawnPrefabWeight(chaserPrefab, 55f),
-                new SpawnPrefabWeight(chargerPrefab, 20f),
-                new SpawnPrefabWeight(shooterPrefab, 17f),
-                new SpawnPrefabWeight(tankPrefab, 8f)
-            });
+            CreateScene(
+                squareSprite,
+                playerPrefab,
+                wardenBossPrefab,
+                inputReferences,
+                new[] { visitorLogClue, apologyNoteClue, patientBraceletClue },
+                new[]
+                {
+                    new SpawnPrefabWeight(chaserPrefab, 55f),
+                    new SpawnPrefabWeight(chargerPrefab, 20f),
+                    new SpawnPrefabWeight(shooterPrefab, 17f),
+                    new SpawnPrefabWeight(tankPrefab, 8f)
+                });
 
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
@@ -454,6 +487,23 @@ namespace LostCity.CombatSandbox.EditorTools
             }
 
             return definition;
+        }
+
+        private static ClueDefinition CreateClueDefinition(
+            string path,
+            string id,
+            string title,
+            string category,
+            string shortDescription,
+            string fullDescription)
+        {
+            ClueDefinition definition = CreateScriptableObject<ClueDefinition>(path);
+            SetString(definition, "id", id);
+            SetString(definition, "title", title);
+            SetString(definition, "category", category);
+            SetString(definition, "shortDescription", shortDescription);
+            SetString(definition, "fullDescription", fullDescription);
+            return SaveAndReloadAsset(definition, path);
         }
 
         private static Projectile CreateProjectilePrefab(
@@ -784,6 +834,7 @@ namespace LostCity.CombatSandbox.EditorTools
             GameObject playerPrefab,
             GameObject bossPrefab,
             InputReferences inputReferences,
+            ClueDefinition[] room304Clues,
             SpawnPrefabWeight[] enemySpawnWeights)
         {
             Scene scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
@@ -793,6 +844,11 @@ namespace LostCity.CombatSandbox.EditorTools
             GameObject managerObject = new GameObject("CombatGameManager");
             managerObject.transform.SetParent(root.transform);
             managerObject.AddComponent<CombatGameManager>();
+            InvestigationProgress investigationProgress = managerObject.AddComponent<InvestigationProgress>();
+            SetString(investigationProgress, "caseTitle", "Room 304");
+            SetString(investigationProgress, "mysteryQuestion", "Why was Room 304 sealed?");
+            SetObjectArray(investigationProgress, "requiredClues", room304Clues);
+            Room304GameStateController gameStateController = managerObject.AddComponent<Room304GameStateController>();
 
             CreateEventSystem(root.transform, inputReferences);
 
@@ -817,10 +873,12 @@ namespace LostCity.CombatSandbox.EditorTools
             arenaRenderer.color = new Color(0.18f, 0.18f, 0.2f, 1f);
             arenaRenderer.sortingOrder = -10;
 
+            CreateRoom304Graybox(root.transform, squareSprite);
+
             GameObject playerObject = (GameObject)PrefabUtility.InstantiatePrefab(playerPrefab);
             playerObject.name = "Player";
             playerObject.transform.SetParent(root.transform);
-            playerObject.transform.position = Vector3.zero;
+            playerObject.transform.position = new Vector3(0f, -5f, 0f);
 
             PlayerAim playerAim = playerObject.GetComponent<PlayerAim>();
             SetObject(playerAim, "aimCamera", camera);
@@ -831,6 +889,33 @@ namespace LostCity.CombatSandbox.EditorTools
 
             PlayerStats playerStats = playerObject.GetComponent<PlayerStats>();
             CreateCombatHud(root.transform, squareSprite, playerStats, playerExperience);
+            EvidenceJournal evidenceJournal = CreateEvidenceJournalUi(root.transform, squareSprite, investigationProgress);
+            DeductionBoard deductionBoard = CreateDeductionBoardUi(root.transform, squareSprite, investigationProgress);
+            MemoryFragmentPanel memoryFragmentPanel = CreateMemoryFragmentPanelUi(root.transform, squareSprite);
+
+            CreateCluePickup(
+                root.transform,
+                squareSprite,
+                room304Clues.Length > 0 ? room304Clues[0] : null,
+                investigationProgress,
+                new Vector3(-6f, -2.2f, 0f),
+                new Color(0.55f, 0.9f, 1f, 1f));
+
+            CreateCluePickup(
+                root.transform,
+                squareSprite,
+                room304Clues.Length > 1 ? room304Clues[1] : null,
+                investigationProgress,
+                new Vector3(4.8f, -1.2f, 0f),
+                new Color(1f, 0.9f, 0.45f, 1f));
+
+            CreateCluePickup(
+                root.transform,
+                squareSprite,
+                room304Clues.Length > 2 ? room304Clues[2] : null,
+                investigationProgress,
+                new Vector3(0f, 3.3f, 0f),
+                new Color(0.55f, 1f, 0.55f, 1f));
 
             SimpleTopDownCameraFollow cameraFollow = cameraObject.AddComponent<SimpleTopDownCameraFollow>();
             SetObject(cameraFollow, "target", playerObject.transform);
@@ -851,17 +936,27 @@ namespace LostCity.CombatSandbox.EditorTools
             SetInt(spawner, "maxAliveEnemies", 10);
             SetFloat(spawner, "spawnRadius", 18f);
             SetFloat(spawner, "minimumDistanceFromPlayer", 8f);
+            spawner.enabled = false;
+            EditorUtility.SetDirty(spawner);
 
             GameObject bossSpawnerObject = new GameObject("BossSpawner");
             bossSpawnerObject.transform.SetParent(root.transform);
-            bossSpawnerObject.transform.position = new Vector3(0f, 9f, 0f);
+            bossSpawnerObject.transform.position = new Vector3(0f, 10f, 0f);
 
             BossSpawnController bossSpawnController = bossSpawnerObject.AddComponent<BossSpawnController>();
             SetObject(bossSpawnController, "bossPrefab", bossPrefab);
             SetObject(bossSpawnController, "spawnPoint", bossSpawnerObject.transform);
             SetObject(bossSpawnController, "player", playerObject.transform);
-            SetFloat(bossSpawnController, "spawnDelaySeconds", 2f);
-            SetBool(bossSpawnController, "spawnOnStart", true);
+            SetFloat(bossSpawnController, "spawnDelaySeconds", 0f);
+            SetBool(bossSpawnController, "spawnOnStart", false);
+            bossSpawnController.enabled = false;
+            EditorUtility.SetDirty(bossSpawnController);
+
+            SetObject(gameStateController, "investigationProgress", investigationProgress);
+            SetObject(gameStateController, "deductionBoard", deductionBoard);
+            SetObject(gameStateController, "enemySpawner", spawner);
+            SetObject(gameStateController, "bossSpawnController", bossSpawnController);
+            SetObject(gameStateController, "memoryFragmentPanel", memoryFragmentPanel);
 
             EditorSceneManager.SaveScene(scene, ScenePath);
             AddSceneToBuildSettings(ScenePath);
@@ -970,6 +1065,288 @@ namespace LostCity.CombatSandbox.EditorTools
             SetColor(minimapController, "enemyColor", new Color(1f, 0.25f, 0.25f, 1f));
             SetColor(minimapController, "bossColor", new Color(1f, 0.85f, 0.2f, 1f));
             SetFloat(minimapController, "refreshIntervalSeconds", 0.25f);
+        }
+
+        private static void CreateRoom304Graybox(Transform root, Sprite squareSprite)
+        {
+            CreateSpriteBlock(
+                "InvestigationWing",
+                root,
+                squareSprite,
+                new Vector3(0f, -2f, 0f),
+                new Vector3(16f, 9f, 1f),
+                new Color(0.16f, 0.18f, 0.2f, 1f),
+                -9);
+
+            GameObject sealedRoom = CreateSpriteBlock(
+                "SealedRoom_304",
+                root,
+                squareSprite,
+                new Vector3(0f, 5.4f, 0f),
+                new Vector3(6f, 3.2f, 1f),
+                new Color(0.1f, 0.11f, 0.13f, 1f),
+                -8);
+
+            GameObject sealedDoor = CreateSpriteBlock(
+                "Room304_SealedDoor",
+                root,
+                squareSprite,
+                new Vector3(0f, 3.75f, 0f),
+                new Vector3(4.4f, 0.35f, 1f),
+                new Color(0.52f, 0.52f, 0.56f, 1f),
+                1);
+            BoxCollider2D doorCollider = sealedDoor.AddComponent<BoxCollider2D>();
+            doorCollider.size = Vector2.one;
+
+            CreateSpriteBlock(
+                "BossArena",
+                root,
+                squareSprite,
+                new Vector3(0f, 10f, 0f),
+                new Vector3(17f, 9f, 1f),
+                new Color(0.12f, 0.09f, 0.12f, 1f),
+                -8);
+
+            CreateWorldLabel(sealedRoom.transform, "ROOM 304\nSEALED", new Vector3(0f, 0f, 0f), new Vector2(420f, 80f), 22, Color.white);
+        }
+
+        private static GameObject CreateSpriteBlock(
+            string name,
+            Transform parent,
+            Sprite sprite,
+            Vector3 position,
+            Vector3 scale,
+            Color color,
+            int sortingOrder)
+        {
+            GameObject blockObject = new GameObject(name);
+            blockObject.transform.SetParent(parent);
+            blockObject.transform.position = position;
+            blockObject.transform.localScale = scale;
+
+            SpriteRenderer renderer = blockObject.AddComponent<SpriteRenderer>();
+            renderer.sprite = sprite;
+            renderer.color = color;
+            renderer.sortingOrder = sortingOrder;
+            return blockObject;
+        }
+
+        private static CluePickup CreateCluePickup(
+            Transform root,
+            Sprite squareSprite,
+            ClueDefinition clue,
+            InvestigationProgress investigationProgress,
+            Vector3 position,
+            Color color)
+        {
+            GameObject clueObject = new GameObject(clue != null ? "Clue_" + clue.Title.Replace(" ", string.Empty) : "Clue");
+            clueObject.transform.SetParent(root);
+            clueObject.transform.position = position;
+            clueObject.transform.localScale = new Vector3(0.55f, 0.55f, 1f);
+
+            SpriteRenderer renderer = clueObject.AddComponent<SpriteRenderer>();
+            renderer.sprite = squareSprite;
+            renderer.color = color;
+            renderer.sortingOrder = 3;
+
+            BoxCollider2D collider = clueObject.AddComponent<BoxCollider2D>();
+            collider.isTrigger = true;
+            collider.size = new Vector2(1.8f, 1.8f);
+
+            GameObject promptObject = CreateWorldLabel(
+                clueObject.transform,
+                clue != null ? "Press E\n" + clue.Title : "Press E",
+                new Vector3(0f, 1.15f, 0f),
+                new Vector2(320f, 80f),
+                18,
+                Color.white);
+            promptObject.SetActive(false);
+
+            CluePickup pickup = clueObject.AddComponent<CluePickup>();
+            SetObject(pickup, "clue", clue);
+            SetObject(pickup, "investigationProgress", investigationProgress);
+            SetObject(pickup, "interactionPrompt", promptObject);
+            return pickup;
+        }
+
+        private static GameObject CreateWorldLabel(
+            Transform parent,
+            string label,
+            Vector3 localPosition,
+            Vector2 size,
+            int fontSize,
+            Color color)
+        {
+            Font font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            if (font == null)
+            {
+                font = Resources.GetBuiltinResource<Font>("Arial.ttf");
+            }
+
+            GameObject canvasObject = new GameObject("WorldLabel");
+            RectTransform canvasRect = canvasObject.AddComponent<RectTransform>();
+            canvasObject.transform.SetParent(parent, worldPositionStays: false);
+            canvasObject.transform.localPosition = localPosition;
+            canvasObject.transform.localScale = new Vector3(0.01f, 0.01f, 0.01f);
+            canvasRect.sizeDelta = size;
+
+            Canvas canvas = canvasObject.AddComponent<Canvas>();
+            canvas.renderMode = RenderMode.WorldSpace;
+            canvas.sortingOrder = 60;
+
+            Text text = CreateText("Text", canvasObject.transform, font, label, fontSize, TextAnchor.MiddleCenter, size, Vector2.zero);
+            text.color = color;
+            return canvasObject;
+        }
+
+        private static EvidenceJournal CreateEvidenceJournalUi(Transform root, Sprite squareSprite, InvestigationProgress investigationProgress)
+        {
+            Font font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            if (font == null)
+            {
+                font = Resources.GetBuiltinResource<Font>("Arial.ttf");
+            }
+
+            GameObject canvasObject = new GameObject("EvidenceJournalUI");
+            canvasObject.transform.SetParent(root);
+
+            Canvas canvas = canvasObject.AddComponent<Canvas>();
+            canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+            canvas.sortingOrder = 92;
+            canvasObject.AddComponent<CanvasScaler>();
+
+            EvidenceJournal journal = canvasObject.AddComponent<EvidenceJournal>();
+
+            GameObject panelObject = CreateUiRect("Panel", canvasObject.transform, new Vector2(620f, 430f), Vector2.zero);
+            Image panelImage = panelObject.AddComponent<Image>();
+            panelImage.sprite = squareSprite;
+            panelImage.color = new Color(0.04f, 0.05f, 0.06f, 0.94f);
+
+            Text titleText = CreateText("Title", panelObject.transform, font, "Room 304 Evidence", 28, TextAnchor.MiddleCenter, new Vector2(560f, 40f), new Vector2(0f, 175f));
+            Text clueListText = CreateText("ClueList", panelObject.transform, font, "No evidence collected.", 17, TextAnchor.UpperLeft, new Vector2(540f, 300f), new Vector2(0f, -10f));
+
+            SetObject(journal, "investigationProgress", investigationProgress);
+            SetObject(journal, "panelRoot", panelObject);
+            SetObject(journal, "titleText", titleText);
+            SetObject(journal, "clueListText", clueListText);
+            panelObject.SetActive(false);
+            return journal;
+        }
+
+        private static DeductionBoard CreateDeductionBoardUi(Transform root, Sprite squareSprite, InvestigationProgress investigationProgress)
+        {
+            Font font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            if (font == null)
+            {
+                font = Resources.GetBuiltinResource<Font>("Arial.ttf");
+            }
+
+            GameObject canvasObject = new GameObject("DeductionBoardUI");
+            canvasObject.transform.SetParent(root);
+
+            Canvas canvas = canvasObject.AddComponent<Canvas>();
+            canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+            canvas.sortingOrder = 96;
+            canvasObject.AddComponent<CanvasScaler>();
+            canvasObject.AddComponent<GraphicRaycaster>();
+
+            DeductionBoard board = canvasObject.AddComponent<DeductionBoard>();
+
+            GameObject panelObject = CreateUiRect("Panel", canvasObject.transform, new Vector2(680f, 500f), Vector2.zero);
+            Image panelImage = panelObject.AddComponent<Image>();
+            panelImage.sprite = squareSprite;
+            panelImage.color = new Color(0.04f, 0.05f, 0.06f, 0.95f);
+
+            Text titleText = CreateText("Title", panelObject.transform, font, "ROOM 304", 28, TextAnchor.MiddleCenter, new Vector2(560f, 38f), new Vector2(0f, 218f));
+            Text questionText = CreateText("Question", panelObject.transform, font, "Why was Room 304 sealed?", 20, TextAnchor.MiddleCenter, new Vector2(600f, 34f), new Vector2(0f, 178f));
+
+            GameObject clueRootObject = CreateUiRect("CollectedClues", panelObject.transform, new Vector2(500f, 180f), new Vector2(0f, 60f));
+            VerticalLayoutGroup layoutGroup = clueRootObject.AddComponent<VerticalLayoutGroup>();
+            layoutGroup.spacing = 8f;
+            layoutGroup.childAlignment = TextAnchor.UpperCenter;
+            layoutGroup.childForceExpandWidth = true;
+            layoutGroup.childForceExpandHeight = false;
+
+            Button clueButtonTemplate = CreateDeductionButton(clueRootObject.transform, font, "Clue", new Vector2(500f, 52f));
+            clueButtonTemplate.gameObject.SetActive(false);
+
+            Text selectedText = CreateText("SelectedClues", panelObject.transform, font, "Selected clues: none", 16, TextAnchor.UpperLeft, new Vector2(500f, 80f), new Vector2(0f, -110f));
+            Text feedbackText = CreateText("Feedback", panelObject.transform, font, "Select the evidence that answers the question.", 17, TextAnchor.MiddleCenter, new Vector2(560f, 34f), new Vector2(0f, -175f));
+            Button submitButton = CreateDeductionButton(panelObject.transform, font, "Submit Deduction", new Vector2(320f, 44f));
+            ((RectTransform)submitButton.transform).anchoredPosition = new Vector2(0f, -220f);
+
+            SetObject(board, "investigationProgress", investigationProgress);
+            SetObject(board, "panelRoot", panelObject);
+            SetObject(board, "questionText", questionText);
+            SetObject(board, "clueButtonRoot", clueRootObject.GetComponent<RectTransform>());
+            SetObject(board, "clueButtonTemplate", clueButtonTemplate);
+            SetObject(board, "selectedCluesText", selectedText);
+            SetObject(board, "feedbackText", feedbackText);
+            SetObject(board, "submitButton", submitButton);
+            panelObject.SetActive(false);
+            return board;
+        }
+
+        private static Button CreateDeductionButton(Transform parent, Font font, string label, Vector2 size)
+        {
+            GameObject buttonObject = CreateUiRect(label + "Button", parent, size, Vector2.zero);
+            Image image = buttonObject.AddComponent<Image>();
+            image.color = new Color(0.16f, 0.18f, 0.21f, 1f);
+
+            Button button = buttonObject.AddComponent<Button>();
+            button.targetGraphic = image;
+            ColorBlock colors = button.colors;
+            colors.normalColor = image.color;
+            colors.highlightedColor = new Color(0.24f, 0.28f, 0.32f, 1f);
+            colors.pressedColor = new Color(0.1f, 0.12f, 0.15f, 1f);
+            colors.selectedColor = colors.highlightedColor;
+            button.colors = colors;
+
+            CreateText("Label", buttonObject.transform, font, label, 16, TextAnchor.MiddleCenter, size - new Vector2(20f, 8f), Vector2.zero);
+            return button;
+        }
+
+        private static MemoryFragmentPanel CreateMemoryFragmentPanelUi(Transform root, Sprite squareSprite)
+        {
+            Font font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            if (font == null)
+            {
+                font = Resources.GetBuiltinResource<Font>("Arial.ttf");
+            }
+
+            GameObject canvasObject = new GameObject("ResolutionUI");
+            canvasObject.transform.SetParent(root);
+
+            Canvas canvas = canvasObject.AddComponent<Canvas>();
+            canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+            canvas.sortingOrder = 110;
+            canvasObject.AddComponent<CanvasScaler>();
+
+            MemoryFragmentPanel panel = canvasObject.AddComponent<MemoryFragmentPanel>();
+
+            GameObject panelObject = CreateUiRect("MemoryFragmentPanel", canvasObject.transform, new Vector2(620f, 260f), Vector2.zero);
+            Image panelImage = panelObject.AddComponent<Image>();
+            panelImage.sprite = squareSprite;
+            panelImage.color = new Color(0.04f, 0.05f, 0.06f, 0.96f);
+
+            Text titleText = CreateText("Title", panelObject.transform, font, "Memory Fragment", 28, TextAnchor.MiddleCenter, new Vector2(560f, 42f), new Vector2(0f, 84f));
+            Text bodyText = CreateText(
+                "Body",
+                panelObject.transform,
+                font,
+                "Room 304 was sealed because the visitor never came. The regret belongs to you.",
+                20,
+                TextAnchor.MiddleCenter,
+                new Vector2(540f, 130f),
+                new Vector2(0f, -20f));
+
+            SetObject(panel, "panelRoot", panelObject);
+            SetObject(panel, "titleText", titleText);
+            SetObject(panel, "bodyText", bodyText);
+            SetString(panel, "title", "Memory Fragment");
+            SetString(panel, "body", "Room 304 was sealed because the visitor never came. The regret belongs to the player.");
+            panelObject.SetActive(false);
+            return panel;
         }
 
         private static void AddWorldHealthBar(GameObject owner, Sprite squareSprite, Vector3 localPosition, Color fillColor, bool hideWhenFull, float width = 1f)

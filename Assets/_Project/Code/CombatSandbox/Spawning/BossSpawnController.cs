@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace LostCity.CombatSandbox
@@ -13,6 +14,10 @@ namespace LostCity.CombatSandbox
         private GameObject activeBoss;
         private float spawnTime;
         private bool hasSpawned;
+
+        public event Action<GameObject> BossSpawned;
+
+        public GameObject ActiveBoss => activeBoss;
 
         private void Start()
         {
@@ -30,12 +35,17 @@ namespace LostCity.CombatSandbox
             SpawnBoss();
         }
 
-        public void SpawnBoss()
+        public GameObject SpawnBoss()
         {
+            if (activeBoss != null)
+            {
+                return activeBoss;
+            }
+
             if (bossPrefab == null)
             {
                 Debug.LogWarning($"{name} needs a boss prefab.", this);
-                return;
+                return null;
             }
 
             Vector3 position = spawnPoint != null ? spawnPoint.position : transform.position;
@@ -47,6 +57,9 @@ namespace LostCity.CombatSandbox
             {
                 wardenBoss.SetTarget(player);
             }
+
+            BossSpawned?.Invoke(activeBoss);
+            return activeBoss;
         }
 
         private void ResolveReferences()
