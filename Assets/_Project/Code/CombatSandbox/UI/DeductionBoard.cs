@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Text;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
@@ -21,6 +22,7 @@ namespace LostCity.CombatSandbox
         private readonly List<Button> clueButtons = new List<Button>();
         private readonly StringBuilder textBuilder = new StringBuilder();
         private bool isAvailable = true;
+        private Coroutine correctDeductionRoutine;
 
         private void Awake()
         {
@@ -172,7 +174,7 @@ namespace LostCity.CombatSandbox
 
         private void Submit()
         {
-            if (investigationProgress == null)
+            if (investigationProgress == null || correctDeductionRoutine != null)
             {
                 return;
             }
@@ -184,8 +186,12 @@ namespace LostCity.CombatSandbox
                     feedbackText.text = "Truth Reconstructed";
                 }
 
-                investigationProgress.MarkCaseSolved();
-                Hide();
+                if (submitButton != null)
+                {
+                    submitButton.interactable = false;
+                }
+
+                correctDeductionRoutine = StartCoroutine(CompleteCorrectDeduction());
                 return;
             }
 
@@ -193,6 +199,13 @@ namespace LostCity.CombatSandbox
             {
                 feedbackText.text = "The evidence does not fit yet.";
             }
+        }
+
+        private IEnumerator CompleteCorrectDeduction()
+        {
+            yield return new WaitForSecondsRealtime(0.75f);
+            investigationProgress.MarkCaseSolved();
+            Hide();
         }
 
         private void RefreshSelectedText()
