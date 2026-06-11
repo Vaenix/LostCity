@@ -12,14 +12,17 @@ namespace LostCity.CombatSandbox
 
         private readonly List<ClueDefinition> collectedClues = new List<ClueDefinition>();
         private bool caseSolved;
+        private bool allRequiredCluesCollected;
 
         public event Action<ClueDefinition> ClueCollected;
+        public event Action AllRequiredCluesCollected;
         public event Action CaseSolved;
 
         public string CaseTitle => caseTitle;
         public string MysteryQuestion => mysteryQuestion;
         public IReadOnlyList<ClueDefinition> CollectedClues => collectedClues;
         public bool IsCaseSolved => caseSolved;
+        public bool HasCollectedAllRequiredClues => AreAllRequiredCluesCollected();
 
         public bool TryCollectClue(ClueDefinition clue)
         {
@@ -30,6 +33,7 @@ namespace LostCity.CombatSandbox
 
             collectedClues.Add(clue);
             ClueCollected?.Invoke(clue);
+            NotifyAllRequiredCluesCollectedIfReady();
             return true;
         }
 
@@ -96,6 +100,35 @@ namespace LostCity.CombatSandbox
             {
                 TryCollectClue(requiredClues[i]);
             }
+        }
+
+        private void NotifyAllRequiredCluesCollectedIfReady()
+        {
+            if (allRequiredCluesCollected || !AreAllRequiredCluesCollected())
+            {
+                return;
+            }
+
+            allRequiredCluesCollected = true;
+            AllRequiredCluesCollected?.Invoke();
+        }
+
+        private bool AreAllRequiredCluesCollected()
+        {
+            if (requiredClues == null || requiredClues.Length == 0)
+            {
+                return false;
+            }
+
+            for (int i = 0; i < requiredClues.Length; i++)
+            {
+                if (!HasClue(requiredClues[i]))
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         private static bool ContainsClue(IReadOnlyList<ClueDefinition> clues, ClueDefinition target)

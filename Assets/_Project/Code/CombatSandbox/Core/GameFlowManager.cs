@@ -32,6 +32,7 @@ namespace LostCity.CombatSandbox
 
             if (investigationProgress != null)
             {
+                investigationProgress.AllRequiredCluesCollected += EnterDeductionState;
                 investigationProgress.CaseSolved += EnterCombatState;
             }
 
@@ -55,6 +56,7 @@ namespace LostCity.CombatSandbox
         {
             if (investigationProgress != null)
             {
+                investigationProgress.AllRequiredCluesCollected -= EnterDeductionState;
                 investigationProgress.CaseSolved -= EnterCombatState;
             }
 
@@ -135,6 +137,21 @@ namespace LostCity.CombatSandbox
             if (completionUI != null)
             {
                 completionUI.Hide();
+            }
+        }
+
+        private void EnterDeductionState()
+        {
+            if (CurrentState != GameFlowState.Investigation)
+            {
+                return;
+            }
+
+            SetState(GameFlowState.Deduction);
+
+            if (deductionBoard != null)
+            {
+                deductionBoard.SetAvailable(true);
             }
         }
 
