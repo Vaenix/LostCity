@@ -10,7 +10,7 @@ The weapon system validates the dual-weapon combat design.
 - Fire automatic memory orb projectiles.
 - Resolve projectile damage.
 - Apply player attack and crit modifiers.
-- Support fire rate, damage, and drone projectile upgrades.
+- Support fire rate, damage, and drone projectile rewards through `RewardDefinition`.
 
 ## Public Fields
 
@@ -23,6 +23,7 @@ Key data lives on:
 - `WeaponDefinition`
 - `ProjectileDefinition`
 - `CombatUpgradeStats`
+- `RewardDefinition`
 
 ## Public Methods
 
@@ -49,5 +50,6 @@ Create and assign weapons through `CombatSandboxCreator`, not manual scene setup
 ## Common Pitfalls
 
 - Do not leave weapon references null in prefabs.
+- Upgrade rewards should be configured as `RewardDefinition` assets.
 - Projectiles use 2D physics and trigger colliders.
 - Combat is a support pillar, not the whole game.

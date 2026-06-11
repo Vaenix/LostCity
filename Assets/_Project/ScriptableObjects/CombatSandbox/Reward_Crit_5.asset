@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81ce39ae6b3b453ea72a6e22af17a5a9, type: 3}
+  m_Name: Reward_Crit_5
+  m_EditorClassIdentifier:
+  rewardId: reward_crit_5
+  displayName: +5%暴击率
+  description: 永久提高暴击率。
+  rewardType: 0
+  statType: 4
+  multiplier: 1
+  additiveValue: 0.05
+  integerValue: 0
+  weaponDefinition: {fileID: 0}
+  unlockId:

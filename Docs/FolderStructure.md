@@ -30,7 +30,7 @@
 | `Assets/_Project/Code/CombatSandbox` | Runtime and editor C# scripts for the prototype. |
 | `Assets/_Project/Prefabs/CombatSandbox` | Generated prefabs. |
 | `Assets/_Project/Scenes` | Generated playable scene. |
-| `Assets/_Project/ScriptableObjects/CombatSandbox` | Generated definitions for weapons, enemies, projectiles, and clues. |
+| `Assets/_Project/ScriptableObjects/CombatSandbox` | ScriptableObject definitions for cases, clues, bosses, rewards, weapons, enemies, and projectiles. |
 | `Assets/_Project/Settings/Input` | Generated Input System assets and action references. |
 
 ## Code Folders
@@ -43,10 +43,10 @@
 | `Editor` | Scene and asset generation. | `CombatSandboxCreator` |
 | `Enemies` | Enemy data and behavior. | `EnemyDefinition`, `MemoryFragmentEnemy`, `WardenBoss` |
 | `Feedback` | Runtime feedback components. | `HitFlash`, `WorldHealthBar` |
-| `Investigation` | Clue and case progress systems. | `ClueDefinition`, `CluePickup`, `InvestigationProgress` |
+| `Investigation` | Case, clue, and case progress systems. | `CaseDefinition`, `ClueDefinition`, `ClueType`, `CluePickup`, `InvestigationProgress` |
 | `Pickups` | XP pickup flow. | `XpDropper`, `XpOrb` |
 | `Player` | Player input, movement, aim, death, and stats. | `PlayerInputReader`, `PlayerMotor`, `PlayerAim`, `PlayerDeathHandler`, `PlayerStats` |
-| `Progression` | XP, levels, upgrades, rewards. | `PlayerExperience`, `CombatUpgradeStats`, `Room304RewardType` |
+| `Progression` | XP, levels, upgrades, rewards. | `PlayerExperience`, `CombatUpgradeStats`, `RewardDefinition`, `RewardType`, `RewardStatType` |
 | `Spawning` | Enemy and boss spawning. | `EnemySpawner`, `BossSpawnController`, `EnemySpawnEntry` |
-| `UI` | HUD, journal, deduction, reward, completion, minimap. | `PlayerHud`, `EvidenceJournal`, `DeductionBoard`, `Room304RewardSelectionUI`, `Room304CompletionUI` |
+| `UI` | HUD, prompts, journal, deduction, reward, completion, minimap. | `GamePromptManager`, `PromptType`, `PlayerHud`, `EvidenceJournal`, `DeductionBoard`, `Room304RewardSelectionUI`, `Room304CompletionUI` |
 | `Weapons` | Manual and automatic weapon logic. | `PistolWeapon`, `MemoryOrbWeapon`, `Projectile`, `WeaponDefinition`, `ProjectileDefinition` |

@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ab67b754950704b46bef5803f7bd9d72, type: 3}
+  m_Name: Room304_VisitorLog
+  m_EditorClassIdentifier:
+  id: room304_visitor_log
+  clueName: 探视登记表
+  description: 304号病房最后一条探视记录是空白的。
+  title: 探视登记表
+  category: 医院记录
+  type: 0
+  icon: {fileID: 21300000, guid: 37af4b62a67d3499798200d7ada1860d, type: 3}
+  journalText: 登记表为每个病房列出了预期探视记录，只有304号病房的最后一行被擦掉，只剩时间和空白签名框。
+  shortDescription: 304号病房最后一条探视记录是空白的。
+  fullDescription: 登记表为每个病房列出了预期探视记录，只有304号病房的最后一行被擦掉，只剩时间和空白签名框。

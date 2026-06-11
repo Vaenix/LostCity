@@ -35,6 +35,7 @@ Important data lives on `EnemyDefinition`:
 ## Dependencies
 
 - `EnemyDefinition`
+- `BossDefinition` for boss configuration.
 - `MemoryFragmentEnemy`
 - `Damageable`
 - `TeamMember`

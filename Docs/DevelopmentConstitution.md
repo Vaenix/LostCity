@@ -48,6 +48,7 @@ Docs/
     |-- PlayerStats.md
     |-- GameFlowManager.md
     |-- CombatSystem.md
+    |-- CaseSystem.md
     |-- InvestigationSystem.md
     |-- DeductionSystem.md
     |-- BossSystem.md

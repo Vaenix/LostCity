@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 399b9b244de64563aea1ea1df2e72e5f, type: 3}
+  m_Name: Boss_WardenDefinition
+  m_EditorClassIdentifier:
+  bossName: 看守者
+  bossPrefab: {fileID: 3847339049632894326, guid: 6a75a1de2e086454c9093f0218c02873, type: 3}
+  health: 320
+  moveSpeed: 2
+  skills:
+  - skillId: warden_charge
+    skillName: 冲锋
+    description: 看守者向玩家快速冲撞。
+  - skillId: warden_summon
+    skillName: 召唤
+    description: 看守者召唤记忆碎片加入战斗。
+  - skillId: warden_radial_burst
+    skillName: 环形弹幕
+    description: 看守者释放一圈投射物。
+  xpReward: 12
+  rewardPool:
+  - {fileID: 11400000, guid: 82ea0188d1be4d73a0d3f6e399c99610, type: 2}
+  - {fileID: 11400000, guid: b7c4d60426454aa0ae3fd0d9ce73a371, type: 2}
+  - {fileID: 11400000, guid: c4af8b7daed948d3a31ac8b7d1e09df1, type: 2}

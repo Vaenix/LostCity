@@ -37,6 +37,21 @@ namespace LostCity.CombatSandbox
             }
         }
 
+        public void ApplyReward(RewardDefinition rewardDefinition)
+        {
+            if (rewardDefinition == null)
+            {
+                return;
+            }
+
+            rewardDefinition.Apply(playerStats, this);
+        }
+
+        public void AddDroneProjectiles(int amount)
+        {
+            extraDroneProjectiles += Mathf.Max(0, amount);
+        }
+
         public float RollProjectileDamageMultiplier()
         {
             return playerStats != null ? playerStats.RollOutgoingDamageMultiplier() : ProjectileDamageMultiplier;

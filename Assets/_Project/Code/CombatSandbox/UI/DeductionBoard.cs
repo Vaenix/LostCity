@@ -132,14 +132,14 @@ namespace LostCity.CombatSandbox
             }
 
             Button button = Instantiate(clueButtonTemplate, clueButtonRoot);
-            button.name = clue.Title + "Button";
+            button.name = clue.Name + "Button";
             button.gameObject.SetActive(true);
             button.onClick.AddListener(() => ToggleClue(clue));
 
             Text label = button.GetComponentInChildren<Text>();
             if (label != null)
             {
-                label.text = clue.Title + "\n" + clue.ShortDescription;
+                label.text = clue.Name + "\n" + clue.Description;
             }
 
             clueButtons.Add(button);
@@ -183,7 +183,9 @@ namespace LostCity.CombatSandbox
             {
                 if (feedbackText != null)
                 {
-                    feedbackText.text = "真相重现";
+                    feedbackText.text = string.IsNullOrWhiteSpace(investigationProgress.CorrectAnswer)
+                        ? "真相已重构"
+                        : "真相已重构\n" + investigationProgress.CorrectAnswer;
                 }
 
                 if (submitButton != null)
@@ -225,7 +227,7 @@ namespace LostCity.CombatSandbox
             textBuilder.Append("已选择线索：\n");
             for (int i = 0; i < selectedClues.Count; i++)
             {
-                textBuilder.Append("- ").Append(selectedClues[i].Title).Append('\n');
+                textBuilder.Append("- ").Append(selectedClues[i].Name).Append('\n');
             }
 
             selectedCluesText.text = textBuilder.ToString();

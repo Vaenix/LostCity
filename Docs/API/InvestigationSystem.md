@@ -2,12 +2,12 @@
 
 ## Purpose
 
-The investigation system tracks clues collected for a handcrafted case.
+The investigation system tracks clues collected for the active `CaseDefinition`.
 
 ## Responsibilities
 
-- Store case title and mystery question.
-- Track required clues.
+- Read case title, description, clue list, deduction question, correct answer, boss, rewards, and completion text from `CaseDefinition`.
+- Track required clues from case data.
 - Track collected clues.
 - Notify UI when clues are collected.
 - Notify flow when all required clues are collected.
@@ -20,7 +20,13 @@ No public fields. Case data is serialized.
 ## Public Properties
 
 - `CaseTitle`
+- `CaseDescription`
 - `MysteryQuestion`
+- `CorrectAnswer`
+- `CompletionText`
+- `BossDefinition`
+- `RewardPool`
+- `RequiredClues`
 - `CollectedClues`
 - `IsCaseSolved`
 - `HasCollectedAllRequiredClues`
@@ -36,6 +42,7 @@ No public fields. Case data is serialized.
 ## Dependencies
 
 - `ClueDefinition`
+- `CaseDefinition`
 - `CluePickup`
 - `EvidenceJournal`
 - `DeductionBoard`
@@ -60,4 +67,4 @@ if (investigationProgress.TryCollectClue(clue))
 
 - Mystery logic must remain handcrafted.
 - Do not generate clue relationships procedurally.
-- Current deduction expects the exact required clue set.
+- Current deduction expects the exact case clue set.

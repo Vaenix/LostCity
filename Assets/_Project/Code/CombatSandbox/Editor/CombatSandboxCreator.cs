@@ -59,6 +59,14 @@ namespace LostCity.CombatSandbox.EditorTools
         private const string VisitorLogCluePath = ScriptableObjectRoot + "/Room304_VisitorLog.asset";
         private const string ApologyNoteCluePath = ScriptableObjectRoot + "/Room304_CrumpledApologyNote.asset";
         private const string PatientBraceletCluePath = ScriptableObjectRoot + "/Room304_PatientBracelet.asset";
+        private const string WardenBossDefinitionPath = ScriptableObjectRoot + "/Boss_WardenDefinition.asset";
+        private const string Room304CaseDefinitionPath = ScriptableObjectRoot + "/Room304_CaseDefinition.asset";
+        private const string RewardFireRatePath = ScriptableObjectRoot + "/Reward_FireRate.asset";
+        private const string RewardProjectileDamagePath = ScriptableObjectRoot + "/Reward_ProjectileDamage.asset";
+        private const string RewardDroneProjectilePath = ScriptableObjectRoot + "/Reward_DroneProjectile.asset";
+        private const string RewardAttackPath = ScriptableObjectRoot + "/Reward_Attack_10.asset";
+        private const string RewardMaxHpPath = ScriptableObjectRoot + "/Reward_MaxHp_10.asset";
+        private const string RewardCritPath = ScriptableObjectRoot + "/Reward_Crit_5.asset";
 
         private const string SquareSpritePath = GeneratedArtRoot + "/SandboxSquare.png";
         private const string CircleSpritePath = GeneratedArtRoot + "/SandboxCircle.png";
@@ -126,7 +134,7 @@ namespace LostCity.CombatSandbox.EditorTools
 
             WeaponDefinition pistolWeaponDefinition = CreateWeaponDefinition(
                 PistolWeaponDefinitionPath,
-                "Pistol",
+                "手枪",
                 playerProjectilePrefab,
                 pistolProjectileDefinition,
                 cooldownSeconds: 0.25f,
@@ -134,42 +142,126 @@ namespace LostCity.CombatSandbox.EditorTools
 
             WeaponDefinition orbWeaponDefinition = CreateWeaponDefinition(
                 OrbWeaponDefinitionPath,
-                "Memory Orb",
+                "记忆浮游炮",
                 orbProjectilePrefab,
                 orbProjectileDefinition,
                 cooldownSeconds: 0.8f,
                 range: 12f);
 
+            RewardDefinition fireRateReward = CreateRewardDefinition(
+                RewardFireRatePath,
+                "fire_rate_20",
+                "+20%攻击速度",
+                "手枪与自动武器的射击间隔降低。",
+                RewardType.Attribute,
+                RewardStatType.FireRateMultiplier,
+                multiplier: 1.2f,
+                additiveValue: 0f,
+                integerValue: 0,
+                weaponDefinition: null,
+                unlockId: string.Empty);
+
+            RewardDefinition projectileDamageReward = CreateRewardDefinition(
+                RewardProjectileDamagePath,
+                "projectile_damage_20",
+                "+20%攻击力",
+                "所有玩家投射物造成更高伤害。",
+                RewardType.Attribute,
+                RewardStatType.AttackMultiplier,
+                multiplier: 1.2f,
+                additiveValue: 0f,
+                integerValue: 0,
+                weaponDefinition: null,
+                unlockId: string.Empty);
+
+            RewardDefinition droneProjectileReward = CreateRewardDefinition(
+                RewardDroneProjectilePath,
+                "drone_projectile_1",
+                "+1 无人机弹幕数量",
+                "记忆浮游炮每次额外发射一枚投射物。",
+                RewardType.Weapon,
+                RewardStatType.DroneProjectileAdd,
+                multiplier: 1f,
+                additiveValue: 0f,
+                integerValue: 1,
+                weaponDefinition: orbWeaponDefinition,
+                unlockId: string.Empty);
+
+            RewardDefinition attackReward = CreateRewardDefinition(
+                RewardAttackPath,
+                "reward_attack_10",
+                "+10%攻击力",
+                "永久提高本次章节后的攻击力。",
+                RewardType.Attribute,
+                RewardStatType.AttackMultiplier,
+                multiplier: 1.1f,
+                additiveValue: 0f,
+                integerValue: 0,
+                weaponDefinition: null,
+                unlockId: string.Empty);
+
+            RewardDefinition maxHpReward = CreateRewardDefinition(
+                RewardMaxHpPath,
+                "reward_max_hp_10",
+                "+10%生命值",
+                "永久提高最大生命值。",
+                RewardType.Attribute,
+                RewardStatType.MaxHpMultiplier,
+                multiplier: 1.1f,
+                additiveValue: 0f,
+                integerValue: 0,
+                weaponDefinition: null,
+                unlockId: string.Empty);
+
+            RewardDefinition critReward = CreateRewardDefinition(
+                RewardCritPath,
+                "reward_crit_5",
+                "+5%暴击率",
+                "永久提高暴击率。",
+                RewardType.Attribute,
+                RewardStatType.CritChanceAdd,
+                multiplier: 1f,
+                additiveValue: 0.05f,
+                integerValue: 0,
+                weaponDefinition: null,
+                unlockId: string.Empty);
+
             ClueDefinition visitorLogClue = CreateClueDefinition(
                 VisitorLogCluePath,
                 "room304_visitor_log",
-                "访客登记表",
+                "探视登记表",
                 "医院记录",
-                "304号病房最后一条访客记录是空白的。",
-                "访客登记表记录了每个病房的家属探访，唯独304号病房的最后一行被擦掉了姓名，只留下时间和空白签名栏。");
+                ClueType.Document,
+                squareSprite,
+                "304号病房最后一条探视记录是空白的。",
+                "登记表为每个病房列出了预期探视记录，只有304号病房的最后一行被擦掉，只剩时间和空白签名框。");
 
             ClueDefinition apologyNoteClue = CreateClueDefinition(
                 ApologyNoteCluePath,
                 "room304_apology_note",
-                "揉皱的道歉信",
-                "私人便条",
+                "皱巴巴的道歉信",
+                "私人物品",
+                ClueType.Document,
+                squareSprite,
                 "一封从未送出的道歉信。",
-                "信里写着写信人本想早点来，却一直等待所谓合适的时机。落款只剩下玩家名字的首字。");
+                "信中写着写信人一直想早点来，却总在等待合适的时机。署名只剩下玩家名字的首字母。");
 
             ClueDefinition patientBraceletClue = CreateClueDefinition(
                 PatientBraceletCluePath,
                 "room304_patient_bracelet",
-                "病人手环",
-                "个人物品",
-                "手环上的病人姓名与玩家一致。",
-                "这只褪色的304号病房手环写着玩家的名字。被封锁的房间隐藏的并不是别人的遗憾。");
+                "病人腕带",
+                "医疗物件",
+                ClueType.Object,
+                squareSprite,
+                "腕带上的病人姓名与玩家一致。",
+                "304号病房留下的褪色腕带写着玩家的名字。被封锁的房间并不是别人的遗憾。");
 
             DeleteAssetIfExists(LegacyEnemyPrefabPath);
             DeleteAssetIfExists(LegacyEnemyDefinitionPath);
 
             EnemyDefinition chaserDefinition = CreateEnemyDefinition(
                 ChaserEnemyDefinitionPath,
-                "Chaser",
+                "追逐者",
                 EnemyArchetype.Chaser,
                 maxHealth: 42f,
                 moveSpeed: 3.8f,
@@ -187,7 +279,7 @@ namespace LostCity.CombatSandbox.EditorTools
 
             EnemyDefinition chargerDefinition = CreateEnemyDefinition(
                 ChargerEnemyDefinitionPath,
-                "Charger",
+                "冲锋者",
                 EnemyArchetype.Charger,
                 maxHealth: 55f,
                 moveSpeed: 2.7f,
@@ -205,7 +297,7 @@ namespace LostCity.CombatSandbox.EditorTools
 
             EnemyDefinition shooterDefinition = CreateEnemyDefinition(
                 ShooterEnemyDefinitionPath,
-                "Shooter",
+                "射手",
                 EnemyArchetype.Shooter,
                 maxHealth: 34f,
                 moveSpeed: 2.4f,
@@ -223,7 +315,7 @@ namespace LostCity.CombatSandbox.EditorTools
 
             EnemyDefinition tankDefinition = CreateEnemyDefinition(
                 TankEnemyDefinitionPath,
-                "Tank",
+                "重装者",
                 EnemyArchetype.Tank,
                 maxHealth: 120f,
                 moveSpeed: 1.8f,
@@ -244,14 +336,40 @@ namespace LostCity.CombatSandbox.EditorTools
             GameObject shooterPrefab = CreateEnemyPrefab(ShooterEnemyPrefabPath, "Enemy_Shooter", circleSprite, squareSprite, shooterDefinition, xpOrbPrefab, new Color(0.95f, 0.25f, 1f, 1f), 2);
             GameObject tankPrefab = CreateEnemyPrefab(TankEnemyPrefabPath, "Enemy_Tank", circleSprite, squareSprite, tankDefinition, xpOrbPrefab, new Color(0.55f, 0.35f, 1f, 1f), 3);
             GameObject wardenBossPrefab = CreateWardenBossPrefab(WardenBossPrefabPath, squareSprite, enemyProjectilePrefab, enemyProjectileDefinition, xpOrbPrefab, new[] { chaserPrefab, chargerPrefab, shooterPrefab });
+            RewardDefinition[] room304RewardPool = { attackReward, maxHpReward, critReward };
+            BossDefinition wardenBossDefinition = CreateBossDefinition(
+                WardenBossDefinitionPath,
+                "看守者",
+                wardenBossPrefab,
+                health: 320f,
+                moveSpeed: 2f,
+                xpReward: 12,
+                rewardPool: room304RewardPool,
+                skills: new[]
+                {
+                    new BossSkillDefinition { skillId = "warden_charge", skillName = "冲锋", description = "看守者向玩家快速冲撞。" },
+                    new BossSkillDefinition { skillId = "warden_summon", skillName = "召唤", description = "看守者召唤记忆碎片加入战斗。" },
+                    new BossSkillDefinition { skillId = "warden_radial_burst", skillName = "环形弹幕", description = "看守者释放一圈投射物。" }
+                });
+            CaseDefinition room304CaseDefinition = CreateCaseDefinition(
+                Room304CaseDefinitionPath,
+                "room_304",
+                "304号病房",
+                "被封锁的病房保存着一段被回避的记忆。",
+                new[] { visitorLogClue, apologyNoteClue, patientBraceletClue },
+                "304号病房真正封存的遗憾是什么？",
+                "304号病房封存的不是陌生人的案件，而是玩家一直逃避的道歉。",
+                wardenBossDefinition,
+                room304RewardPool,
+                "304号病房已解封");
             GameObject playerPrefab = CreatePlayerPrefab(PlayerPrefabPath, circleSprite, squareSprite, inputReferences, pistolWeaponDefinition, orbWeaponDefinition);
 
             CreateScene(
                 squareSprite,
                 playerPrefab,
-                wardenBossPrefab,
+                room304CaseDefinition,
                 inputReferences,
-                new[] { visitorLogClue, apologyNoteClue, patientBraceletClue },
+                new[] { fireRateReward, projectileDamageReward, droneProjectileReward },
                 new[]
                 {
                     new SpawnPrefabWeight(chaserPrefab, 55f),
@@ -494,15 +612,95 @@ namespace LostCity.CombatSandbox.EditorTools
             string id,
             string title,
             string category,
+            ClueType type,
+            Sprite icon,
             string shortDescription,
             string fullDescription)
         {
             ClueDefinition definition = CreateScriptableObject<ClueDefinition>(path);
             SetString(definition, "id", id);
+            SetString(definition, "clueName", title);
+            SetString(definition, "description", shortDescription);
             SetString(definition, "title", title);
             SetString(definition, "category", category);
+            SetEnum(definition, "type", type);
+            SetObject(definition, "icon", icon);
+            SetString(definition, "journalText", fullDescription);
             SetString(definition, "shortDescription", shortDescription);
             SetString(definition, "fullDescription", fullDescription);
+            return SaveAndReloadAsset(definition, path);
+        }
+
+        private static RewardDefinition CreateRewardDefinition(
+            string path,
+            string rewardId,
+            string displayName,
+            string description,
+            RewardType rewardType,
+            RewardStatType statType,
+            float multiplier,
+            float additiveValue,
+            int integerValue,
+            WeaponDefinition weaponDefinition,
+            string unlockId)
+        {
+            RewardDefinition definition = CreateScriptableObject<RewardDefinition>(path);
+            SetString(definition, "rewardId", rewardId);
+            SetString(definition, "displayName", displayName);
+            SetString(definition, "description", description);
+            SetEnum(definition, "rewardType", rewardType);
+            SetEnum(definition, "statType", statType);
+            SetFloat(definition, "multiplier", multiplier);
+            SetFloat(definition, "additiveValue", additiveValue);
+            SetInt(definition, "integerValue", integerValue);
+            SetObject(definition, "weaponDefinition", weaponDefinition);
+            SetString(definition, "unlockId", unlockId);
+            return SaveAndReloadAsset(definition, path);
+        }
+
+        private static BossDefinition CreateBossDefinition(
+            string path,
+            string bossName,
+            GameObject bossPrefab,
+            float health,
+            float moveSpeed,
+            int xpReward,
+            RewardDefinition[] rewardPool,
+            BossSkillDefinition[] skills)
+        {
+            BossDefinition definition = CreateScriptableObject<BossDefinition>(path);
+            SetString(definition, "bossName", bossName);
+            SetObject(definition, "bossPrefab", bossPrefab);
+            SetFloat(definition, "health", health);
+            SetFloat(definition, "moveSpeed", moveSpeed);
+            SetInt(definition, "xpReward", xpReward);
+            SetObjectArray(definition, "rewardPool", rewardPool);
+            SetBossSkills(definition, "skills", skills);
+            return SaveAndReloadAsset(definition, path);
+        }
+
+        private static CaseDefinition CreateCaseDefinition(
+            string path,
+            string caseId,
+            string caseName,
+            string description,
+            ClueDefinition[] clues,
+            string deductionQuestion,
+            string correctAnswer,
+            BossDefinition bossDefinition,
+            RewardDefinition[] rewardPool,
+            string completionText)
+        {
+            CaseDefinition definition = CreateScriptableObject<CaseDefinition>(path);
+            SetString(definition, "caseId", caseId);
+            SetString(definition, "caseName", caseName);
+            SetString(definition, "description", description);
+            SetObjectArray(definition, "clues", clues);
+            SetString(definition, "deductionQuestion", deductionQuestion);
+            SetString(definition, "correctAnswer", correctAnswer);
+            SetObject(definition, "bossDefinition", bossDefinition);
+            SetObjectArray(definition, "rewardPool", rewardPool);
+            SetString(definition, "completionText", completionText);
             return SaveAndReloadAsset(definition, path);
         }
 
@@ -832,11 +1030,17 @@ namespace LostCity.CombatSandbox.EditorTools
         private static void CreateScene(
             Sprite squareSprite,
             GameObject playerPrefab,
-            GameObject bossPrefab,
+            CaseDefinition caseDefinition,
             InputReferences inputReferences,
-            ClueDefinition[] room304Clues,
+            RewardDefinition[] upgradeRewards,
             SpawnPrefabWeight[] enemySpawnWeights)
         {
+            ClueDefinition[] room304Clues = caseDefinition != null && caseDefinition.Clues != null
+                ? caseDefinition.Clues
+                : Array.Empty<ClueDefinition>();
+            BossDefinition bossDefinition = caseDefinition != null ? caseDefinition.BossDefinition : null;
+            GameObject bossPrefab = bossDefinition != null ? bossDefinition.BossPrefab : null;
+
             Scene scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
 
             GameObject root = new GameObject("CombatSandbox");
@@ -845,13 +1049,12 @@ namespace LostCity.CombatSandbox.EditorTools
             managerObject.transform.SetParent(root.transform);
             managerObject.AddComponent<CombatGameManager>();
             InvestigationProgress investigationProgress = managerObject.AddComponent<InvestigationProgress>();
-            SetString(investigationProgress, "caseTitle", "304号病房");
-            SetString(investigationProgress, "mysteryQuestion", "304号病房为什么被封锁？");
-            SetObjectArray(investigationProgress, "requiredClues", room304Clues);
+            SetObject(investigationProgress, "caseDefinition", caseDefinition);
             GameFlowManager gameFlowManager = managerObject.AddComponent<GameFlowManager>();
             Room304DebugTools debugTools = managerObject.AddComponent<Room304DebugTools>();
 
             CreateEventSystem(root.transform, inputReferences);
+            CreateGamePromptUi(root.transform, squareSprite);
 
             GameObject cameraObject = new GameObject("Main Camera");
             cameraObject.transform.SetParent(root.transform);
@@ -884,7 +1087,7 @@ namespace LostCity.CombatSandbox.EditorTools
             PlayerAim playerAim = playerObject.GetComponent<PlayerAim>();
             SetObject(playerAim, "aimCamera", camera);
 
-            UpgradeSelectionController upgradeSelectionController = CreateUpgradeChoiceUi(root.transform);
+            UpgradeSelectionController upgradeSelectionController = CreateUpgradeChoiceUi(root.transform, upgradeRewards);
             PlayerExperience playerExperience = playerObject.GetComponent<PlayerExperience>();
             SetObject(playerExperience, "upgradeSelectionController", upgradeSelectionController);
 
@@ -946,6 +1149,7 @@ namespace LostCity.CombatSandbox.EditorTools
             bossSpawnerObject.transform.position = new Vector3(0f, 10f, 0f);
 
             BossSpawnController bossSpawnController = bossSpawnerObject.AddComponent<BossSpawnController>();
+            SetObject(bossSpawnController, "bossDefinition", bossDefinition);
             SetObject(bossSpawnController, "bossPrefab", bossPrefab);
             SetObject(bossSpawnController, "spawnPoint", bossSpawnerObject.transform);
             SetObject(bossSpawnController, "player", playerObject.transform);
@@ -961,6 +1165,7 @@ namespace LostCity.CombatSandbox.EditorTools
             SetObject(gameFlowManager, "rewardSelectionUI", rewardSelectionUI);
             SetObject(gameFlowManager, "completionUI", completionUI);
             SetObject(gameFlowManager, "playerStats", playerStats);
+            SetObject(gameFlowManager, "combatUpgradeStats", playerObject.GetComponent<CombatUpgradeStats>());
             SetObject(debugTools, "gameFlowManager", gameFlowManager);
 
             EditorSceneManager.SaveScene(scene, ScenePath);
@@ -1486,7 +1691,48 @@ namespace LostCity.CombatSandbox.EditorTools
             SetBool(healthBar, "hideWhenFull", hideWhenFull);
         }
 
-        private static UpgradeSelectionController CreateUpgradeChoiceUi(Transform root)
+        private static GamePromptManager CreateGamePromptUi(Transform root, Sprite squareSprite)
+        {
+            Font font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            if (font == null)
+            {
+                font = Resources.GetBuiltinResource<Font>("Arial.ttf");
+            }
+
+            GameObject canvasObject = new GameObject("GamePromptUI");
+            canvasObject.transform.SetParent(root);
+
+            Canvas canvas = canvasObject.AddComponent<Canvas>();
+            canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+            canvas.sortingOrder = 130;
+            canvasObject.AddComponent<CanvasScaler>();
+
+            GamePromptManager promptManager = canvasObject.AddComponent<GamePromptManager>();
+
+            GameObject panelObject = CreateAnchoredUiRect(
+                "Panel",
+                canvasObject.transform,
+                new Vector2(420f, 96f),
+                new Vector2(0f, -84f),
+                new Vector2(0.5f, 1f),
+                new Vector2(0.5f, 1f));
+
+            Image panelImage = panelObject.AddComponent<Image>();
+            panelImage.sprite = squareSprite;
+            panelImage.color = new Color(0.16f, 0.12f, 0.36f, 0.92f);
+            panelImage.raycastTarget = false;
+
+            Text messageText = CreateText("Message", panelObject.transform, font, string.Empty, 20, TextAnchor.MiddleCenter, new Vector2(380f, 76f), Vector2.zero);
+
+            SetObject(promptManager, "panelRoot", panelObject);
+            SetObject(promptManager, "messageText", messageText);
+            SetObject(promptManager, "backgroundImage", panelImage);
+            SetFloat(promptManager, "defaultDurationSeconds", 3f);
+            panelObject.SetActive(false);
+            return promptManager;
+        }
+
+        private static UpgradeSelectionController CreateUpgradeChoiceUi(Transform root, RewardDefinition[] upgradeChoices)
         {
             Font font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
             if (font == null)
@@ -1523,6 +1769,7 @@ namespace LostCity.CombatSandbox.EditorTools
             SetObject(controller, "damageButtonText", damageText);
             SetObject(controller, "droneButton", droneButton);
             SetObject(controller, "droneButtonText", droneText);
+            SetObjectArray(controller, "upgradeChoices", upgradeChoices);
             SetBool(controller, "pauseWhileChoosing", true);
 
             panelObject.SetActive(false);
@@ -1774,6 +2021,21 @@ namespace LostCity.CombatSandbox.EditorTools
                     SerializedProperty entryProperty = property.GetArrayElementAtIndex(i);
                     entryProperty.FindPropertyRelative("prefab").objectReferenceValue = entries[i].Prefab;
                     entryProperty.FindPropertyRelative("weight").floatValue = entries[i].Weight;
+                }
+            });
+        }
+
+        private static void SetBossSkills(UnityEngine.Object target, string propertyName, BossSkillDefinition[] skills)
+        {
+            SetSerializedProperty(target, propertyName, property =>
+            {
+                property.arraySize = skills != null ? skills.Length : 0;
+                for (int i = 0; i < property.arraySize; i++)
+                {
+                    SerializedProperty skillProperty = property.GetArrayElementAtIndex(i);
+                    skillProperty.FindPropertyRelative("skillId").stringValue = skills[i].skillId;
+                    skillProperty.FindPropertyRelative("skillName").stringValue = skills[i].skillName;
+                    skillProperty.FindPropertyRelative("description").stringValue = skills[i].description;
                 }
             });
         }

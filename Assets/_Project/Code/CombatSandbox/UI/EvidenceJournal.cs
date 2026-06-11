@@ -100,11 +100,11 @@ namespace LostCity.CombatSandbox
             {
                 ClueDefinition clue = investigationProgress.CollectedClues[i];
                 textBuilder
-                    .Append(clue.Title)
+                    .Append(clue.Name)
                     .Append(" [")
                     .Append(clue.Category)
                     .Append("]\n")
-                    .Append(clue.FullDescription)
+                    .Append(clue.JournalText)
                     .Append("\n\n");
             }
 

@@ -25,6 +25,11 @@ namespace LostCity.CombatSandbox
             damageable.Died -= HandleDied;
         }
 
+        public void SetExperienceValue(int value)
+        {
+            experienceValue = Mathf.Max(0, value);
+        }
+
         private void HandleDied(Damageable source, DamageInfo damageInfo)
         {
             if (xpOrbPrefab == null)

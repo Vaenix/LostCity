@@ -12,6 +12,7 @@ namespace LostCity.CombatSandbox
         [SerializeField] private Room304RewardSelectionUI rewardSelectionUI;
         [SerializeField] private Room304CompletionUI completionUI;
         [SerializeField] private PlayerStats playerStats;
+        [SerializeField] private CombatUpgradeStats combatUpgradeStats;
 
         private Damageable trackedBossDamageable;
 
@@ -188,6 +189,7 @@ namespace LostCity.CombatSandbox
             if (bossSpawnController != null)
             {
                 bossSpawnController.enabled = true;
+                bossSpawnController.SetBossDefinition(investigationProgress != null ? investigationProgress.BossDefinition : null);
                 TrackBoss(bossSpawnController.SpawnBoss());
             }
         }
@@ -216,7 +218,14 @@ namespace LostCity.CombatSandbox
 
             if (rewardSelectionUI != null)
             {
-                rewardSelectionUI.Show(playerStats);
+                RewardDefinition[] rewardPool = investigationProgress != null ? investigationProgress.RewardPool : null;
+                BossDefinition bossDefinition = investigationProgress != null ? investigationProgress.BossDefinition : null;
+                if ((rewardPool == null || rewardPool.Length == 0) && bossDefinition != null)
+                {
+                    rewardPool = bossDefinition.RewardPool;
+                }
+
+                rewardSelectionUI.Show(playerStats, rewardPool, combatUpgradeStats);
             }
         }
 
@@ -231,7 +240,9 @@ namespace LostCity.CombatSandbox
 
             if (completionUI != null)
             {
-                completionUI.ShowChapterComplete();
+                string caseName = investigationProgress != null ? investigationProgress.CaseTitle : "304号病房";
+                string completionText = investigationProgress != null ? investigationProgress.CompletionText : string.Empty;
+                completionUI.ShowChapterComplete(caseName, completionText);
             }
         }
 
@@ -271,7 +282,7 @@ namespace LostCity.CombatSandbox
             EnterRewardState();
         }
 
-        private void HandleRewardSelected(Room304RewardType rewardType)
+        private void HandleRewardSelected(RewardDefinition rewardDefinition)
         {
             Debug.Log("Reward Selected");
             EnterChapterCompleteState();
@@ -340,6 +351,11 @@ namespace LostCity.CombatSandbox
             if (playerStats == null)
             {
                 playerStats = FindObjectOfType<PlayerStats>();
+            }
+
+            if (combatUpgradeStats == null)
+            {
+                combatUpgradeStats = FindObjectOfType<CombatUpgradeStats>();
             }
         }
     }

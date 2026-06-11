@@ -9,7 +9,8 @@ The UI system provides graybox feedback and controls for the current prototype.
 - Show player HUD stats.
 - Show world-space health bars.
 - Show minimap markers.
-- Show collected evidence.
+- Show centralized prompts through `GamePromptManager`.
+- Show collected evidence from clue data.
 - Show deduction board.
 - Show upgrade choices.
 - Show Room 304 rewards.
@@ -29,6 +30,7 @@ No public fields. UI references are serialized.
 - `DeductionBoard.SetAvailable(bool available)`
 - `DeductionBoard.Hide()`
 - `Room304RewardSelectionUI.Show(PlayerStats playerStats)`
+- `Room304RewardSelectionUI.Show(PlayerStats playerStats, RewardDefinition[] rewards, CombatUpgradeStats upgradeStats)`
 - `Room304RewardSelectionUI.Hide()`
 - `Room304CompletionUI.ShowChapterComplete()`
 - `Room304CompletionUI.ShowNextChapterPlaceholder()`
@@ -40,6 +42,8 @@ No public fields. UI references are serialized.
 - Unity Input System UI module
 - `EventSystem`
 - `GraphicRaycaster` on interactive canvases
+- `GamePromptManager`
+- `RewardDefinition`
 
 ## Events
 

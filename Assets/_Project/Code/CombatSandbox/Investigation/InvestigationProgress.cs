@@ -6,6 +6,7 @@ namespace LostCity.CombatSandbox
 {
     public sealed class InvestigationProgress : MonoBehaviour
     {
+        [SerializeField] private CaseDefinition caseDefinition;
         [SerializeField] private string caseTitle = "304号病房";
         [SerializeField] private string mysteryQuestion = "304号病房为什么被封锁？";
         [SerializeField] private ClueDefinition[] requiredClues;
@@ -18,8 +19,15 @@ namespace LostCity.CombatSandbox
         public event Action AllRequiredCluesCollected;
         public event Action CaseSolved;
 
-        public string CaseTitle => caseTitle;
-        public string MysteryQuestion => mysteryQuestion;
+        public CaseDefinition CurrentCase => caseDefinition;
+        public string CaseTitle => caseDefinition != null ? caseDefinition.CaseName : caseTitle;
+        public string CaseDescription => caseDefinition != null ? caseDefinition.Description : string.Empty;
+        public string MysteryQuestion => caseDefinition != null ? caseDefinition.DeductionQuestion : mysteryQuestion;
+        public string CorrectAnswer => caseDefinition != null ? caseDefinition.CorrectAnswer : string.Empty;
+        public string CompletionText => caseDefinition != null ? caseDefinition.CompletionText : string.Empty;
+        public BossDefinition BossDefinition => caseDefinition != null ? caseDefinition.BossDefinition : null;
+        public RewardDefinition[] RewardPool => caseDefinition != null ? caseDefinition.RewardPool : null;
+        public IReadOnlyList<ClueDefinition> RequiredClues => GetRequiredClues();
         public IReadOnlyList<ClueDefinition> CollectedClues => collectedClues;
         public bool IsCaseSolved => caseSolved;
         public bool HasCollectedAllRequiredClues => AreAllRequiredCluesCollected();
@@ -57,19 +65,20 @@ namespace LostCity.CombatSandbox
 
         public bool IsCorrectDeduction(IReadOnlyList<ClueDefinition> selectedClues)
         {
-            if (requiredClues == null || requiredClues.Length == 0 || selectedClues == null)
+            IReadOnlyList<ClueDefinition> activeRequiredClues = GetRequiredClues();
+            if (activeRequiredClues.Count == 0 || selectedClues == null)
             {
                 return false;
             }
 
-            if (selectedClues.Count != requiredClues.Length)
+            if (selectedClues.Count != activeRequiredClues.Count)
             {
                 return false;
             }
 
-            for (int i = 0; i < requiredClues.Length; i++)
+            for (int i = 0; i < activeRequiredClues.Count; i++)
             {
-                if (!ContainsClue(selectedClues, requiredClues[i]))
+                if (!ContainsClue(selectedClues, activeRequiredClues[i]))
                 {
                     return false;
                 }
@@ -91,14 +100,10 @@ namespace LostCity.CombatSandbox
 
         public void CollectAllRequiredClues()
         {
-            if (requiredClues == null)
+            IReadOnlyList<ClueDefinition> activeRequiredClues = GetRequiredClues();
+            for (int i = 0; i < activeRequiredClues.Count; i++)
             {
-                return;
-            }
-
-            for (int i = 0; i < requiredClues.Length; i++)
-            {
-                TryCollectClue(requiredClues[i]);
+                TryCollectClue(activeRequiredClues[i]);
             }
         }
 
@@ -115,20 +120,31 @@ namespace LostCity.CombatSandbox
 
         private bool AreAllRequiredCluesCollected()
         {
-            if (requiredClues == null || requiredClues.Length == 0)
+            IReadOnlyList<ClueDefinition> activeRequiredClues = GetRequiredClues();
+            if (activeRequiredClues.Count == 0)
             {
                 return false;
             }
 
-            for (int i = 0; i < requiredClues.Length; i++)
+            for (int i = 0; i < activeRequiredClues.Count; i++)
             {
-                if (!HasClue(requiredClues[i]))
+                if (!HasClue(activeRequiredClues[i]))
                 {
                     return false;
                 }
             }
 
             return true;
+        }
+
+        private IReadOnlyList<ClueDefinition> GetRequiredClues()
+        {
+            if (caseDefinition != null && caseDefinition.Clues != null)
+            {
+                return caseDefinition.Clues;
+            }
+
+            return requiredClues ?? Array.Empty<ClueDefinition>();
         }
 
         private static bool ContainsClue(IReadOnlyList<ClueDefinition> clues, ClueDefinition target)

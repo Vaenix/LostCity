@@ -5,6 +5,7 @@ namespace LostCity.CombatSandbox
 {
     public sealed class BossSpawnController : MonoBehaviour
     {
+        [SerializeField] private BossDefinition bossDefinition;
         [SerializeField] private GameObject bossPrefab;
         [SerializeField] private Transform spawnPoint;
         [SerializeField] private Transform player;
@@ -18,6 +19,14 @@ namespace LostCity.CombatSandbox
         public event Action<GameObject> BossSpawned;
 
         public GameObject ActiveBoss => activeBoss;
+
+        public void SetBossDefinition(BossDefinition definition)
+        {
+            if (definition != null)
+            {
+                bossDefinition = definition;
+            }
+        }
 
         private void Start()
         {
@@ -42,15 +51,21 @@ namespace LostCity.CombatSandbox
                 return activeBoss;
             }
 
-            if (bossPrefab == null)
+            GameObject prefab = bossDefinition != null && bossDefinition.BossPrefab != null
+                ? bossDefinition.BossPrefab
+                : bossPrefab;
+
+            if (prefab == null)
             {
                 Debug.LogWarning($"{name} needs a boss prefab.", this);
                 return null;
             }
 
             Vector3 position = spawnPoint != null ? spawnPoint.position : transform.position;
-            activeBoss = Instantiate(bossPrefab, position, Quaternion.identity);
+            activeBoss = Instantiate(prefab, position, Quaternion.identity);
             hasSpawned = true;
+
+            ApplyBossDefinition(activeBoss);
 
             WardenBoss wardenBoss = activeBoss.GetComponent<WardenBoss>();
             if (wardenBoss != null && player != null)
@@ -60,6 +75,34 @@ namespace LostCity.CombatSandbox
 
             BossSpawned?.Invoke(activeBoss);
             return activeBoss;
+        }
+
+        private void ApplyBossDefinition(GameObject boss)
+        {
+            if (bossDefinition == null || boss == null)
+            {
+                return;
+            }
+
+            boss.name = bossDefinition.Name;
+
+            Damageable damageable = boss.GetComponent<Damageable>();
+            if (damageable != null)
+            {
+                damageable.SetMaxHealth(bossDefinition.Health, resetCurrentHealth: true);
+            }
+
+            WardenBoss wardenBoss = boss.GetComponent<WardenBoss>();
+            if (wardenBoss != null)
+            {
+                wardenBoss.ApplyDefinition(bossDefinition);
+            }
+
+            XpDropper xpDropper = boss.GetComponent<XpDropper>();
+            if (xpDropper != null)
+            {
+                xpDropper.SetExperienceValue(bossDefinition.XpReward);
+            }
         }
 
         private void ResolveReferences()

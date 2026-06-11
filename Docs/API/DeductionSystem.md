@@ -6,11 +6,11 @@ The deduction system lets the player select collected clues and submit a hypothe
 
 ## Responsibilities
 
-- Display the current mystery question.
-- Display collected clue buttons.
+- Display the active `CaseDefinition.DeductionQuestion`.
+- Display collected clue buttons from `ClueDefinition.Name` and `Description`.
 - Track selected clues.
 - Submit selected clues to `InvestigationProgress`.
-- Show success or failure feedback.
+- Show success or failure feedback. Success includes `CaseDefinition.CorrectAnswer`.
 - Mark the case solved after a short success delay.
 
 ## Public Fields
@@ -29,6 +29,8 @@ None.
 ## Dependencies
 
 - `InvestigationProgress`
+- `CaseDefinition`
+- `ClueDefinition`
 - Unity UI `Button` and `Text`
 - Unity Input System keyboard access for Tab toggle
 
@@ -45,5 +47,5 @@ deductionBoard.SetAvailable(false);
 ## Common Pitfalls
 
 - The deduction board is not a general puzzle framework.
-- Correct deduction currently means selecting all required clues exactly.
+- Correct deduction currently means selecting all active case clues exactly.
 - Do not add branching narrative logic here yet.

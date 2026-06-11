@@ -4,7 +4,7 @@ This folder is the source of truth for Lost City development. Code is not consid
 
 ## Current Phase
 
-Lost City is in **Room 304 gameplay loop validation**.
+Lost City is in **Phase 5, Framework Freeze**.
 
 The active prototype validates this chain:
 
@@ -12,7 +12,7 @@ The active prototype validates this chain:
 探索 -> 收集线索 -> 推理成功 -> Boss生成 -> Boss战 -> Boss死亡 -> 奖励选择 -> 章节完成
 ```
 
-No final story, final art, VFX polish, localization framework, or Chapter 2 content should be added until Room 304 is validated end to end.
+No final story, final art, VFX polish, localization framework, or Chapter 2 content should be added until the data-driven Room 304 framework is validated end to end.
 
 ## Required Reading Order
 
@@ -29,6 +29,7 @@ No final story, final art, VFX polish, localization framework, or Chapter 2 cont
 - [PlayerStats](API/PlayerStats.md)
 - [GameFlowManager](API/GameFlowManager.md)
 - [CombatSystem](API/CombatSystem.md)
+- [CaseSystem](API/CaseSystem.md)
 - [InvestigationSystem](API/InvestigationSystem.md)
 - [DeductionSystem](API/DeductionSystem.md)
 - [BossSystem](API/BossSystem.md)
@@ -44,4 +45,5 @@ No final story, final art, VFX polish, localization framework, or Chapter 2 cont
 - Documentation must be updated with every feature and every behavior-changing bug fix.
 - Mermaid diagrams must be updated whenever architecture, state flow, or event flow changes.
 - New systems need API documentation before the task is considered complete.
+- New cases, clues, bosses, and rewards should be added as ScriptableObject data and prefabs before core code is changed.
 - Do not rely on AI memory for project knowledge. Put durable knowledge in this folder.

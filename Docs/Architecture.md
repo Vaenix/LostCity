@@ -2,13 +2,13 @@
 
 ## System Overview
 
-Lost City currently runs as a generated Unity combat sandbox scene with Room 304 investigation and chapter flow layered on top.
+Lost City currently runs as a generated Unity combat sandbox scene with Room 304 investigation and chapter flow layered on top. Phase 5 freezes the demo into a data-driven framework for cases, clues, bosses, rewards, and prompts.
 
 The prototype is intentionally simple:
 
 - One generated scene.
 - One playable player.
-- One investigation case.
+- One `CaseDefinition` for Room 304.
 - One deduction board.
 - One boss encounter.
 - One reward screen.
@@ -19,13 +19,14 @@ The prototype is intentionally simple:
 | Manager or Controller | Purpose |
 | --- | --- |
 | `GameFlowManager` | Owns Room 304 state transitions. |
-| `InvestigationProgress` | Tracks collected clues and deduction success. |
+| `InvestigationProgress` | Reads `CaseDefinition`, tracks collected clues, and reports deduction success. |
 | `DeductionBoard` | Lets the player choose clues and submit the deduction. |
 | `EnemySpawner` | Spawns weighted enemy archetypes during combat. |
-| `BossSpawnController` | Spawns The Warden and exposes the active boss. |
+| `BossSpawnController` | Reads `BossDefinition`, spawns the boss prefab, and exposes the active boss. |
 | `PlayerStats` | Stores player combat and progression stats for the current session. |
-| `Room304RewardSelectionUI` | Applies one post-boss reward. |
+| `Room304RewardSelectionUI` | Displays and applies `RewardDefinition` choices. |
 | `Room304CompletionUI` | Shows chapter completion and placeholder next chapter text. |
+| `GamePromptManager` | Centralizes prototype prompts by prompt type. |
 | `CombatSandboxCreator` | Editor automation that generates scene, prefabs, ScriptableObjects, input actions, and references. |
 
 ## State Machine
@@ -66,22 +67,32 @@ flowchart TD
 
 ```mermaid
 flowchart LR
+    Case["CaseDefinition"]
     Clue["ClueDefinition"]
     Pickup["CluePickup"]
     Progress["InvestigationProgress"]
     Board["DeductionBoard"]
     Flow["GameFlowManager"]
+    BossData["BossDefinition"]
     Boss["BossSpawnController"]
+    RewardData["RewardDefinition"]
     Reward["Room304RewardSelectionUI"]
     Stats["PlayerStats"]
+    Prompt["GamePromptManager"]
 
+    Case --> Clue
+    Case --> BossData
+    Case --> RewardData
     Clue --> Pickup
     Pickup --> Progress
+    Pickup --> Prompt
     Progress --> Board
     Board --> Progress
     Progress --> Flow
+    BossData --> Boss
     Flow --> Boss
     Boss --> Flow
+    RewardData --> Reward
     Flow --> Reward
     Reward --> Stats
 ```
@@ -96,9 +107,11 @@ flowchart LR
 
 ## Subsystem Relationships
 
-- Investigation and deduction are handcrafted. Mystery logic is not procedural.
+- Investigation and deduction are data-driven by `CaseDefinition` and `ClueDefinition`; mystery logic remains handcrafted data.
 - Combat starts only after deduction success or debug spawn.
-- Rewards modify `PlayerStats` directly and persist until the scene or session resets.
+- Rewards are `RewardDefinition` assets and apply to `PlayerStats` or `CombatUpgradeStats`.
+- Boss setup is driven by `BossDefinition` plus the boss prefab.
+- Prototype prompts route through `GamePromptManager`.
 - Chapter progression currently ends at a placeholder state. No Chapter 2 content exists.
 
 ## Known Architecture Debt
@@ -106,3 +119,4 @@ flowchart LR
 - `Room304GameStateController` is legacy and should be retired after generated scenes fully migrate to `GameFlowManager`.
 - Scene generation still needs a stronger automated validation pass for all serialized references.
 - Session persistence exists only in-memory through scene objects. There is no save system.
+- `Room304RewardSelectionUI` is now data-driven but still carries a Room304-specific class name.

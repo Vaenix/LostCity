@@ -11,6 +11,7 @@ namespace LostCity.CombatSandbox
         [SerializeField] private GameObject interactionPrompt;
 
         private bool playerInRange;
+        private GamePromptManager promptManager;
 
         private void Awake()
         {
@@ -53,6 +54,8 @@ namespace LostCity.CombatSandbox
             ResolveProgress();
             playerInRange = true;
             SetPromptVisible(true);
+            ResolvePromptManager();
+            promptManager?.ShowPrompt("发现可调查线索\n[E] 调查", PromptType.Clue);
         }
 
         private void OnTriggerExit2D(Collider2D other)
@@ -71,6 +74,9 @@ namespace LostCity.CombatSandbox
             ResolveProgress();
             if (investigationProgress != null && investigationProgress.TryCollectClue(clue))
             {
+                ResolvePromptManager();
+                string clueName = clue != null ? clue.Name : "未知线索";
+                promptManager?.ShowPrompt($"获得新线索\n【{clueName}】\n按 J 查看线索档案", PromptType.Success);
                 gameObject.SetActive(false);
             }
         }
@@ -87,7 +93,15 @@ namespace LostCity.CombatSandbox
         {
             if (interactionPrompt != null)
             {
-                interactionPrompt.SetActive(visible);
+                interactionPrompt.SetActive(false);
+            }
+        }
+
+        private void ResolvePromptManager()
+        {
+            if (promptManager == null)
+            {
+                promptManager = GamePromptManager.Instance;
             }
         }
 

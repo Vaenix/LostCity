@@ -28,29 +28,29 @@ flowchart TD
 
 ## Investigation
 
-The player explores Room 304, finds clue pickups, and collects all required clues. Collecting the full required clue set moves `GameFlowManager` from `Investigation` to `Deduction`.
+The player explores the active case, finds clue pickups, and collects all required clues from `CaseDefinition.Clues`. Collecting the full required clue set moves `GameFlowManager` from `Investigation` to `Deduction`.
 
 ## Deduction
 
-The player opens the deduction board, selects collected clues, and submits them. The current MVP requires selecting all required clues exactly. Correct submission shows `真相重现` and raises `CaseSolved`.
+The player opens the deduction board, selects collected clues, and submits them. The current MVP requires selecting all required clues exactly. Correct submission shows `真相已重构`, displays `CaseDefinition.CorrectAnswer`, and raises `CaseSolved`.
 
 ## Combat
 
-`GameFlowManager` receives `CaseSolved`, disables the deduction board, enables combat spawning, and asks `BossSpawnController` to spawn The Warden.
+`GameFlowManager` receives `CaseSolved`, disables the deduction board, enables combat spawning, passes `CaseDefinition.BossDefinition` to `BossSpawnController`, and spawns the configured boss.
 
 Combat uses:
 
 - Pistol manual weapon.
 - Memory orb automatic weapon.
 - Weighted enemy spawning.
-- The Warden boss.
+- Boss from `BossDefinition`.
 - Player stats for damage, crit, defense, dodge, health, and movement.
 
 ## Reward
 
 When the boss dies, combat stops, remaining enemies are removed, and the reward screen appears.
 
-Temporary rewards:
+Temporary rewards are `RewardDefinition` assets:
 
 - `+10%攻击力`
 - `+10%生命值`
@@ -73,7 +73,7 @@ There is no save system yet, so progression is not persistent across editor Play
 
 ## Boss Progression
 
-The Room 304 boss is The Warden. It exists to validate:
+The Room 304 boss is configured through `BossDefinition`. It exists to validate:
 
 - Boss spawn after deduction.
 - Boss death event handling.

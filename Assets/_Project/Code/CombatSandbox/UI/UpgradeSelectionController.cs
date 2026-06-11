@@ -16,6 +16,7 @@ namespace LostCity.CombatSandbox
         [SerializeField] private Text damageButtonText;
         [SerializeField] private Button droneButton;
         [SerializeField] private Text droneButtonText;
+        [SerializeField] private RewardDefinition[] upgradeChoices;
         [SerializeField] private bool pauseWhileChoosing = true;
 
         private CombatUpgradeStats activeStats;
@@ -30,17 +31,17 @@ namespace LostCity.CombatSandbox
 
             if (fireRateButton != null)
             {
-                fireRateButton.onClick.AddListener(() => Choose(CombatUpgradeType.FireRate));
+                fireRateButton.onClick.AddListener(() => Choose(0, CombatUpgradeType.FireRate));
             }
 
             if (damageButton != null)
             {
-                damageButton.onClick.AddListener(() => Choose(CombatUpgradeType.ProjectileDamage));
+                damageButton.onClick.AddListener(() => Choose(1, CombatUpgradeType.ProjectileDamage));
             }
 
             if (droneButton != null)
             {
-                droneButton.onClick.AddListener(() => Choose(CombatUpgradeType.DroneProjectile));
+                droneButton.onClick.AddListener(() => Choose(2, CombatUpgradeType.DroneProjectile));
             }
 
             Hide();
@@ -93,17 +94,17 @@ namespace LostCity.CombatSandbox
 
             if (fireRateButtonText != null)
             {
-                fireRateButtonText.text = "+20%攻击速度";
+                fireRateButtonText.text = GetChoiceLabel(0, "+20%攻击速度");
             }
 
             if (damageButtonText != null)
             {
-                damageButtonText.text = "+20%攻击力";
+                damageButtonText.text = GetChoiceLabel(1, "+20%攻击力");
             }
 
             if (droneButtonText != null)
             {
-                droneButtonText.text = "+1 记忆浮游炮";
+                droneButtonText.text = GetChoiceLabel(2, "+1 无人机弹幕数量");
             }
 
             if (pauseWhileChoosing)
@@ -115,18 +116,50 @@ namespace LostCity.CombatSandbox
             panelRoot.SetActive(true);
         }
 
-        private void Choose(CombatUpgradeType upgradeType)
+        private void Choose(int choiceIndex, CombatUpgradeType fallbackUpgradeType)
         {
             if (activeStats == null)
             {
                 return;
             }
 
-            activeStats.ApplyUpgrade(upgradeType);
+            RewardDefinition rewardDefinition = GetReward(choiceIndex);
+            if (rewardDefinition != null)
+            {
+                activeStats.ApplyReward(rewardDefinition);
+            }
+            else
+            {
+                activeStats.ApplyUpgrade(fallbackUpgradeType);
+            }
+
             Hide();
             choiceCompleted?.Invoke();
             choiceCompleted = null;
             activeStats = null;
+        }
+
+        private string GetChoiceLabel(int index, string fallback)
+        {
+            RewardDefinition rewardDefinition = GetReward(index);
+            if (rewardDefinition == null)
+            {
+                return fallback;
+            }
+
+            return string.IsNullOrWhiteSpace(rewardDefinition.Description)
+                ? rewardDefinition.DisplayName
+                : rewardDefinition.DisplayName + "\n" + rewardDefinition.Description;
+        }
+
+        private RewardDefinition GetReward(int index)
+        {
+            if (upgradeChoices == null || index < 0 || index >= upgradeChoices.Length)
+            {
+                return null;
+            }
+
+            return upgradeChoices[index];
         }
 
         private void Hide()

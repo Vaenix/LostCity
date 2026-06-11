@@ -4,19 +4,21 @@
 
 ```text
 Trigger
-Player presses E inside a clue trigger.
+Player enters a clue trigger, then presses E.
 
 System
-CluePickup calls InvestigationProgress.TryCollectClue().
+CluePickup shows a `GamePromptManager` clue prompt, then calls `InvestigationProgress.TryCollectClue()`.
 
 Result
-Clue is added, ClueCollected fires, journal and deduction UI can refresh.
+Clue is added, `ClueCollected` fires, `GamePromptManager` shows the collected clue prompt, and journal/deduction UI can refresh.
 ```
 
 ```mermaid
 flowchart TD
+    Near["Player enters clue trigger"] --> Prompt["GamePromptManager: 发现可调查线索"]
     Input["E pressed near clue"] --> Pickup["CluePickup"]
     Pickup --> Progress["InvestigationProgress.TryCollectClue"]
+    Pickup --> CollectedPrompt["GamePromptManager: 获得新线索"]
     Progress --> Event["ClueCollected"]
     Event --> Journal["EvidenceJournal refresh"]
     Event --> Board["DeductionBoard refresh if open"]
@@ -29,7 +31,7 @@ Trigger
 InvestigationProgress.ClueCollected.
 
 System
-EvidenceJournal rebuilds text from collected clues.
+EvidenceJournal rebuilds text from `ClueDefinition.Name`, `Category`, and `JournalText`.
 
 Result
 The journal shows collected clue titles, categories, and descriptions.
@@ -42,10 +44,10 @@ Trigger
 Player clicks 提交推理.
 
 System
-DeductionBoard checks InvestigationProgress.IsCorrectDeduction().
+DeductionBoard reads `CaseDefinition.DeductionQuestion` and checks `InvestigationProgress.IsCorrectDeduction()`.
 
 Result
-Correct deduction displays 真相重现 and marks the case solved.
+Correct deduction displays 真相已重构 and `CaseDefinition.CorrectAnswer`, then marks the case solved.
 Incorrect deduction displays 证据还无法成立。
 ```
 
@@ -69,17 +71,17 @@ Trigger
 GameFlowManager enters Combat.
 
 System
-EnemySpawner is enabled and BossSpawnController.SpawnBoss() is called.
+EnemySpawner is enabled. BossSpawnController receives `CaseDefinition.BossDefinition` and spawns its configured prefab.
 
 Result
-The Warden appears and GameFlowManager tracks its Damageable.Died event.
+The configured boss appears and GameFlowManager tracks its Damageable.Died event.
 ```
 
 ## Boss Death
 
 ```text
 Trigger
-The Warden Damageable reaches 0 health.
+The configured boss Damageable reaches 0 health.
 
 System
 GameFlowManager receives Damageable.Died.
@@ -95,7 +97,7 @@ Trigger
 Player clicks one reward button.
 
 System
-Room304RewardSelectionUI applies the reward to PlayerStats.
+Room304RewardSelectionUI applies the selected `RewardDefinition` to PlayerStats or CombatUpgradeStats.
 
 Result
 RewardSelected fires and GameFlowManager enters ChapterComplete.
@@ -108,10 +110,10 @@ Trigger
 PlayerExperience receives enough XP.
 
 System
-UpgradeSelectionController shows upgrade choices.
+UpgradeSelectionController shows `RewardDefinition` upgrade choices.
 
 Result
-CombatUpgradeStats applies fire rate, projectile damage, or extra drone projectile upgrades.
+CombatUpgradeStats applies attack speed, attack, or drone projectile rewards from data.
 ```
 
 ## Scene Transition

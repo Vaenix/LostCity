@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81ce39ae6b3b453ea72a6e22af17a5a9, type: 3}
+  m_Name: Reward_DroneProjectile
+  m_EditorClassIdentifier:
+  rewardId: drone_projectile_1
+  displayName: +1 无人机弹幕数量
+  description: 记忆浮游炮每次额外发射一枚投射物。
+  rewardType: 1
+  statType: 6
+  multiplier: 1
+  additiveValue: 0
+  integerValue: 1
+  weaponDefinition: {fileID: 11400000, guid: 1f9b4592fab4b4b2f9d84246a65e58a2, type: 2}
+  unlockId:

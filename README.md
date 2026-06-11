@@ -2,9 +2,9 @@
 
 **Genre:** Mystery Puzzle + Roguelike Action
 **Engine:** Unity 2022 LTS
-**Current Development Phase:** Room 304 gameplay loop validation, Phase 3 completion plus Phase 4 foundation
+**Current Development Phase:** Phase 5, Framework Freeze
 
-Lost City is a Unity prototype for a single-player game that combines investigation, deduction, and lightweight roguelike combat. The current goal is not final content or polish. The current goal is to validate whether one complete chapter loop can move cleanly from exploration to clue collection, deduction, combat, reward, and chapter completion.
+Lost City is a Unity prototype for a single-player game that combines investigation, deduction, and lightweight roguelike combat. The current goal is not final content or polish. The current goal is to freeze the current demo into a data-driven framework for cases, clues, bosses, rewards, and prompts.
 
 ## Project Overview
 
@@ -30,6 +30,11 @@ The first playable chapter prototype is **Room 304**. It uses graybox assets and
 - Reward selection after boss death.
 - Chapter complete screen.
 - Placeholder next chapter state.
+- Data-driven `CaseDefinition`.
+- Data-driven `ClueDefinition`.
+- Data-driven `BossDefinition`.
+- Data-driven `RewardDefinition`.
+- Unified `GamePromptManager`.
 
 ## Controls
 
@@ -72,24 +77,34 @@ flowchart TD
     Player["Player"]
     Stats["PlayerStats"]
     Flow["GameFlowManager"]
+    Case["CaseDefinition"]
     Investigation["InvestigationProgress"]
+    BossData["BossDefinition"]
+    RewardData["RewardDefinition"]
     Journal["EvidenceJournal"]
     Deduction["DeductionBoard"]
     Spawner["EnemySpawner"]
     BossSpawn["BossSpawnController"]
-    Boss["The Warden"]
+    Boss["看守者"]
     Reward["Room304RewardSelectionUI"]
     Complete["Room304CompletionUI"]
+    Prompt["GamePromptManager"]
 
     Player --> Stats
+    Case --> Investigation
+    Case --> BossData
+    Case --> RewardData
     Investigation --> Journal
     Investigation --> Deduction
+    Investigation --> Prompt
     Investigation -- "AllRequiredCluesCollected" --> Flow
     Deduction -- "CaseSolved" --> Flow
     Flow --> Spawner
+    BossData --> BossSpawn
     Flow --> BossSpawn
     BossSpawn --> Boss
     Boss -- "Died" --> Flow
+    RewardData --> Reward
     Flow --> Reward
     Reward -- "RewardSelected" --> Flow
     Reward --> Stats
@@ -150,12 +165,12 @@ Full folder documentation lives in [Docs/FolderStructure.md](Docs/FolderStructur
 
 ## Current Roadmap
 
-1. Complete Room 304 gameplay loop validation.
+1. Regenerate the sandbox with Phase 5 data assets.
 2. Verify generated scene and all UI interactions in Unity Play Mode.
 3. Clean stale generated scene and prefab changes after successful regeneration.
 4. Add stronger automated validation for generator-created references.
-5. Expand combat readability only after the current loop is stable.
-6. Add Chapter 2 content only after Room 304 is validated end to end.
+5. Add future cases through ScriptableObject data and prefabs, not core code edits.
+6. Add Chapter 2 content only after the data-driven Room 304 framework is validated end to end.
 
 See [Docs/Roadmap.md](Docs/Roadmap.md) for details.
 
@@ -166,6 +181,7 @@ See [Docs/Roadmap.md](Docs/Roadmap.md) for details.
 - `Room304GameStateController` is legacy and should not be used by newly generated scenes.
 - No save system exists yet, so progression persists only during the current play session.
 - Room 304 is architecture validation content, not final story content.
+- Unity response files may not include newly added scripts until the Unity Editor imports them.
 
 ## Documentation
 

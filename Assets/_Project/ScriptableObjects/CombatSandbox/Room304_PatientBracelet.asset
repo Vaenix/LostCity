@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ab67b754950704b46bef5803f7bd9d72, type: 3}
+  m_Name: Room304_PatientBracelet
+  m_EditorClassIdentifier:
+  id: room304_patient_bracelet
+  clueName: 病人腕带
+  description: 腕带上的病人姓名与玩家一致。
+  title: 病人腕带
+  category: 医疗物件
+  type: 1
+  icon: {fileID: 21300000, guid: 37af4b62a67d3499798200d7ada1860d, type: 3}
+  journalText: 304号病房留下的褪色腕带写着玩家的名字。被封锁的房间并不是别人的遗憾。
+  shortDescription: 腕带上的病人姓名与玩家一致。
+  fullDescription: 304号病房留下的褪色腕带写着玩家的名字。被封锁的房间并不是别人的遗憾。

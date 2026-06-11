@@ -104,6 +104,16 @@ namespace LostCity.CombatSandbox
             target = newTarget;
         }
 
+        public void ApplyDefinition(BossDefinition definition)
+        {
+            if (definition == null)
+            {
+                return;
+            }
+
+            moveSpeed = definition.MoveSpeed;
+        }
+
         private void OnCollisionStay2D(Collision2D collision)
         {
             TryDamagePlayer(collision.collider);

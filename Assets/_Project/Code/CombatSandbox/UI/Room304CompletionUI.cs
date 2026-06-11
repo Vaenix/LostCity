@@ -39,6 +39,11 @@ namespace LostCity.CombatSandbox
 
         public void ShowChapterComplete()
         {
+            ShowChapterComplete("304号病房", string.Empty);
+        }
+
+        public void ShowChapterComplete(string caseName, string completionText)
+        {
             hasContinued = false;
             waitingForContinue = true;
 
@@ -49,7 +54,9 @@ namespace LostCity.CombatSandbox
 
             if (bodyText != null)
             {
-                bodyText.text = "304号病房\n按空格继续";
+                string resolvedCaseName = string.IsNullOrWhiteSpace(caseName) ? "当前案件" : caseName;
+                string resolvedCompletionText = string.IsNullOrWhiteSpace(completionText) ? resolvedCaseName : completionText;
+                bodyText.text = resolvedCompletionText + "\n按空格继续";
             }
 
             if (panelRoot != null)
