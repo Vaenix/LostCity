@@ -9,11 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b540fb516239e42f4a78f3b202ae410e, type: 3}
-  m_Name: MemoryFragmentEnemyDefinition
+  m_Script: {fileID: 11500000, guid: ba9ef3beff6664bc586fbd3b708739e6, type: 3}
+  m_Name: EnemyProjectileDefinition
   m_EditorClassIdentifier: 
-  maxHealth: 45
-  moveSpeed: 3.5
-  stoppingDistance: 0.75
-  contactDamage: 12
-  contactCooldownSeconds: 0.75
+  damage: 6
+  speed: 9
+  lifetimeSeconds: 4

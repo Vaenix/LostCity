@@ -12,6 +12,7 @@ namespace LostCity.CombatSandbox
         [SerializeField] private float nextLevelExperienceMultiplier = 1.35f;
 
         private int pendingUpgradeChoices;
+        private PlayerStats playerStats;
 
         public int CurrentLevel => currentLevel;
         public int CurrentExperience => currentExperience;
@@ -28,6 +29,8 @@ namespace LostCity.CombatSandbox
             {
                 upgradeSelectionController = FindObjectOfType<UpgradeSelectionController>(includeInactive: true);
             }
+
+            playerStats = GetComponent<PlayerStats>();
         }
 
         public void AddExperience(int amount)
@@ -37,7 +40,8 @@ namespace LostCity.CombatSandbox
                 return;
             }
 
-            currentExperience += amount;
+            float xpMultiplier = playerStats != null ? playerStats.XpMultiplier : 1f;
+            currentExperience += Mathf.Max(1, Mathf.RoundToInt(amount * xpMultiplier));
 
             while (currentExperience >= experienceToNextLevel)
             {

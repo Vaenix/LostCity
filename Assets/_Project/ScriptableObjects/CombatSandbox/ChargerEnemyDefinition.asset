@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b540fb516239e42f4a78f3b202ae410e, type: 3}
+  m_Name: ChargerEnemyDefinition
+  m_EditorClassIdentifier: 
+  displayName: Charger
+  archetype: 1
+  maxHealth: 55
+  moveSpeed: 2.7
+  stoppingDistance: 0.85
+  contactDamage: 8
+  contactCooldownSeconds: 0.75
+  chargeTriggerRange: 7
+  chargeSpeed: 10
+  chargeDurationSeconds: 0.5
+  chargeCooldownSeconds: 2.6
+  shootRange: 0
+  shootCooldownSeconds: 0
+  projectilePrefab: {fileID: 3210236490688101663, guid: d44b6c2a692764462a6f71cee710f2b7, type: 3}
+  projectileDefinition: {fileID: 11400000, guid: ba011864fbf794674956a42f700f0993, type: 2}

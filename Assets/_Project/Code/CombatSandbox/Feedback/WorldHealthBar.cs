@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace LostCity.CombatSandbox
 {
@@ -6,6 +7,7 @@ namespace LostCity.CombatSandbox
     public sealed class WorldHealthBar : MonoBehaviour
     {
         [SerializeField] private Transform barRoot;
+        [SerializeField] private Image fillImage;
         [SerializeField] private Transform fill;
         [SerializeField] private bool hideWhenFull;
 
@@ -54,13 +56,20 @@ namespace LostCity.CombatSandbox
 
         private void UpdateFill()
         {
-            if (fill == null || damageable.MaxHealth <= 0f)
+            if (damageable.MaxHealth <= 0f)
             {
                 return;
             }
 
             float normalizedHealth = Mathf.Clamp01(damageable.CurrentHealth / damageable.MaxHealth);
-            fill.localScale = new Vector3(fullFillScale.x * normalizedHealth, fullFillScale.y, fullFillScale.z);
+            if (fillImage != null)
+            {
+                fillImage.fillAmount = normalizedHealth;
+            }
+            else if (fill != null)
+            {
+                fill.localScale = new Vector3(fullFillScale.x * normalizedHealth, fullFillScale.y, fullFillScale.z);
+            }
 
             if (barRoot != null && hideWhenFull)
             {

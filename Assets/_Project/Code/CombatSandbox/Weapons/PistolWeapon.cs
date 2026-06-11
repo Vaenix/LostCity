@@ -56,7 +56,7 @@ namespace LostCity.CombatSandbox
 
             Vector3 fireDirection = playerAim != null ? playerAim.AimDirection : muzzle.right;
             Projectile projectile = Instantiate(weaponDefinition.ProjectilePrefab, muzzle.position, Quaternion.identity);
-            float damageMultiplier = upgradeStats != null ? upgradeStats.ProjectileDamageMultiplier : 1f;
+            float damageMultiplier = upgradeStats != null ? upgradeStats.RollProjectileDamageMultiplier() : 1f;
             projectile.Launch(weaponDefinition.ProjectileDefinition, sourceTeam, fireDirection, gameObject, damageMultiplier);
 
             float fireRateMultiplier = upgradeStats != null ? upgradeStats.FireRateMultiplier : 1f;

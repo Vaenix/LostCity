@@ -6,6 +6,7 @@ namespace LostCity.CombatSandbox
     public sealed class EnemySpawner : MonoBehaviour
     {
         [SerializeField] private GameObject enemyPrefab;
+        [SerializeField] private EnemySpawnEntry[] spawnEntries;
         [SerializeField] private Transform player;
         [SerializeField] private Transform arenaCenter;
         [SerializeField] private float spawnIntervalSeconds = 1.25f;
@@ -61,15 +62,56 @@ namespace LostCity.CombatSandbox
 
         private void TrySpawnEnemy()
         {
-            if (enemyPrefab == null)
+            GameObject prefab = SelectEnemyPrefab();
+            if (prefab == null)
             {
-                Debug.LogWarning($"{name} needs an enemy prefab.", this);
+                Debug.LogWarning($"{name} needs at least one enemy prefab.", this);
                 return;
             }
 
             Vector3 spawnPosition = FindSpawnPosition();
-            GameObject enemy = Instantiate(enemyPrefab, spawnPosition, Quaternion.identity);
+            GameObject enemy = Instantiate(prefab, spawnPosition, Quaternion.identity);
             aliveEnemies.Add(enemy);
+        }
+
+        private GameObject SelectEnemyPrefab()
+        {
+            if (spawnEntries == null || spawnEntries.Length == 0)
+            {
+                return enemyPrefab;
+            }
+
+            float totalWeight = 0f;
+            for (int i = 0; i < spawnEntries.Length; i++)
+            {
+                if (spawnEntries[i] != null && spawnEntries[i].Prefab != null)
+                {
+                    totalWeight += spawnEntries[i].Weight;
+                }
+            }
+
+            if (totalWeight <= 0f)
+            {
+                return enemyPrefab;
+            }
+
+            float roll = Random.Range(0f, totalWeight);
+            for (int i = 0; i < spawnEntries.Length; i++)
+            {
+                EnemySpawnEntry entry = spawnEntries[i];
+                if (entry == null || entry.Prefab == null)
+                {
+                    continue;
+                }
+
+                roll -= entry.Weight;
+                if (roll <= 0f)
+                {
+                    return entry.Prefab;
+                }
+            }
+
+            return enemyPrefab;
         }
 
         private Vector3 FindSpawnPosition()

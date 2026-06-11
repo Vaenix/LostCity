@@ -1,5 +1,7 @@
 using System;
 using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.InputSystem.UI;
 using UnityEngine.UI;
 
 namespace LostCity.CombatSandbox
@@ -24,6 +26,8 @@ namespace LostCity.CombatSandbox
 
         private void Awake()
         {
+            EnsureInputSystemUiModule();
+
             if (fireRateButton != null)
             {
                 fireRateButton.onClick.AddListener(() => Choose(CombatUpgradeType.FireRate));
@@ -40,6 +44,36 @@ namespace LostCity.CombatSandbox
             }
 
             Hide();
+        }
+
+        private static void EnsureInputSystemUiModule()
+        {
+            EventSystem eventSystem = EventSystem.current ?? FindObjectOfType<EventSystem>();
+            if (eventSystem == null)
+            {
+                GameObject eventSystemObject = new GameObject("EventSystem");
+                eventSystem = eventSystemObject.AddComponent<EventSystem>();
+            }
+
+            InputSystemUIInputModule inputModule = eventSystem.GetComponent<InputSystemUIInputModule>();
+            if (inputModule == null)
+            {
+                inputModule = eventSystem.gameObject.AddComponent<InputSystemUIInputModule>();
+            }
+
+            if (inputModule.actionsAsset == null)
+            {
+                inputModule.AssignDefaultActions();
+            }
+
+            BaseInputModule[] inputModules = eventSystem.GetComponents<BaseInputModule>();
+            for (int i = 0; i < inputModules.Length; i++)
+            {
+                if (inputModules[i] != inputModule)
+                {
+                    inputModules[i].enabled = false;
+                }
+            }
         }
 
         public void Show(CombatUpgradeStats stats, int level, Action onChoiceCompleted)

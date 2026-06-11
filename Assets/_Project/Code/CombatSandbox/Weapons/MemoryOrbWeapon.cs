@@ -109,12 +109,12 @@ namespace LostCity.CombatSandbox
         private void FireVolley(Vector3 baseDirection)
         {
             int projectileCount = 1 + (upgradeStats != null ? upgradeStats.ExtraDroneProjectiles : 0);
-            float damageMultiplier = upgradeStats != null ? upgradeStats.ProjectileDamageMultiplier : 1f;
 
             for (int i = 0; i < projectileCount; i++)
             {
                 Vector3 shotDirection = GetVolleyDirection(baseDirection, i, projectileCount);
                 Projectile projectile = Instantiate(weaponDefinition.ProjectilePrefab, muzzle.position, Quaternion.identity);
+                float damageMultiplier = upgradeStats != null ? upgradeStats.RollProjectileDamageMultiplier() : 1f;
                 projectile.Launch(weaponDefinition.ProjectileDefinition, sourceTeam, shotDirection, gameObject, damageMultiplier);
             }
         }

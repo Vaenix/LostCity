@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: CombatSandbox_Aim.inputactionreference
   m_EditorClassIdentifier: 
   m_Asset: {fileID: -944628639613478452, guid: 8bc528dbc47964ed6a4a4f0060d8c4de, type: 3}
-  m_ActionId: 7739f233-fac1-4e98-9aac-ea473d0e2cf3
+  m_ActionId: a8fb8804-a975-4d6a-9282-f401edb5745d

@@ -10,6 +10,7 @@ namespace LostCity.CombatSandbox
         [SerializeField] private float moveSpeed = 8f;
 
         private PlayerExperience target;
+        private PlayerStats targetStats;
 
         public void Initialize(int value)
         {
@@ -32,7 +33,8 @@ namespace LostCity.CombatSandbox
             }
 
             Vector3 toTarget = target.transform.position - transform.position;
-            if (toTarget.sqrMagnitude > attractionRadius * attractionRadius)
+            float activeAttractionRadius = targetStats != null ? targetStats.PickupRadius : attractionRadius;
+            if (toTarget.sqrMagnitude > activeAttractionRadius * activeAttractionRadius)
             {
                 return;
             }
@@ -60,6 +62,10 @@ namespace LostCity.CombatSandbox
             }
 
             target = FindObjectOfType<PlayerExperience>();
+            if (target != null)
+            {
+                targetStats = target.GetComponent<PlayerStats>();
+            }
         }
     }
 }

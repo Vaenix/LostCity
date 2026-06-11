@@ -9,14 +9,16 @@ namespace LostCity.CombatSandbox
         [SerializeField] private float moveSpeed = 7f;
 
         private Rigidbody2D body;
+        private PlayerStats playerStats;
 
-        public float MoveSpeed => moveSpeed;
+        public float MoveSpeed => playerStats != null ? playerStats.MoveSpeed : moveSpeed;
 
         private void Awake()
         {
             body = GetComponent<Rigidbody2D>();
             body.gravityScale = 0f;
             body.constraints = RigidbodyConstraints2D.FreezeRotation;
+            playerStats = GetComponent<PlayerStats>();
 
             if (inputReader == null)
             {
@@ -34,7 +36,7 @@ namespace LostCity.CombatSandbox
                 moveDirection.Normalize();
             }
 
-            Vector2 nextPosition = body.position + moveDirection * (moveSpeed * Time.fixedDeltaTime);
+            Vector2 nextPosition = body.position + moveDirection * (MoveSpeed * Time.fixedDeltaTime);
             body.MovePosition(nextPosition);
         }
     }

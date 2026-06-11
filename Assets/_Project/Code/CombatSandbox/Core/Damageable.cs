@@ -58,14 +58,22 @@ namespace LostCity.CombatSandbox
                 return;
             }
 
-            currentHealth = Mathf.Max(0f, currentHealth - damageInfo.Amount);
-            Damaged?.Invoke(this, damageInfo);
+            PlayerStats playerStats = GetComponent<PlayerStats>();
+            float finalDamage = playerStats != null ? playerStats.ModifyIncomingDamage(damageInfo) : damageInfo.Amount;
+            if (finalDamage <= 0f)
+            {
+                return;
+            }
+
+            DamageInfo appliedDamage = new DamageInfo(finalDamage, damageInfo.SourceTeam, damageInfo.Source, damageInfo.HitPoint);
+            currentHealth = Mathf.Max(0f, currentHealth - finalDamage);
+            Damaged?.Invoke(this, appliedDamage);
             onHealthChanged.Invoke(currentHealth, maxHealth);
             HealthChanged?.Invoke(this);
 
             if (currentHealth <= 0f)
             {
-                Die(damageInfo);
+                Die(appliedDamage);
             }
         }
 
