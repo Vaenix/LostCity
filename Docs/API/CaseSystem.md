@@ -2,24 +2,45 @@
 
 ## Purpose
 
-The case system makes each investigation case data-driven through `CaseDefinition`.
+The case system combines data-driven investigation content with deterministic Phase 6 meta progression rules.
+
+`CaseDefinition` continues to provide investigation content. `LostCity.Meta.Core` derives case state and validates whether a selected case may start without depending on `UnityEngine`.
 
 ## Responsibilities
 
-- Store the active case id, name, and description.
-- Provide the clue list for journal and deduction UI.
-- Provide the deduction question and correct answer text.
-- Provide the boss definition for combat.
-- Provide the reward pool after boss death.
-- Provide chapter completion text.
+- Represent case content through `CaseDefinition`.
+- Derive `Locked`, `Available`, or `Completed` from chapter order, chapter prerequisites, and completed case IDs.
+- Prevent invalid, locked, metadata-only, or incomplete cases from starting.
+- Allow a completed playable case with all required content to be replayed.
+- Keep derived availability out of save data.
 
-## Public Fields
+## Public Types
 
-No public fields. Case data is configured through serialized ScriptableObject fields.
+### `CaseState`
+
+- `Locked`: The case cannot currently be selected.
+- `Available`: The case is unlocked and not yet completed.
+- `Completed`: The case ID is present in the completion set.
+
+### `CaseProgressionInput`
+
+Pure C# chapter input used by the progression evaluator:
+
+- `OrderedCaseIds`: Case IDs in sequential unlock order.
+- `RequiredCompletedCaseIds`: Case IDs that must all be completed before the chapter unlocks.
+
+Null arrays are normalized to empty arrays.
+
+### `CaseStartBlockReason`
+
+- `None`: The case may start.
+- `Locked`: Progression state blocks the case.
+- `NotPlayable`: The entry is metadata-only or otherwise marked non-playable.
+- `MissingContent`: The playable entry lacks required case content.
 
 ## Public Properties
 
-`CaseDefinition` exposes:
+`CaseDefinition` currently exposes:
 
 - `CaseId`
 - `CaseName`
@@ -31,29 +52,86 @@ No public fields. Case data is configured through serialized ScriptableObject fi
 - `RewardPool`
 - `CompletionText`
 
+Phase 6 Task 2 does not modify `CaseDefinition`; later catalog work supplies its metadata to these pure rules.
+
 ## Public Methods
 
-No public methods. Runtime systems read immutable case data through properties.
+### `CaseProgressionRules.GetCaseState`
+
+```csharp
+CaseState GetCaseState(
+    string caseId,
+    CaseProgressionInput chapter,
+    ISet<string> completedCaseIds)
+```
+
+Evaluation order:
+
+1. Blank IDs, null chapters, and IDs not present in `OrderedCaseIds` are `Locked`.
+2. A valid chapter case already in the completion set is `Completed`.
+3. Missing chapter prerequisites make the case `Locked`.
+4. The first case is `Available`.
+5. Each later case is `Available` only after the immediately preceding case completes.
+
+A null completion set is treated as empty.
+
+### `CaseStartRules.CanStart`
+
+```csharp
+bool CanStart(
+    CaseState state,
+    bool isPlayable,
+    bool hasRequiredContent,
+    out CaseStartBlockReason reason)
+```
+
+Block reasons use this priority:
+
+1. `Locked`
+2. `NotPlayable`
+3. `MissingContent`
+
+Both `Available` and `Completed` cases may start when playable and complete, which enables replay.
 
 ## Dependencies
 
-- `ClueDefinition`
-- `BossDefinition`
-- `RewardDefinition`
-- `InvestigationProgress`
-- `CombatSandboxCreator`
+- `System`
+- `System.Collections.Generic`
+- Existing investigation content definitions
+
+The production Meta Core assembly has `noEngineReferences: true` and does not reference `UnityEngine`.
 
 ## Events
 
-No direct events. `InvestigationProgress` raises clue and case progress events based on the active case data.
+The pure progression and start rules raise no events. Runtime services and `InvestigationProgress` own state-change notifications.
 
 ## Usage Example
 
-Create a new case by making a `CaseDefinition`, assigning clue assets, assigning a boss definition, assigning a reward pool, and then assigning the case to `InvestigationProgress`.
+```csharp
+CaseProgressionInput chapter = new CaseProgressionInput(
+    new[] { "room_304", "placeholder" },
+    new string[0]);
+
+HashSet<string> completedCases = new HashSet<string> { "room_304" };
+CaseState state = CaseProgressionRules.GetCaseState(
+    "placeholder",
+    chapter,
+    completedCases);
+
+bool canStart = CaseStartRules.CanStart(
+    state,
+    isPlayable: false,
+    hasRequiredContent: false,
+    out CaseStartBlockReason reason);
+```
+
+The placeholder is `Available` after Room 304 completes, but `CanStart` returns `false` with `NotPlayable`.
 
 ## Common Pitfalls
 
-- Do not hardcode case text in UI scripts.
-- Do not generate mystery logic procedurally.
-- A case without clues cannot enter deduction.
-- A case without a boss definition cannot spawn a data-driven boss.
+- Do not persist `CaseState`; derive it from stable IDs and chapter definitions.
+- Do not report a completed ID as completed unless that ID belongs to the evaluated chapter.
+- Do not treat `Available` as sufficient to start; playability and required content are separate gates.
+- Do not block replay solely because a case is `Completed`.
+- Do not hardcode case text or Room 304-specific branches in runtime UI.
+- A case without clues or a boss cannot enter the complete investigation flow.
