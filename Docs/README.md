@@ -4,7 +4,7 @@ This folder is the source of truth for Lost City development. Code is not consid
 
 ## Current Phase
 
-Lost City is in **Phase 5, Framework Freeze**.
+Lost City is entering **Phase 6, Meta Framework**. The approved design is documented in [Phase 6 Meta Framework Design](superpowers/specs/2026-06-12-phase-6-meta-framework-design.md).
 
 The active prototype validates this chain:
 
@@ -12,7 +12,7 @@ The active prototype validates this chain:
 探索 -> 收集线索 -> 推理成功 -> Boss生成 -> Boss战 -> Boss死亡 -> 奖励选择 -> 章节完成
 ```
 
-No final story, final art, VFX polish, localization framework, or Chapter 2 content should be added until the data-driven Room 304 framework is validated end to end.
+Phase 6 adds Hub, registry, progression, persistence, archive, bestiary, chapter, and return-flow architecture without adding final story, art, VFX, Chapter 2, or new playable content.
 
 ## Required Reading Order
 
