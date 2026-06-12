@@ -4,7 +4,10 @@ This folder is the source of truth for Lost City development. Code is not consid
 
 ## Current Phase
 
-Lost City is entering **Phase 6, Meta Framework**. The approved design is documented in [Phase 6 Meta Framework Design](superpowers/specs/2026-06-12-phase-6-meta-framework-design.md).
+Lost City is entering **Phase 6, Meta Framework**.
+
+- [Approved design](superpowers/specs/2026-06-12-phase-6-meta-framework-design.md)
+- [Implementation plan](superpowers/plans/2026-06-12-phase-6-meta-framework.md)
 
 The active prototype validates this chain:
 
