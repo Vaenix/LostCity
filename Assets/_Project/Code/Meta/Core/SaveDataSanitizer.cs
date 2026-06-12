@@ -7,6 +7,12 @@ namespace LostCity.Meta.Core
     {
         public static SaveGameData Sanitize(SaveGameData data)
         {
+            if (data != null && data.Version > SaveGameData.CurrentVersion)
+            {
+                throw new NotSupportedException(
+                    $"Save schema version {data.Version} is newer than supported version {SaveGameData.CurrentVersion}.");
+            }
+
             data ??= SaveGameData.CreateDefault();
             data.Version = SaveGameData.CurrentVersion;
             data.CompletedCaseIds = SanitizeIds(data.CompletedCaseIds);
@@ -17,7 +23,12 @@ namespace LostCity.Meta.Core
             data.PlayerProgress ??= new PlayerProgressData();
             data.PlayerProgress.Level = Math.Max(1, data.PlayerProgress.Level);
             data.PlayerProgress.CurrentExperience = Math.Max(0, data.PlayerProgress.CurrentExperience);
-            data.PlayerProgress.ExperienceToNextLevel = Math.Max(1, data.PlayerProgress.ExperienceToNextLevel);
+            if (data.PlayerProgress.ExperienceToNextLevel <= 0)
+            {
+                data.PlayerProgress.ExperienceToNextLevel =
+                    new PlayerProgressData().ExperienceToNextLevel;
+            }
+
             data.PlayerProgress.AttackMultiplier = PositiveOrOne(data.PlayerProgress.AttackMultiplier);
             data.PlayerProgress.MaxHpMultiplier = PositiveOrOne(data.PlayerProgress.MaxHpMultiplier);
             data.PlayerProgress.FireRateMultiplier = PositiveOrOne(data.PlayerProgress.FireRateMultiplier);

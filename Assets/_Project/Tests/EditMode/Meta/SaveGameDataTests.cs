@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using NUnit.Framework;
 
@@ -88,7 +89,7 @@ namespace LostCity.Meta.Core.Tests
             SaveGameData data = SaveGameData.CreateDefault();
             data.PlayerProgress.Level = 0;
             data.PlayerProgress.CurrentExperience = -1;
-            data.PlayerProgress.ExperienceToNextLevel = 0;
+            data.PlayerProgress.ExperienceToNextLevel = -1;
             data.PlayerProgress.AttackMultiplier = -2f;
             data.PlayerProgress.MaxHpMultiplier = float.NaN;
             data.PlayerProgress.FireRateMultiplier = float.PositiveInfinity;
@@ -100,13 +101,26 @@ namespace LostCity.Meta.Core.Tests
 
             Assert.That(data.PlayerProgress.Level, Is.EqualTo(1));
             Assert.That(data.PlayerProgress.CurrentExperience, Is.Zero);
-            Assert.That(data.PlayerProgress.ExperienceToNextLevel, Is.EqualTo(1));
+            Assert.That(data.PlayerProgress.ExperienceToNextLevel, Is.EqualTo(5));
             Assert.That(data.PlayerProgress.AttackMultiplier, Is.EqualTo(1f));
             Assert.That(data.PlayerProgress.MaxHpMultiplier, Is.EqualTo(1f));
             Assert.That(data.PlayerProgress.FireRateMultiplier, Is.EqualTo(1f));
             Assert.That(data.PlayerProgress.CritChanceBonus, Is.Zero);
             Assert.That(data.PlayerProgress.DodgeChanceBonus, Is.Zero);
             Assert.That(data.PlayerProgress.DroneProjectileBonus, Is.Zero);
+        }
+
+        [Test]
+        public void Sanitize_MissingExperienceThresholdRestoresDtoDefault()
+        {
+            SaveGameData data = SaveGameData.CreateDefault();
+            data.PlayerProgress.ExperienceToNextLevel = 0;
+
+            SaveDataSanitizer.Sanitize(data);
+
+            Assert.That(
+                data.PlayerProgress.ExperienceToNextLevel,
+                Is.EqualTo(new PlayerProgressData().ExperienceToNextLevel));
         }
 
         [Test]
@@ -126,6 +140,28 @@ namespace LostCity.Meta.Core.Tests
             Assert.That(data.PlayerProgress.Level, Is.EqualTo(4));
             Assert.That(data.PlayerProgress.CurrentExperience, Is.EqualTo(3));
             Assert.That(data.PlayerProgress.AttackMultiplier, Is.EqualTo(1.25f));
+        }
+
+        [Test]
+        public void Sanitize_FutureVersionThrowsBeforeMutatingInput()
+        {
+            int futureVersion = SaveGameData.CurrentVersion + 1;
+            SaveGameData data = SaveGameData.CreateDefault();
+            data.Version = futureVersion;
+            data.CompletedCaseIds.Add("room_304");
+            data.PlayerProgress.Level = 4;
+            List<string> originalCompletedCaseIds = data.CompletedCaseIds;
+            PlayerProgressData originalPlayerProgress = data.PlayerProgress;
+
+            NotSupportedException exception = Assert.Throws<NotSupportedException>(
+                () => SaveDataSanitizer.Sanitize(data));
+
+            Assert.That(exception.Message, Does.Contain(futureVersion.ToString()));
+            Assert.That(data.Version, Is.EqualTo(futureVersion));
+            Assert.That(data.CompletedCaseIds, Is.SameAs(originalCompletedCaseIds));
+            Assert.That(data.CompletedCaseIds, Is.EqualTo(new[] { "room_304" }));
+            Assert.That(data.PlayerProgress, Is.SameAs(originalPlayerProgress));
+            Assert.That(data.PlayerProgress.Level, Is.EqualTo(4));
         }
 
         [Test]

@@ -11,9 +11,10 @@ The Phase 6 save contract defines versioned, JSON-compatible meta progression da
 - Provide stable defaults for a new save.
 - Repair null collections, blank IDs, duplicate IDs, and invalid progression values.
 - Upgrade recognized older DTO data to the current schema version while preserving valid fields.
+- Reject newer schema versions before modifying the input DTO.
 - Keep the data assembly independent from `UnityEngine`.
 
-File IO, save paths, backup policy, and automatic saving are not part of Task 1. A later runtime save manager owns those responsibilities and must sanitize data after JSON deserialization.
+File IO, save paths, backup policy, and automatic saving are not part of Task 1. A later runtime save manager owns those responsibilities, must preserve unsupported future-version files before fallback, and must sanitize supported data after JSON deserialization.
 
 ## Public Fields
 
@@ -53,7 +54,7 @@ No public properties. The DTO uses public fields because Unity `JsonUtility` ser
 
 ### `SaveDataSanitizer`
 
-- `Sanitize(SaveGameData data)`: Returns a usable save, initializes missing data, removes invalid IDs, normalizes invalid progression values, and sets recognized data to the current version.
+- `Sanitize(SaveGameData data)`: Returns a usable save, initializes missing data, removes invalid IDs, normalizes invalid progression values, and sets recognized data to the current version. Throws `NotSupportedException` before mutation when `Version` is newer than `CurrentVersion`.
 - `AddUnique(List<string> values, string id)`: Adds a non-blank ID once and reports whether the list changed.
 
 ## Dependencies
@@ -93,12 +94,14 @@ This keeps the JSON stable and inspectable while allowing runtime systems to bui
 - Null save data becomes a new default save.
 - Null collections become empty lists.
 - IDs are trimmed; null, blank, and duplicate entries are removed.
-- Levels and thresholds have a minimum of `1`.
+- Levels have a minimum of `1`.
+- A missing or invalid `ExperienceToNextLevel` value of `0` or less is restored to the DTO default of `5`.
 - Experience and additive bonuses have a minimum of `0`.
 - Multipliers must be finite and greater than `0`; otherwise they reset to `1`.
 - Valid recognized fields are retained when older data is normalized.
+- A version newer than `CurrentVersion` throws `NotSupportedException` before any input field or collection is changed.
 
-Task 1 does not implement raw JSON backup or forward-schema rejection. The later file persistence layer must preserve the original file before replacing corrupt or unsupported future-version data.
+Task 1 does not implement raw JSON backup. The later file persistence layer must catch the future-version rejection, preserve the original file, and then apply its backup or fallback policy.
 
 ## Autosave Behavior
 
@@ -110,6 +113,7 @@ There is no autosave behavior in the data contract. Later runtime code is respon
 - Do not persist current HP. Only the permanent maximum HP multiplier belongs in meta progression.
 - Do not persist derived case availability. Task 2 computes `CaseState` from completed IDs and content definitions.
 - Call `Sanitize` after deserialization before reading or mutating save data.
+- Handle `NotSupportedException` at the file layer; do not overwrite a future-version save with older schema data.
 - Pass normalized stable IDs to `AddUnique`; load-time sanitization trims legacy entries.
 - ID matching is case-sensitive. Changing an ID after release requires an explicit migration.
 - Do not add PlayerPrefs or file IO to the core assembly.
