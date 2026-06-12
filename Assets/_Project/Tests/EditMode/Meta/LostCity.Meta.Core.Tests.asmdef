@@ -1,0 +1,23 @@
+{
+  "name": "LostCity.Meta.Core.Tests",
+  "rootNamespace": "LostCity.Meta.Core.Tests",
+  "references": [
+    "LostCity.Meta.Core"
+  ],
+  "includePlatforms": [
+    "Editor"
+  ],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": false,
+  "defineConstraints": [
+    "UNITY_INCLUDE_TESTS"
+  ],
+  "versionDefines": [],
+  "noEngineReferences": false,
+  "optionalUnityReferences": [
+    "TestAssemblies"
+  ]
+}
