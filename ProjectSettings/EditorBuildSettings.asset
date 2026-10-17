@@ -11,4 +11,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/_Project/Scenes/CombatSandbox.unity
     guid: edbb4334e6e1646baa05b4ae820f78a2
+  - enabled: 1
+    path: Assets/_Project/Scenes/Room304Greybox.unity
+    guid: fc98835f1ef4b4cdaa1018b7c748a4c8
   m_configObjects: {}

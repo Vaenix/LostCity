@@ -31,6 +31,13 @@ reviewable from Hub. Previously discovered clues do not auto-solve a replay.
 
 ## Player Progression
 
+The separate Room304Greybox spatial sample validates only:
+`进入病房/走廊 -> 靠近线索 -> E 收集 -> J 图文档案 -> 返回大厅`.
+It reuses the three existing clues and permanent discovery IDs, but grants no XP,
+stats, case completion or unlocks. It has no combat or deduction. Its minimal player
+has no PlayerProgressPersistence, so it cannot overwrite saved combat modifiers.
+Use Hub/CombatSandbox for the complete loop above.
+
 XP levels offer one upgrade choice per gained level. Attack, maximum health, fire rate,
 crit, dodge, and drone count modifiers persist through the player persistence adapter.
 Level, partial XP, next threshold, and unspent upgrade choices persist. Current HP and spawned pickups are not saves.

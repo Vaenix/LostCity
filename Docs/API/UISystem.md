@@ -75,6 +75,14 @@ Editor 菜单：`Tools > Lost City > Create Hub Scene`。
 
 ## 其他界面
 
+`Room304Greybox` 新增独立图文档案，复用 `EvidenceJournal` 的 J 键、
+`Toggle()`、`Hide()` 和 `ClueCollected` 订阅。可选 `illustratedView` 引用为空时
+保留旧文本路径；不迁移或重写现有 CombatSandbox/Room 的 UI 引用。
+图文列表仅展示已收集线索，缩略图选择驱动图片、名称、分类及正文。
+装饰图不拦截射线，列表 Viewport 和 Button 接收输入；打开档案不暂停时间或移动。
+`Room304SampleController.Awake()` 将现有中文字体回退应用到整个样例 Canvas，
+包含工具栏、提示、隐藏面板和行模板。详见 [EvidencePresentation](EvidencePresentation.md)。
+
 现有 `EvidenceJournal.Hide()`、`DeductionBoard.SetAvailable(bool)`、`DeductionBoard.Hide()`
 和 `UpgradeSelectionController.IsShowing` 保持各自职责。
 奖励与完成界面的泛化及自动返回属于调查流程实现，不由大厅视图接管。

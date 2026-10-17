@@ -81,3 +81,31 @@ rewriting them to satisfy the source whitespace check.
 
 The user owns Play Mode interaction and gameplay feel validation. Do not use
 desktop automation to click upgrades or play the game.
+
+## Independent Room 304 2.5D Sample
+
+Use the same licensed Unity command and original project path, with one of these
+`-executeMethod` values and `-quit` (not concurrently with another Editor):
+
+```text
+LostCity.Room304Sample.EditorTools.Room304SampleCreator.CreateSample
+LostCity.Room304Sample.EditorTools.Room304SampleValidation.ValidateSample
+LostCity.Room304Sample.EditorTools.Room304SampleValidation.RenderSample
+```
+
+Creation writes only the owned Room304Greybox scene, art and input assets, then
+appends Build Settings. It does not run the CombatSandbox generator. It requires
+saved open scenes; protect manual changes to the sample before regenerating it.
+
+Validation reopens the sample and checks references, matching UI actions, minimal
+player, original clue IDs, 2D footprints, static player-width routes to all three
+clues, imported image settings and 4:3/16:9/21:9 framing. It does not drive input.
+RenderSample needs a graphics device: omit `-nographics`, optionally use
+`-force-metal` on macOS. It calls Camera.Render in Edit Mode and writes images to
+the OS temp folder `lost-city-room304-sample`; it checks nonblank pixels and missing
+shader magenta. Overlay UI is not included in those world renders.
+
+The regular EditMode suite includes Room304SampleInteractionTests and
+EvidencePresentationTests. Tests use temporary save data, not the real player save.
+Static clearance and camera renders do not replace user walking, pointer input,
+scrolling, font, save/relaunch or return-to-Hub Play Mode checks.

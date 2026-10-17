@@ -101,3 +101,10 @@ if (investigationProgress.TryCollectClue(clue))
 - Mystery logic must remain handcrafted.
 - Do not generate clue relationships procedurally.
 - Current deduction expects the exact case clue set.
+- Room304Greybox uses three fixed CluePickup objects without CaseClueLayout or
+  GameFlowManager. AllRequiredCluesCollected still fires but does not start combat.
+- Grounded CircleCollider2D triggers stay at Z=0; raised 3D visuals are children,
+  not substitutes for trigger footprints. Keep one player collider and avoid
+  overlapping clue triggers because CluePickup tracks a single in-range flag.
+- The sample journal's illustrated view consumes collected clues only; see
+  [EvidencePresentation](EvidencePresentation.md). Original text journals still work.

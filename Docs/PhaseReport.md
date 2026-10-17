@@ -1,5 +1,37 @@
 # Phase 6 Report: Meta Framework
 
+## Room 304 Spatial Sample Follow-Up
+
+The separately approved 2026-10-17 follow-up builds an independent hospital room
+and short corridor in the original project. It is not Chapter 2 and does not replace
+the Phase 6 gameplay loop. Detailed acceptance and command evidence are maintained
+in [Room30425DSample](Room30425DSample.md).
+
+- Objectives: validate fixed oblique overhead framing, true 3D graybox geometry,
+  solid XY 2D physics, original clue pickup and illustrated collected-evidence UI.
+- New systems: Room304SampleCreator/Geometry/Validation, Room304SampleController,
+  EvidenceIllustrationCatalog, IllustratedEvidenceJournal, EvidenceThumbnailRow,
+  EvidenceArtImporter and EvidencePresentationBuilder.
+- Shared changes: PlayerAim now ray-intersects the gameplay plane; EvidenceJournal
+  has an optional illustrated renderer, preserving its original text fallback.
+- Dependencies: existing Unity UI/Input System/2D physics/built-in renderer only.
+  No new Unity package, save schema, case, story, boss or physics migration.
+- Assets: owned Room304Greybox scene, meshes/materials, input actions and unchanged
+  copies of three evidence illustrations plus necessary UI sprites. Existing
+  authored scenes/prefabs/definitions are outside this generator's ownership.
+- Event changes: collection refreshes the optional illustrated view; sample return
+  flushes dirty discoveries before using the existing Hub scene service. No local
+  deduction/combat/completion state machine is added.
+- Known issues/debt: sample not integrated with combat; installed CJK font fallback;
+  one overlap flag per clue; source alpha residue retained; actual game interaction
+  remains the user's responsibility. No Computer Use or Play Mode automation.
+- Next recommendation: manually validate this spatial sample and the existing
+  Phase 6 full loop before combining their layouts or expanding content.
+- Actual verification: native generation/reopen/reference/static-route checks pass;
+  full EditMode suite **131/131** passes (89 baseline + 42 new); three offline world
+  renders are nonblank and have no missing-shader pixels. All 51 protected original
+  asset hashes remain unchanged. UI interaction and gameplay are not verified.
+
 ## Status And Objectives
 
 Implementation and automated acceptance are complete; manual Play Mode acceptance

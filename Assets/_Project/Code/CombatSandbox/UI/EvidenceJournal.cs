@@ -1,4 +1,5 @@
 using System.Text;
+using LostCity.EvidencePresentation;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
@@ -11,6 +12,7 @@ namespace LostCity.CombatSandbox
         [SerializeField] private GameObject panelRoot;
         [SerializeField] private Text titleText;
         [SerializeField] private Text clueListText;
+        [SerializeField] private IllustratedEvidenceJournal illustratedView;
 
         private readonly StringBuilder textBuilder = new StringBuilder();
 
@@ -28,6 +30,7 @@ namespace LostCity.CombatSandbox
             {
                 investigationProgress.ClueCollected += HandleClueCollected;
             }
+            if (illustratedView != null) Refresh();
         }
 
         private void Update()
@@ -55,7 +58,7 @@ namespace LostCity.CombatSandbox
             }
         }
 
-        private void Toggle()
+        public void Toggle()
         {
             if (panelRoot == null)
             {
@@ -74,6 +77,12 @@ namespace LostCity.CombatSandbox
         private void Refresh()
         {
             ResolveReferences();
+            if (illustratedView != null)
+            {
+                if (titleText != null) titleText.text = investigationProgress != null ? investigationProgress.CaseTitle + "线索" : "线索档案";
+                illustratedView.Refresh(investigationProgress != null ? investigationProgress.CollectedClues : null);
+                return;
+            }
             if (investigationProgress == null)
             {
                 return;

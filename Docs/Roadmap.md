@@ -2,7 +2,10 @@
 
 ## Current Phase
 
-**Phase 6, Meta Framework.** Implementation and automated validation are complete; manual gameplay acceptance is pending. No new bosses, chapters, weapons, story, or art are in scope.
+**Phase 6, Meta Framework + independent Room 304 spatial sample.** Phase 6 automated
+validation is complete; manual gameplay acceptance is pending. The authorized 2.5D
+sample reuses supplied UI art and original clues, not final environment production.
+No new bosses, chapters, weapons or story are in scope.
 
 ## Completed Systems
 
@@ -12,6 +15,10 @@ Phase 6 includes core DTO/rules, catalog discovery, registry, atomic storage, se
 
 ## In Progress
 
+- Independent Room304Greybox manual acceptance: implementation, saved-scene/static
+  validation, three offline renders and latest EditMode suite (131/131) pass.
+  Actual walking, pickup, journal input and Hub return remain unplayed. See
+  Room30425DSample.md for evidence and manual gates.
 - User-owned normal gameplay flow, actual scene transitions, input and visual verification.
 - Reproducing any reported runtime issues after automated acceptance.
 
@@ -28,6 +35,10 @@ Phase 6 includes core DTO/rules, catalog discovery, registry, atomic storage, se
 - Single-writer local JSON; no cloud, profiles, or concurrent writers.
 - Generated resources need refresh after serialized-field changes.
 - Manual gameplay and balance verification remain necessary.
+- Sample pickup range uses a single player overlap flag; keep triggers separate.
+- Sample art retains source pixels, including small nonzero alpha residue.
+- The independent sample is not yet the shared case scene; integrating its spatial
+  layout with combat/deduction requires a separately scoped follow-up.
 
 ## Future Systems
 

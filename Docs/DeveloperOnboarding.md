@@ -15,6 +15,29 @@ For an older local scene retained during a Phase 6 merge, see
 [Phase6Integration](Phase6Integration.md). Back up local changes before migration;
 `Create Combat Sandbox` is a destructive seed rebuild, not a normal startup step.
 
+## Room 304 Spatial Sample
+
+Open `Assets/_Project/Scenes/Room304Greybox.unity` directly, not `Assets/Room.unity`.
+This separate graybox uses true 3D meshes with existing XY 2D physics, a fixed
+oblique camera, three original clues and an illustrated journal. It does not include
+combat, deduction or case completion, and is not selected from the Hub case list.
+Read [Room30425DSample](Room30425DSample.md) for coordinates, ownership and acceptance.
+
+To deliberately rebuild only this sample, save open scenes and choose
+`Tools > Lost City > Create Room 304 2.5D Sample`. It rewrites its owned sample
+scene/meshes/materials and appends the scene to Build Settings, without regenerating
+Hub, CombatSandbox, user Room, player prefabs or case definitions. Custom changes
+to the sample itself should be backed up before regeneration. Imported art copies
+are included; the untracked Design source kit is not required in a fresh clone.
+
+Use WASD/arrows, mouse facing, E pickup, J/toolbar journal, thumbnails for selection,
+and the return button. No firing is intended in this investigation-only sample.
+Discoveries use the existing production save; no sample combat stats are captured.
+Do not load the sample additively into an active case session. Stop Play and open
+it directly for its Room 304 fallback. Glyph fallback still requires an installed
+Chinese font. See [PlayerControl](API/PlayerControl.md) and
+[EvidencePresentation](API/EvidencePresentation.md) before extending these modules.
+
 ## Architecture In One Page
 
 `RuntimeBootstrap` creates one persistent `GameRuntime` before the scene starts.

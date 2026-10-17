@@ -33,6 +33,29 @@ Player presses E near pickup
 Repeated pickup IDs do not create repeated archive entries or save writes.
 Unrelated clues are rejected. Archive history does not auto-collect run clues on replay.
 
+### Room304Greybox Presentation Path
+
+```text
+E while the player overlaps a grounded clue trigger
+  -> Existing CluePickup / InvestigationProgress / discovery recorder
+  -> EvidenceJournal receives ClueCollected
+  -> IllustratedEvidenceJournal.Refresh(collected clues only)
+  -> Stable-ID catalog selects thumbnail and large illustration
+  -> Thumbnail selection updates image/title/category/body, retaining selection on refresh
+
+J or journal toolbar button -> EvidenceJournal.Toggle -> show/hide the panel
+Close button -> EvidenceJournal.Hide -> hide without clearing collected clues
+
+Return to Hub button
+  -> Room304SampleController checks services and saves dirty discovery progress
+  -> Read-only or still-dirty save: stay in scene with Chinese error
+  -> Otherwise SceneFlowManager.LoadHub; load errors remain visible
+```
+
+This sample has no AllRequiredCluesCollected listener that starts deduction/combat.
+Collecting all three clues does not complete the case or change player modifiers.
+The optional presentation hook leaves existing text-only journals unchanged.
+
 ## Deduction And Truth Reconstruction
 
 ```text

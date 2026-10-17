@@ -12,13 +12,23 @@ The current content is **Room 304**, a graybox architecture prototype, not final
 
 ## Current Development Phase
 
-**Phase 6: Meta Framework integrated into the original project; manual acceptance pending.** Phase 6 adds case selection, chapter progression, local saves, archives, bestiary, and return to Hub. Unity EditMode tests pass **89/89**, and migrated scenes pass saved-reference validation. These are not a played end-to-end run: see [PhaseReport](Docs/PhaseReport.md).
+**Phase 6 integrated; Room 304 spatial sample ready for manual acceptance.** Phase 6
+adds case selection, progression, saves, archives, bestiary and return to Hub.
+The latest Unity EditMode suite passes **131/131** (89 existing + 42 sample tests).
+Migrated scenes and the new sample pass saved-reference validation; sample offline
+world renders pass at three aspect ratios. None is a played end-to-end run:
+see [PhaseReport](Docs/PhaseReport.md).
 
 ## Current Playable Features
 
 The established sandbox includes movement, mouse aiming, a manual pistol, an automatic memory orb, four enemy archetypes, The Warden, health bars, HUD/minimap, XP collection, levels, and reward choices. Room 304 supports clue pickups, a journal, deduction, truth reconstruction, and a boss-to-reward flow.
 
 Phase 6 includes automatic content indexing, locked/available/completed case states, Chinese Hub/archive/bestiary views, versioned JSON persistence, and case-driven clue placement. Levels, upgrades and unspent choices persist; a completed case returns to Hub automatically. Manual gameplay acceptance remains pending.
+
+An independent **Room 304 2.5D graybox** adds a hospital room and short corridor,
+fixed oblique camera, solid 2D footprints and a collected-clue illustration journal.
+It reuses the original three clues and supplied UI images. It has no combat,
+deduction or completion flow and does not replace the full sandbox.
 
 ## Core Gameplay Loop
 
@@ -60,7 +70,17 @@ to start testing an existing project: that command resets seeded content. It is 
 for deliberately rebuilding the graybox after backing up authoring work. See the
 [integration report](Docs/Phase6Integration.md) for backup and migration details.
 
-Build order is Hub, then CombatSandbox. The shared scene retains Room 304 as a direct-debug fallback; a Hub-selected session takes precedence. The next-case placeholder is metadata only and cannot be played.
+Build order starts with Hub, then CombatSandbox; Room304Greybox is appended for
+direct spatial testing. The shared scene retains Room 304 as a direct-debug
+fallback; a Hub-selected session takes precedence. The next-case placeholder is
+metadata only and cannot be played.
+
+For the separate spatial sample, open
+`Assets/_Project/Scenes/Room304Greybox.unity` directly. Use WASD/arrows, mouse
+facing, E pickup, J/toolbar journal and 返回大厅. No weapon fire is expected there.
+`Tools > Lost City > Create Room 304 2.5D Sample` rebuilds only its owned assets;
+`Validate Room 304 2.5D Sample` checks saved wiring and static geometry without
+Play Mode. See [sample setup and acceptance](Docs/Room30425DSample.md).
 
 See [Verification](Tools/Verification/README.md) for tests and batch commands. Gameplay, clicking, and balance checks belong to the developer; Computer Use is not part of verification.
 
@@ -78,6 +98,9 @@ flowchart LR
     Player --> Save
     Flow --> Save
     Flow --> Hub
+    Sample["Independent Room304Greybox"] --> Journal["Illustrated collected-clue journal"]
+    Sample --> Save
+    Sample --> Hub
 ```
 
 ## Folder Structure Summary
@@ -86,9 +109,12 @@ flowchart LR
 Assets/_Project/
   Code/CombatSandbox/    Combat, investigation, UI, editor generation
   Code/Meta/             Rules, persistence, catalog, runtime, Hub UI
+  Code/Room304Sample/    Independent 2.5D graybox generator and validation
+  Code/EvidencePresentation/ Optional illustrated evidence journal
   Tests/EditMode/Meta/   Core and Unity-facing tests
   Prefabs/CombatSandbox/ Generated graybox prefabs
-  Scenes/               Hub and shared CombatSandbox
+  Scenes/               Hub, CombatSandbox and Room304Greybox
+  Art/                  Graybox meshes/materials and supplied UI illustrations
   ScriptableObjects/    Seed content and chapter metadata
   Resources/            Generated GameContentCatalog
   Settings/Input/       Input Actions and references
@@ -132,6 +158,8 @@ Richer exploration and emotionally grounded mysteries built on a maintainable da
 - Chinese graybox text uses installed CJK font fallback, not guaranteed shipping font coverage.
 - Saves assume one local writer, not cloud sync or concurrent game instances.
 - Narrative, visuals, deduction mechanics, and balance remain prototype quality.
+- The 2.5D sample is not integrated into the full case/boss loop; its walking,
+  pickup and journal interaction require manual acceptance.
 
 ## Documentation
 

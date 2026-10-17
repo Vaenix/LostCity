@@ -4,7 +4,8 @@
 
 Phase 6 integrates the existing Room 304 prototype into a multi-case framework.
 Source and generated assets must pass the gates in PhaseReport before release.
-No second chapter, new boss, new weapon, final story, or art is added.
+No second chapter, new boss, new weapon, or final story is added. The separately
+authorized Room 304 2.5D sample reuses existing clues and supplied UI illustrations.
 
 ## System Overview
 
@@ -83,7 +84,8 @@ without becoming playable.
 
 ## Scene Flow
 
-Build order: 0 Hub, 1 CombatSandbox. GameRuntime uses DontDestroyOnLoad.
+Build order: 0 Hub, 1 CombatSandbox; the independent Room304Greybox sample is appended.
+GameRuntime uses DontDestroyOnLoad.
 Selecting a case establishes a session before loading the shared scene.
 InvestigationProgress.Awake reads the session; its serialized definition is only a
 direct-scene fallback. CaseClueLayout.Start reuses matching authored pickups and
@@ -96,6 +98,36 @@ The deprecated `Room304GameStateController` is a passive serialization shell wit
 the historical script GUID and five private serialized references. It keeps untouched
 legacy scenes free of Missing Script without restoring a competing state machine.
 It does not make a legacy Room scene a playable Phase 6 entry point; start from Hub.
+
+## Independent 2.5D Sample
+
+Open Room304Greybox directly for spatial investigation acceptance. It has no
+GameFlowManager, CaseClueLayout, combat, deduction or completion controller. It is
+not another playable registry case and does not mark Room 304 complete. The existing
+CaseDefinition is only its direct-entry fallback; do not load it additively into an
+active case session. The return button uses the existing save and scene services.
+
+```mermaid
+flowchart LR
+    Input["Input System / PlayerMotor"] --> XY["Rigidbody2D + solid XY footprints"]
+    Ray["Oblique camera / mouse ray"] --> Aim["PlayerAim: intersect XY plane"]
+    XY --> Pickup["Grounded clue triggers / E"]
+    Pickup --> Progress["Existing InvestigationProgress"]
+    Progress --> Save["Existing discovery recorder / save"]
+    Progress --> Journal["EvidenceJournal optional illustrated view"]
+    Ids["Stable clue ID -> Sprite catalog"] --> Journal
+    Mesh["Real 3D meshes, height along negative Z"] --> Camera["Fixed orthographic camera"]
+    Return["Room304SampleController.ReturnToHub"] --> Save
+    Return --> Hub["SceneFlowManager.LoadHub"]
+```
+
+Geometry and UI images are separate: 3D meshes use built-in materials; UI sprites
+are copied unchanged from the supplied kit. Gameplay stays in world XY at Z=0,
+with no 3D physics package. Visual-only roots rotate conventional Y-up meshes by
+(-90,0,0). The camera stays fixed; PlayerAim now intersects the gameplay plane,
+preserving the existing untilted sandbox behavior. No save schema or global flow
+state changes. See [sample contract](Room30425DSample.md) and
+[EvidencePresentation API](API/EvidencePresentation.md).
 
 ## Data Flow And Lifetime
 

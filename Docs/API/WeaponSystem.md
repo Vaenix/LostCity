@@ -49,6 +49,11 @@ Create and assign weapons through `CombatSandboxCreator`, not manual scene setup
 
 ## Common Pitfalls
 
+- Mouse aim now projects onto the XY plane through PlayerAim, supporting both the
+  original camera and the independent oblique sample. Weapons still fire in 2D;
+  see [PlayerControl](PlayerControl.md). Raising a visual mesh must not raise its
+  physics/weapon root or switch to a 3D collision API.
+
 - Do not leave weapon references null in prefabs.
 - Upgrade rewards should be configured as `RewardDefinition` assets.
 - Projectiles use 2D physics and trigger colliders.

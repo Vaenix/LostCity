@@ -10,6 +10,10 @@ This folder is the source of truth for Lost City development. Code is not consid
 Lost City has implemented **Phase 6, Meta Framework**. Automated acceptance passes;
 manual Play Mode acceptance remains pending. See [PhaseReport](PhaseReport.md).
 
+The separately authorized [Room 304 2.5D sample](Room30425DSample.md) validates
+spatial investigation and supplied evidence illustrations without replacing the
+Phase 6 loop or adding a chapter.
+
 - [Approved design](superpowers/specs/2026-06-12-phase-6-meta-framework-design.md)
 - [Implementation plan](superpowers/plans/2026-06-12-phase-6-meta-framework.md)
 
@@ -34,6 +38,8 @@ Phase 6 adds Hub, registry, progression, persistence, archive, bestiary, chapter
 ## API Documentation
 
 - [PlayerStats](API/PlayerStats.md)
+- [PlayerControl](API/PlayerControl.md)
+- [EvidencePresentation](API/EvidencePresentation.md)
 - [GameFlowManager](API/GameFlowManager.md)
 - [CombatSystem](API/CombatSystem.md)
 - [CaseSystem](API/CaseSystem.md)

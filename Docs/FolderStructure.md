@@ -49,19 +49,32 @@ All paths below are under `Assets/_Project/Code/CombatSandbox`.
 
 ## Content And Generated Assets
 
+Independent sample code:
+
+| Path under Assets/_Project/Code | Purpose / key classes |
+| --- | --- |
+| Room304Sample/Runtime | Room304SampleController: safe return to Hub and Canvas font fallback |
+| Room304Sample/Editor | Room304SampleCreator, Room304SampleGeometry, Room304SampleValidation |
+| EvidencePresentation/Runtime | EvidenceIllustrationCatalog, IllustratedEvidenceJournal, EvidenceThumbnailRow |
+| EvidencePresentation/Editor | EvidenceArtImporter, EvidencePresentationBuilder |
+
 | Path under Assets/_Project | Contents |
 | --- | --- |
 | Art/CombatSandbox/Generated | Existing graybox circle/square sprites |
+| Art/Room304Sample | Owned primitive meshes and built-in-renderer materials |
+| Art/EvidencePresentation | Unmodified copies of three clue illustrations and required UI sprites |
 | Prefabs/CombatSandbox | Player, projectiles, XP orb, four enemies, Warden |
-| Scenes | Hub.unity and shared CombatSandbox.unity |
+| Scenes | Hub.unity, shared CombatSandbox.unity, independent Room304Greybox.unity |
 | ScriptableObjects/CombatSandbox | Existing case/clues, boss/enemies, weapons, projectiles, rewards |
 | ScriptableObjects/Meta | Chapter_01 and metadata-only Case_Placeholder |
-| Resources | Generated GameContentCatalog.asset for runtime loading |
-| Settings/Input | CombatSandbox.inputactions plus persistent action references |
+| Resources | GameContentCatalog.asset and separate EvidenceIllustrationCatalog.asset |
+| Settings/Input | CombatSandbox actions plus independent Room304Sample actions/references |
 | Tests/EditMode/Meta | Pure core tests and Unity-native save/content/UI tests |
 
 Generation and integration status are in PhaseReport and Phase6Integration. Add custom content outside seeded paths because
 Create Combat Sandbox overwrites its seed values.
+The sample generator owns only its named sample/art/input assets. Original user
+Room files and the untracked Design source kit are not generated or rewritten.
 
 ## Documentation
 
