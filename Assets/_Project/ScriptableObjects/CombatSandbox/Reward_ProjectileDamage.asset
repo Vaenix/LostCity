@@ -11,14 +11,14 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 81ce39ae6b3b453ea72a6e22af17a5a9, type: 3}
   m_Name: Reward_ProjectileDamage
-  m_EditorClassIdentifier:
+  m_EditorClassIdentifier: 
   rewardId: projectile_damage_20
-  displayName: +20%攻击力
-  description: 所有玩家投射物造成更高伤害。
+  displayName: "+20%\u653B\u51FB\u529B"
+  description: "\u6240\u6709\u73A9\u5BB6\u6295\u5C04\u7269\u9020\u6210\u66F4\u9AD8\u4F24\u5BB3\u3002"
   rewardType: 0
   statType: 1
   multiplier: 1.2
   additiveValue: 0
   integerValue: 0
   weaponDefinition: {fileID: 0}
-  unlockId:
+  unlockId: 

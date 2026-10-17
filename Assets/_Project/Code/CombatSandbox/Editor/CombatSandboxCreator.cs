@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using LostCity.CombatSandbox;
+using LostCity.Meta;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -18,6 +19,7 @@ namespace LostCity.CombatSandbox.EditorTools
         private const string MenuPath = "Tools/Lost City/Create Combat Sandbox";
 
         private const string ScenePath = "Assets/_Project/Scenes/CombatSandbox.unity";
+        private const string HubScenePath = "Assets/_Project/Scenes/Hub.unity";
         private const string PrefabRoot = "Assets/_Project/Prefabs/CombatSandbox";
         private const string ScriptableObjectRoot = "Assets/_Project/ScriptableObjects/CombatSandbox";
         private const string InputRoot = "Assets/_Project/Settings/Input";
@@ -61,6 +63,9 @@ namespace LostCity.CombatSandbox.EditorTools
         private const string PatientBraceletCluePath = ScriptableObjectRoot + "/Room304_PatientBracelet.asset";
         private const string WardenBossDefinitionPath = ScriptableObjectRoot + "/Boss_WardenDefinition.asset";
         private const string Room304CaseDefinitionPath = ScriptableObjectRoot + "/Room304_CaseDefinition.asset";
+        private const string MetaDataRoot = "Assets/_Project/ScriptableObjects/Meta";
+        private const string PlaceholderCaseDefinitionPath = MetaDataRoot + "/Case_Placeholder.asset";
+        private const string ChapterDefinitionPath = MetaDataRoot + "/Chapter_01.asset";
         private const string RewardFireRatePath = ScriptableObjectRoot + "/Reward_FireRate.asset";
         private const string RewardProjectileDamagePath = ScriptableObjectRoot + "/Reward_ProjectileDamage.asset";
         private const string RewardDroneProjectilePath = ScriptableObjectRoot + "/Reward_DroneProjectile.asset";
@@ -362,6 +367,7 @@ namespace LostCity.CombatSandbox.EditorTools
                 wardenBossDefinition,
                 room304RewardPool,
                 "304号病房已解封");
+            CreateChapterDefinitions(room304CaseDefinition);
             GameObject playerPrefab = CreatePlayerPrefab(PlayerPrefabPath, circleSprite, squareSprite, inputReferences, pistolWeaponDefinition, orbWeaponDefinition);
 
             CreateScene(
@@ -378,13 +384,40 @@ namespace LostCity.CombatSandbox.EditorTools
                     new SpawnPrefabWeight(tankPrefab, 8f)
                 });
 
+            HubSceneBuilder.CreateHubScene();
+            GameContentCatalogBuilder.Rebuild();
+            ConfigureBuildScenes();
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
+            EditorSceneManager.OpenScene(HubScenePath);
 
-            EditorUtility.DisplayDialog(
-                "Combat Sandbox Created",
-                "CombatSandbox scene, prefabs, ScriptableObjects, generated sprites, and Input Actions were created. Press Play in Assets/_Project/Scenes/CombatSandbox.unity.",
-                "OK");
+            if (!Application.isBatchMode)
+                EditorUtility.DisplayDialog("原型已生成", "大厅、共享调查场景及所需资源已生成。请从 Hub 场景进入游戏。", "确定");
+        }
+
+        private static void CreateChapterDefinitions(CaseDefinition firstCase)
+        {
+            CaseDefinition placeholder = CreateScriptableObject<CaseDefinition>(PlaceholderCaseDefinitionPath);
+            SetString(placeholder, "caseId", "placeholder_next_case");
+            SetString(placeholder, "caseName", "下一案件开发中");
+            SetString(placeholder, "description", "用于验证案件解锁流程。");
+            SetString(placeholder, "caseSummary", string.Empty);
+            SetBool(placeholder, "isPlayable", false);
+            SetObjectArray(placeholder, "clues", Array.Empty<UnityEngine.Object>());
+            SetObject(placeholder, "bossDefinition", null);
+            SetObjectArray(placeholder, "rewardPool", Array.Empty<UnityEngine.Object>());
+            SetString(placeholder, "deductionQuestion", string.Empty);
+            SetString(placeholder, "correctAnswer", string.Empty);
+            SetString(placeholder, "completionText", string.Empty);
+            placeholder = SaveAndReloadAsset(placeholder, PlaceholderCaseDefinitionPath);
+
+            ChapterDefinition chapter = CreateScriptableObject<ChapterDefinition>(ChapterDefinitionPath);
+            SetString(chapter, "chapterId", "chapter_01");
+            SetString(chapter, "chapterName", "第一章");
+            SetString(chapter, "description", "当前章节框架验证。");
+            SetObjectArray(chapter, "cases", new UnityEngine.Object[] { firstCase, placeholder });
+            SetSerializedProperty(chapter, "requiredCompletedCaseIds", property => property.arraySize = 0);
+            SaveAndReloadAsset(chapter, ChapterDefinitionPath);
         }
 
         private static void EnsureFolders()
@@ -392,6 +425,7 @@ namespace LostCity.CombatSandbox.EditorTools
             Directory.CreateDirectory("Assets/_Project/Scenes");
             Directory.CreateDirectory(PrefabRoot);
             Directory.CreateDirectory(ScriptableObjectRoot);
+            Directory.CreateDirectory(MetaDataRoot);
             Directory.CreateDirectory(InputRoot);
             Directory.CreateDirectory(GeneratedArtRoot);
             AssetDatabase.Refresh();
@@ -399,17 +433,6 @@ namespace LostCity.CombatSandbox.EditorTools
 
         private static InputReferences CreateInputActions()
         {
-            DeleteAssetIfExists(MoveActionReferencePath);
-            DeleteAssetIfExists(FireActionReferencePath);
-            DeleteAssetIfExists(AimActionReferencePath);
-            DeleteAssetIfExists(UiPointActionReferencePath);
-            DeleteAssetIfExists(UiClickActionReferencePath);
-            DeleteAssetIfExists(UiScrollWheelActionReferencePath);
-            DeleteAssetIfExists(UiNavigateActionReferencePath);
-            DeleteAssetIfExists(UiSubmitActionReferencePath);
-            DeleteAssetIfExists(UiCancelActionReferencePath);
-            DeleteAssetIfExists(InputActionsPath);
-
             InputActionAsset inputActions = ScriptableObject.CreateInstance<InputActionAsset>();
             inputActions.name = "CombatSandbox";
 
@@ -531,9 +554,15 @@ namespace LostCity.CombatSandbox.EditorTools
         private static InputActionReference CreateActionReference(InputActionAsset inputActions, string actionPath, string assetPath)
         {
             InputAction action = inputActions.FindAction(actionPath, throwIfNotFound: true);
-            InputActionReference reference = InputActionReference.Create(action);
-            reference.name = action.name + "Reference";
-            AssetDatabase.CreateAsset(reference, assetPath);
+            InputActionReference reference = AssetDatabase.LoadAssetAtPath<InputActionReference>(assetPath);
+            if (reference == null)
+            {
+                reference = InputActionReference.Create(action);
+                AssetDatabase.CreateAsset(reference, assetPath);
+            }
+            else reference.Set(action);
+            reference.name = Path.GetFileNameWithoutExtension(assetPath);
+            EditorUtility.SetDirty(reference);
             return AssetDatabase.LoadAssetAtPath<InputActionReference>(assetPath);
         }
 
@@ -565,6 +594,8 @@ namespace LostCity.CombatSandbox.EditorTools
             ProjectileDefinition projectileDefinition)
         {
             EnemyDefinition definition = CreateScriptableObject<EnemyDefinition>(path);
+            SetString(definition, "enemyId", "enemy_" + archetype.ToString().ToLowerInvariant());
+            SetString(definition, "bestiaryDescription", displayName + "，战斗原型敌人。");
             SetString(definition, "displayName", displayName);
             SetEnum(definition, "archetype", archetype);
             SetFloat(definition, "maxHealth", maxHealth);
@@ -669,6 +700,8 @@ namespace LostCity.CombatSandbox.EditorTools
             BossSkillDefinition[] skills)
         {
             BossDefinition definition = CreateScriptableObject<BossDefinition>(path);
+            SetString(definition, "bossId", "boss_warden");
+            SetString(definition, "bestiaryDescription", "拥有冲锋、召唤与环形弹幕能力。");
             SetString(definition, "bossName", bossName);
             SetObject(definition, "bossPrefab", bossPrefab);
             SetFloat(definition, "health", health);
@@ -695,6 +728,8 @@ namespace LostCity.CombatSandbox.EditorTools
             SetString(definition, "caseId", caseId);
             SetString(definition, "caseName", caseName);
             SetString(definition, "description", description);
+            SetString(definition, "caseSummary", correctAnswer);
+            SetBool(definition, "isPlayable", true);
             SetObjectArray(definition, "clues", clues);
             SetString(definition, "deductionQuestion", deductionQuestion);
             SetString(definition, "correctAnswer", correctAnswer);
@@ -713,8 +748,6 @@ namespace LostCity.CombatSandbox.EditorTools
             float radius,
             ProjectileDefinition defaultDefinition)
         {
-            DeleteAssetIfExists(path);
-
             GameObject projectileObject = new GameObject(objectName);
             projectileObject.transform.localScale = scale;
 
@@ -743,8 +776,6 @@ namespace LostCity.CombatSandbox.EditorTools
 
         private static XpOrb CreateXpOrbPrefab(string path, Sprite sprite)
         {
-            DeleteAssetIfExists(path);
-
             GameObject xpOrbObject = new GameObject("XpOrb");
             xpOrbObject.transform.localScale = new Vector3(0.28f, 0.28f, 1f);
 
@@ -781,8 +812,6 @@ namespace LostCity.CombatSandbox.EditorTools
             Color color,
             int experienceValue)
         {
-            DeleteAssetIfExists(path);
-
             GameObject enemyObject = new GameObject(objectName);
 
             SpriteRenderer spriteRenderer = enemyObject.AddComponent<SpriteRenderer>();
@@ -837,8 +866,6 @@ namespace LostCity.CombatSandbox.EditorTools
             XpOrb xpOrbPrefab,
             GameObject[] summonPrefabs)
         {
-            DeleteAssetIfExists(path);
-
             GameObject bossObject = new GameObject("Boss_TheWarden");
             bossObject.transform.localScale = new Vector3(1.8f, 1.8f, 1f);
 
@@ -908,8 +935,6 @@ namespace LostCity.CombatSandbox.EditorTools
             WeaponDefinition pistolWeaponDefinition,
             WeaponDefinition orbWeaponDefinition)
         {
-            DeleteAssetIfExists(path);
-
             GameObject playerObject = new GameObject("Player");
 
             SpriteRenderer spriteRenderer = playerObject.AddComponent<SpriteRenderer>();
@@ -1022,6 +1047,11 @@ namespace LostCity.CombatSandbox.EditorTools
             SetInt(playerExperience, "experienceToNextLevel", 5);
             SetFloat(playerExperience, "nextLevelExperienceMultiplier", 1.35f);
 
+            PlayerProgressPersistence persistence = playerObject.AddComponent<PlayerProgressPersistence>();
+            SetObject(persistence, "playerStats", playerStats);
+            SetObject(persistence, "playerExperience", playerExperience);
+            SetObject(persistence, "combatUpgradeStats", upgradeStats);
+
             AddWorldHealthBar(playerObject, squareSprite, new Vector3(0f, 0.78f, 0f), new Color(0.2f, 1f, 0.35f, 1f), hideWhenFull: false);
 
             return SavePrefab(playerObject, path);
@@ -1035,9 +1065,6 @@ namespace LostCity.CombatSandbox.EditorTools
             RewardDefinition[] upgradeRewards,
             SpawnPrefabWeight[] enemySpawnWeights)
         {
-            ClueDefinition[] room304Clues = caseDefinition != null && caseDefinition.Clues != null
-                ? caseDefinition.Clues
-                : Array.Empty<ClueDefinition>();
             BossDefinition bossDefinition = caseDefinition != null ? caseDefinition.BossDefinition : null;
             GameObject bossPrefab = bossDefinition != null ? bossDefinition.BossPrefab : null;
 
@@ -1051,7 +1078,7 @@ namespace LostCity.CombatSandbox.EditorTools
             InvestigationProgress investigationProgress = managerObject.AddComponent<InvestigationProgress>();
             SetObject(investigationProgress, "caseDefinition", caseDefinition);
             GameFlowManager gameFlowManager = managerObject.AddComponent<GameFlowManager>();
-            Room304DebugTools debugTools = managerObject.AddComponent<Room304DebugTools>();
+            PrototypeDebugTools debugTools = managerObject.AddComponent<PrototypeDebugTools>();
 
             CreateEventSystem(root.transform, inputReferences);
             CreateGamePromptUi(root.transform, squareSprite);
@@ -1077,7 +1104,7 @@ namespace LostCity.CombatSandbox.EditorTools
             arenaRenderer.color = new Color(0.18f, 0.18f, 0.2f, 1f);
             arenaRenderer.sortingOrder = -10;
 
-            CreateRoom304Graybox(root.transform, squareSprite);
+            CreateInvestigationGraybox(root.transform, squareSprite);
 
             GameObject playerObject = (GameObject)PrefabUtility.InstantiatePrefab(playerPrefab);
             playerObject.name = "Player";
@@ -1095,32 +1122,25 @@ namespace LostCity.CombatSandbox.EditorTools
             CreateCombatHud(root.transform, squareSprite, playerStats, playerExperience);
             CreateEvidenceJournalUi(root.transform, squareSprite, investigationProgress);
             DeductionBoard deductionBoard = CreateDeductionBoardUi(root.transform, squareSprite, investigationProgress);
-            Room304RewardSelectionUI rewardSelectionUI = CreateRoom304RewardSelectionUi(root.transform, squareSprite);
-            Room304CompletionUI completionUI = CreateRoom304CompletionUi(root.transform, squareSprite);
+            RewardSelectionUI rewardSelectionUI = CreateRewardSelectionUi(root.transform, squareSprite);
+            CaseCompletionUI completionUI = CreateCaseCompletionUi(root.transform, squareSprite);
 
-            CreateCluePickup(
+            CluePickup pickupTemplate = CreateCluePickup(
                 root.transform,
                 squareSprite,
-                room304Clues.Length > 0 ? room304Clues[0] : null,
+                null,
                 investigationProgress,
-                new Vector3(-6f, -2.2f, 0f),
+                Vector3.zero,
                 new Color(0.55f, 0.9f, 1f, 1f));
-
-            CreateCluePickup(
-                root.transform,
-                squareSprite,
-                room304Clues.Length > 1 ? room304Clues[1] : null,
-                investigationProgress,
-                new Vector3(4.8f, -1.2f, 0f),
-                new Color(1f, 0.9f, 0.45f, 1f));
-
-            CreateCluePickup(
-                root.transform,
-                squareSprite,
-                room304Clues.Length > 2 ? room304Clues[2] : null,
-                investigationProgress,
-                new Vector3(0f, 3.3f, 0f),
-                new Color(0.55f, 1f, 0.55f, 1f));
+            pickupTemplate.name = "CluePickupTemplate";
+            pickupTemplate.gameObject.SetActive(false);
+            GameObject layoutObject = new GameObject("CaseClueLayout");
+            layoutObject.transform.SetParent(root.transform);
+            CaseClueLayout clueLayout = layoutObject.AddComponent<CaseClueLayout>();
+            SetObject(clueLayout, "investigationProgress", investigationProgress);
+            SetObject(clueLayout, "pickupTemplate", pickupTemplate);
+            SetVector2(clueLayout, "center", Vector2.zero);
+            SetFloat(clueLayout, "radius", 6f);
 
             SimpleTopDownCameraFollow cameraFollow = cameraObject.AddComponent<SimpleTopDownCameraFollow>();
             SetObject(cameraFollow, "target", playerObject.transform);
@@ -1166,11 +1186,12 @@ namespace LostCity.CombatSandbox.EditorTools
             SetObject(gameFlowManager, "completionUI", completionUI);
             SetObject(gameFlowManager, "playerStats", playerStats);
             SetObject(gameFlowManager, "combatUpgradeStats", playerObject.GetComponent<CombatUpgradeStats>());
+            SetObject(gameFlowManager, "playerExperience", playerExperience);
+            SetObject(gameFlowManager, "playerProgressPersistence", playerObject.GetComponent<PlayerProgressPersistence>());
+            SetObject(gameFlowManager, "upgradeSelectionController", upgradeSelectionController);
             SetObject(debugTools, "gameFlowManager", gameFlowManager);
 
             EditorSceneManager.SaveScene(scene, ScenePath);
-            AddSceneToBuildSettings(ScenePath);
-            EditorSceneManager.OpenScene(ScenePath);
         }
 
         private static void CreateEventSystem(Transform root, InputReferences inputReferences)
@@ -1181,13 +1202,16 @@ namespace LostCity.CombatSandbox.EditorTools
 
             InputSystemUIInputModule inputModule = eventSystemObject.AddComponent<InputSystemUIInputModule>();
             inputModule.UnassignActions();
-            inputModule.actionsAsset = inputReferences.Asset;
-            inputModule.point = inputReferences.UiPoint;
-            inputModule.leftClick = inputReferences.UiClick;
-            inputModule.scrollWheel = inputReferences.UiScrollWheel;
-            inputModule.move = inputReferences.UiNavigate;
-            inputModule.submit = inputReferences.UiSubmit;
-            inputModule.cancel = inputReferences.UiCancel;
+            var serializedInput = new SerializedObject(inputModule);
+            serializedInput.FindProperty("m_ActionsAsset").objectReferenceValue = inputReferences.Asset;
+            serializedInput.FindProperty("m_PointAction").objectReferenceValue = inputReferences.UiPoint;
+            serializedInput.FindProperty("m_LeftClickAction").objectReferenceValue = inputReferences.UiClick;
+            serializedInput.FindProperty("m_ScrollWheelAction").objectReferenceValue = inputReferences.UiScrollWheel;
+            serializedInput.FindProperty("m_MoveAction").objectReferenceValue = inputReferences.UiNavigate;
+            serializedInput.FindProperty("m_SubmitAction").objectReferenceValue = inputReferences.UiSubmit;
+            serializedInput.FindProperty("m_CancelAction").objectReferenceValue = inputReferences.UiCancel;
+            serializedInput.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(inputModule);
         }
 
         private static void CreateCombatHud(Transform root, Sprite squareSprite, PlayerStats playerStats, PlayerExperience playerExperience)
@@ -1278,7 +1302,7 @@ namespace LostCity.CombatSandbox.EditorTools
             SetFloat(minimapController, "refreshIntervalSeconds", 0.25f);
         }
 
-        private static void CreateRoom304Graybox(Transform root, Sprite squareSprite)
+        private static void CreateInvestigationGraybox(Transform root, Sprite squareSprite)
         {
             CreateSpriteBlock(
                 "InvestigationWing",
@@ -1290,7 +1314,7 @@ namespace LostCity.CombatSandbox.EditorTools
                 -9);
 
             GameObject sealedRoom = CreateSpriteBlock(
-                "SealedRoom_304",
+                "SealedRoom",
                 root,
                 squareSprite,
                 new Vector3(0f, 5.4f, 0f),
@@ -1299,7 +1323,7 @@ namespace LostCity.CombatSandbox.EditorTools
                 -8);
 
             GameObject sealedDoor = CreateSpriteBlock(
-                "Room304_SealedDoor",
+                "SealedDoor",
                 root,
                 squareSprite,
                 new Vector3(0f, 3.75f, 0f),
@@ -1318,7 +1342,7 @@ namespace LostCity.CombatSandbox.EditorTools
                 new Color(0.12f, 0.09f, 0.12f, 1f),
                 -8);
 
-            CreateWorldLabel(sealedRoom.transform, "304号病房\n已封锁", new Vector3(0f, 0f, 0f), new Vector2(420f, 80f), 22, Color.white);
+            CreateWorldLabel(sealedRoom.transform, "已封锁", new Vector3(0f, 0f, 0f), new Vector2(420f, 80f), 22, Color.white);
         }
 
         private static GameObject CreateSpriteBlock(
@@ -1560,7 +1584,7 @@ namespace LostCity.CombatSandbox.EditorTools
             return panel;
         }
 
-        private static Room304RewardSelectionUI CreateRoom304RewardSelectionUi(Transform root, Sprite squareSprite)
+        private static RewardSelectionUI CreateRewardSelectionUi(Transform root, Sprite squareSprite)
         {
             Font font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
             if (font == null)
@@ -1568,7 +1592,7 @@ namespace LostCity.CombatSandbox.EditorTools
                 font = Resources.GetBuiltinResource<Font>("Arial.ttf");
             }
 
-            GameObject canvasObject = new GameObject("Room304RewardSelectionUI");
+            GameObject canvasObject = new GameObject("RewardSelectionUI");
             canvasObject.transform.SetParent(root);
 
             Canvas canvas = canvasObject.AddComponent<Canvas>();
@@ -1577,7 +1601,7 @@ namespace LostCity.CombatSandbox.EditorTools
             canvasObject.AddComponent<CanvasScaler>();
             canvasObject.AddComponent<GraphicRaycaster>();
 
-            Room304RewardSelectionUI rewardSelectionUI = canvasObject.AddComponent<Room304RewardSelectionUI>();
+            RewardSelectionUI rewardSelectionUI = canvasObject.AddComponent<RewardSelectionUI>();
 
             GameObject panelObject = CreateUiRect("Panel", canvasObject.transform, new Vector2(560f, 330f), Vector2.zero);
             Image panelImage = panelObject.AddComponent<Image>();
@@ -1585,7 +1609,7 @@ namespace LostCity.CombatSandbox.EditorTools
             panelImage.color = new Color(0.04f, 0.05f, 0.06f, 0.96f);
 
             Text titleText = CreateText("Title", panelObject.transform, font, "真相已揭开", 30, TextAnchor.MiddleCenter, new Vector2(500f, 46f), new Vector2(0f, 120f));
-            Text bodyText = CreateText("Body", panelObject.transform, font, "304号病房已解封\n选择一项奖励", 20, TextAnchor.MiddleCenter, new Vector2(500f, 72f), new Vector2(0f, 62f));
+            Text bodyText = CreateText("Body", panelObject.transform, font, "选择一项奖励", 20, TextAnchor.MiddleCenter, new Vector2(500f, 72f), new Vector2(0f, 62f));
 
             Button attackButton = CreateUpgradeButton(panelObject.transform, font, "+10%攻击力", new Vector2(0f, -12f), out Text attackText);
             Button maxHpButton = CreateUpgradeButton(panelObject.transform, font, "+10%生命值", new Vector2(0f, -72f), out Text maxHpText);
@@ -1605,7 +1629,7 @@ namespace LostCity.CombatSandbox.EditorTools
             return rewardSelectionUI;
         }
 
-        private static Room304CompletionUI CreateRoom304CompletionUi(Transform root, Sprite squareSprite)
+        private static CaseCompletionUI CreateCaseCompletionUi(Transform root, Sprite squareSprite)
         {
             Font font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
             if (font == null)
@@ -1613,28 +1637,31 @@ namespace LostCity.CombatSandbox.EditorTools
                 font = Resources.GetBuiltinResource<Font>("Arial.ttf");
             }
 
-            GameObject canvasObject = new GameObject("Room304CompletionUI");
+            GameObject canvasObject = new GameObject("CaseCompletionUI");
             canvasObject.transform.SetParent(root);
 
             Canvas canvas = canvasObject.AddComponent<Canvas>();
             canvas.renderMode = RenderMode.ScreenSpaceOverlay;
             canvas.sortingOrder = 120;
             canvasObject.AddComponent<CanvasScaler>();
+            canvasObject.AddComponent<GraphicRaycaster>();
 
-            Room304CompletionUI completionUI = canvasObject.AddComponent<Room304CompletionUI>();
+            CaseCompletionUI completionUI = canvasObject.AddComponent<CaseCompletionUI>();
 
-            GameObject panelObject = CreateUiRect("Panel", canvasObject.transform, new Vector2(560f, 260f), Vector2.zero);
+            GameObject panelObject = CreateUiRect("Panel", canvasObject.transform, new Vector2(560f, 320f), Vector2.zero);
             Image panelImage = panelObject.AddComponent<Image>();
             panelImage.sprite = squareSprite;
             panelImage.color = new Color(0.04f, 0.05f, 0.06f, 0.96f);
             panelImage.raycastTarget = false;
 
-            Text titleText = CreateText("Title", panelObject.transform, font, "章节完成", 32, TextAnchor.MiddleCenter, new Vector2(500f, 54f), new Vector2(0f, 66f));
-            Text bodyText = CreateText("Body", panelObject.transform, font, "304号病房\n按空格继续", 22, TextAnchor.MiddleCenter, new Vector2(500f, 96f), new Vector2(0f, -24f));
+            Text titleText = CreateText("Title", panelObject.transform, font, "案件完成", 32, TextAnchor.MiddleCenter, new Vector2(500f, 54f), new Vector2(0f, 100f));
+            Text bodyText = CreateText("Body", panelObject.transform, font, "正在返回大厅", 22, TextAnchor.MiddleCenter, new Vector2(500f, 112f), new Vector2(0f, 10f));
+            Button retryButton = CreateUpgradeButton(panelObject.transform, font, "重试", new Vector2(0f, -110f), out _);
 
             SetObject(completionUI, "panelRoot", panelObject);
             SetObject(completionUI, "titleText", titleText);
             SetObject(completionUI, "bodyText", bodyText);
+            SetObject(completionUI, "retryButton", retryButton);
 
             panelObject.SetActive(false);
             return completionUI;
@@ -1890,7 +1917,8 @@ namespace LostCity.CombatSandbox.EditorTools
 
         private static T CreateScriptableObject<T>(string path) where T : ScriptableObject
         {
-            DeleteAssetIfExists(path);
+            T existing = AssetDatabase.LoadAssetAtPath<T>(path);
+            if (existing != null) return existing;
             T asset = ScriptableObject.CreateInstance<T>();
             AssetDatabase.CreateAsset(asset, path);
             AssetDatabase.ImportAsset(path, ImportAssetOptions.ForceSynchronousImport);
@@ -1934,20 +1962,15 @@ namespace LostCity.CombatSandbox.EditorTools
             return loadedAsset;
         }
 
-        private static void AddSceneToBuildSettings(string scenePath)
+        private static void ConfigureBuildScenes()
         {
-            List<EditorBuildSettingsScene> scenes = new List<EditorBuildSettingsScene>(EditorBuildSettings.scenes);
-            for (int i = 0; i < scenes.Count; i++)
+            List<EditorBuildSettingsScene> scenes = new List<EditorBuildSettingsScene>
             {
-                if (scenes[i].path == scenePath)
-                {
-                    scenes[i] = new EditorBuildSettingsScene(scenePath, enabled: true);
-                    EditorBuildSettings.scenes = scenes.ToArray();
-                    return;
-                }
-            }
-
-            scenes.Add(new EditorBuildSettingsScene(scenePath, enabled: true));
+                new EditorBuildSettingsScene(HubScenePath, true),
+                new EditorBuildSettingsScene(ScenePath, true)
+            };
+            foreach (EditorBuildSettingsScene scene in EditorBuildSettings.scenes)
+                if (scene.path != HubScenePath && scene.path != ScenePath) scenes.Add(scene);
             EditorBuildSettings.scenes = scenes.ToArray();
         }
 

@@ -12,7 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b540fb516239e42f4a78f3b202ae410e, type: 3}
   m_Name: ChargerEnemyDefinition
   m_EditorClassIdentifier: 
-  displayName: Charger
+  enemyId: enemy_charger
+  bestiaryDescription: "\u51B2\u950B\u8005\uFF0C\u6218\u6597\u539F\u578B\u654C\u4EBA\u3002"
+  displayName: "\u51B2\u950B\u8005"
   archetype: 1
   maxHealth: 55
   moveSpeed: 2.7

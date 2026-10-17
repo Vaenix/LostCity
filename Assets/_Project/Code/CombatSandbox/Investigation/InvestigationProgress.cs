@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using LostCity.Meta;
 using UnityEngine;
 
 namespace LostCity.CombatSandbox
@@ -7,8 +8,8 @@ namespace LostCity.CombatSandbox
     public sealed class InvestigationProgress : MonoBehaviour
     {
         [SerializeField] private CaseDefinition caseDefinition;
-        [SerializeField] private string caseTitle = "304号病房";
-        [SerializeField] private string mysteryQuestion = "304号病房为什么被封锁？";
+        [SerializeField] private string caseTitle = "当前案件";
+        [SerializeField] private string mysteryQuestion = "案件真相是什么？";
         [SerializeField] private ClueDefinition[] requiredClues;
 
         private readonly List<ClueDefinition> collectedClues = new List<ClueDefinition>();
@@ -26,20 +27,33 @@ namespace LostCity.CombatSandbox
         public string CorrectAnswer => caseDefinition != null ? caseDefinition.CorrectAnswer : string.Empty;
         public string CompletionText => caseDefinition != null ? caseDefinition.CompletionText : string.Empty;
         public BossDefinition BossDefinition => caseDefinition != null ? caseDefinition.BossDefinition : null;
-        public RewardDefinition[] RewardPool => caseDefinition != null ? caseDefinition.RewardPool : null;
+        public RewardDefinition[] RewardPool => caseDefinition != null ? caseDefinition.GetCompletionRewards() : Array.Empty<RewardDefinition>();
         public IReadOnlyList<ClueDefinition> RequiredClues => GetRequiredClues();
-        public IReadOnlyList<ClueDefinition> CollectedClues => collectedClues;
+        public IReadOnlyList<ClueDefinition> CollectedClues => collectedClues.ToArray();
         public bool IsCaseSolved => caseSolved;
         public bool HasCollectedAllRequiredClues => AreAllRequiredCluesCollected();
 
+        private void Awake()
+        {
+            var runtime = GameRuntime.Instance;
+            if (runtime != null && runtime.CaseSession.HasActiveCase) caseDefinition = runtime.CaseSession.ActiveCase;
+            if (caseDefinition == null)
+            {
+                Debug.LogError("未找到当前案件配置。", this);
+                runtime?.SceneFlow.LoadHub();
+            }
+        }
+
         public bool TryCollectClue(ClueDefinition clue)
         {
-            if (clue == null || caseSolved || HasClue(clue))
+            if (clue == null || string.IsNullOrWhiteSpace(clue.Id) || caseSolved || HasClue(clue)
+                || !ContainsClue(GetRequiredClues(), clue))
             {
                 return false;
             }
 
             collectedClues.Add(clue);
+            MetaProgressionRecorder.RecordClue(clue);
             ClueCollected?.Invoke(clue);
             NotifyAllRequiredCluesCollectedIfReady();
             return true;
@@ -94,6 +108,7 @@ namespace LostCity.CombatSandbox
                 return;
             }
 
+            if (!HasCollectedAllRequiredClues) return;
             caseSolved = true;
             CaseSolved?.Invoke();
         }
@@ -144,7 +159,7 @@ namespace LostCity.CombatSandbox
                 return caseDefinition.Clues;
             }
 
-            return requiredClues ?? Array.Empty<ClueDefinition>();
+            return requiredClues == null ? Array.Empty<ClueDefinition>() : (ClueDefinition[])requiredClues.Clone();
         }
 
         private static bool ContainsClue(IReadOnlyList<ClueDefinition> clues, ClueDefinition target)
@@ -156,7 +171,7 @@ namespace LostCity.CombatSandbox
 
             for (int i = 0; i < clues.Count; i++)
             {
-                if (clues[i] == target || clues[i].Id == target.Id)
+                if (clues[i] != null && (clues[i] == target || clues[i].Id == target.Id))
                 {
                     return true;
                 }

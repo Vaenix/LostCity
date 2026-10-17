@@ -1,3 +1,6 @@
+using System;
+using LostCity.Meta;
+using LostCity.Meta.Core;
 using UnityEngine;
 
 namespace LostCity.CombatSandbox
@@ -13,6 +16,7 @@ namespace LostCity.CombatSandbox
         public float FireRateMultiplier => playerStats != null ? playerStats.FireRate : Mathf.Max(0.01f, fireRateMultiplier);
         public float ProjectileDamageMultiplier => playerStats != null ? playerStats.Attack : Mathf.Max(0.01f, projectileDamageMultiplier);
         public int ExtraDroneProjectiles => Mathf.Max(0, extraDroneProjectiles);
+        public event Action PermanentProgressChanged;
 
         private void Awake()
         {
@@ -32,7 +36,7 @@ namespace LostCity.CombatSandbox
                     playerStats?.MultiplyAttack(1.2f);
                     break;
                 case CombatUpgradeType.DroneProjectile:
-                    extraDroneProjectiles += 1;
+                    AddDroneProjectiles(1);
                     break;
             }
         }
@@ -45,12 +49,23 @@ namespace LostCity.CombatSandbox
             }
 
             rewardDefinition.Apply(playerStats, this);
+            GetComponent<PlayerProgressPersistence>()?.RecordReward(rewardDefinition);
         }
 
         public void AddDroneProjectiles(int amount)
         {
-            extraDroneProjectiles += Mathf.Max(0, amount);
+            SetExtraDroneProjectiles((int)Math.Min(int.MaxValue, (long)ExtraDroneProjectiles + Mathf.Max(0, amount)));
         }
+
+        public void SetExtraDroneProjectiles(int amount)
+        {
+            amount = Mathf.Max(0, amount);
+            if (amount == extraDroneProjectiles) return;
+            extraDroneProjectiles = amount;
+            PermanentProgressChanged?.Invoke();
+        }
+
+        public void WriteProgressTo(PlayerProgressData progress) => progress.DroneProjectileBonus = ExtraDroneProjectiles;
 
         public float RollProjectileDamageMultiplier()
         {

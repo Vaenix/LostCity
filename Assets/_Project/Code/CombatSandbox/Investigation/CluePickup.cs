@@ -13,6 +13,19 @@ namespace LostCity.CombatSandbox
         private bool playerInRange;
         private GamePromptManager promptManager;
 
+        public ClueDefinition Definition => clue;
+
+        public void Initialize(ClueDefinition definition, InvestigationProgress progress)
+        {
+            clue = definition;
+            investigationProgress = progress;
+            playerInRange = false;
+            if (interactionPrompt != null)
+            {
+                interactionPrompt.SetActive(false);
+            }
+        }
+
         private void Awake()
         {
             Collider2D trigger = GetComponent<Collider2D>();

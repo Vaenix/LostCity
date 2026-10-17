@@ -5,6 +5,8 @@ namespace LostCity.CombatSandbox
     [CreateAssetMenu(menuName = "Lost City/Combat Sandbox/Enemy Definition")]
     public sealed class EnemyDefinition : ScriptableObject
     {
+        [SerializeField] private string enemyId;
+        [SerializeField, TextArea] private string bestiaryDescription;
         [SerializeField] private string displayName = "Memory Fragment";
         [SerializeField] private EnemyArchetype archetype = EnemyArchetype.Chaser;
         [SerializeField] private float maxHealth = 45f;
@@ -22,6 +24,8 @@ namespace LostCity.CombatSandbox
         [SerializeField] private ProjectileDefinition projectileDefinition;
 
         public string DisplayName => displayName;
+        public string EnemyId => enemyId;
+        public string BestiaryDescription => bestiaryDescription;
         public EnemyArchetype Archetype => archetype;
         public float MaxHealth => maxHealth;
         public float MoveSpeed => moveSpeed;

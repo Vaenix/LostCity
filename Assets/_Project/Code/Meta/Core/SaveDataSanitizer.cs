@@ -23,6 +23,7 @@ namespace LostCity.Meta.Core
             data.PlayerProgress ??= new PlayerProgressData();
             data.PlayerProgress.Level = Math.Max(1, data.PlayerProgress.Level);
             data.PlayerProgress.CurrentExperience = Math.Max(0, data.PlayerProgress.CurrentExperience);
+            data.PlayerProgress.PendingUpgradeChoices = Math.Max(0, data.PlayerProgress.PendingUpgradeChoices);
             if (data.PlayerProgress.ExperienceToNextLevel <= 0)
             {
                 data.PlayerProgress.ExperienceToNextLevel =

@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 41299631eda7408b87f122326264a68c, type: 3}
+  m_Name: Case_Placeholder
+  m_EditorClassIdentifier: 
+  caseId: placeholder_next_case
+  caseName: "\u4E0B\u4E00\u6848\u4EF6\u5F00\u53D1\u4E2D"
+  description: "\u7528\u4E8E\u9A8C\u8BC1\u6848\u4EF6\u89E3\u9501\u6D41\u7A0B\u3002"
+  clues: []
+  deductionQuestion: 
+  correctAnswer: 
+  bossDefinition: {fileID: 0}
+  rewardPool: []
+  completionText: 
+  caseSummary: 
+  isPlayable: 0

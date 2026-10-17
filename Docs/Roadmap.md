@@ -2,84 +2,37 @@
 
 ## Current Phase
 
-**Phase 5, Framework Freeze**
-
-The current objective is to keep the Room 304 loop playable while migrating extension points to data:
-
-```text
-探索 -> 收集线索 -> 推理成功 -> Boss生成 -> Boss战 -> Boss死亡 -> 奖励选择 -> 章节完成
-```
+**Phase 6, Meta Framework.** Implementation and automated validation are complete; manual gameplay acceptance is pending. No new bosses, chapters, weapons, story, or art are in scope.
 
 ## Completed Systems
 
-- Unity project setup.
-- Combat sandbox generation tool.
-- Top-down player movement.
-- Mouse aiming.
-- Manual pistol weapon.
-- Automatic memory orb weapon.
-- Player health and death.
-- Player stats.
-- Enemy spawning.
-- Enemy archetypes.
-- The Warden boss prototype.
-- Combat HUD.
-- Minimap.
-- World-space health bars.
-- XP drops and collection.
-- Level-up upgrade choices.
-- Room 304 clue pickups.
-- Evidence journal.
-- Deduction board.
-- Game flow state machine.
-- Boss death to reward transition.
-- Chapter complete screen.
-- Placeholder next chapter state.
-- Data-driven case definitions.
-- Data-driven clue definitions.
-- Data-driven boss definitions.
-- Data-driven reward definitions.
-- Room 304 case, boss, clue, and reward ScriptableObject assets.
-- Unified prompt manager.
+Phase 5 established movement, manual/automatic weapons, four enemy archetypes, The Warden, XP/upgrades, HUD/minimap, Room 304 investigation/deduction, data-driven rewards, and editor generation. These form the existing baseline, not evidence that new Phase 6 assets were generated.
 
-## In Progress Systems
+Phase 6 includes core DTO/rules, catalog discovery, registry, atomic storage, session/scene services, Hub/archive/bestiary, player progression persistence, discovery recording, and automatic completion flow. Native EditMode tests pass 83/83; generated scenes and data contracts pass.
 
-- Room 304 end-to-end Play Mode validation after Phase 5 generation.
-- Manual Play Mode validation of generated `CaseDefinition`, `BossDefinition`, and `RewardDefinition` references.
-- Documentation baseline.
+## In Progress
 
-## Future Systems
-
-- Stronger generated-scene validation.
-- Save and persistent progression.
-- Multi-room exploration.
-- More clue interaction types.
-- More enemy tuning.
-- Elite enemy encounters.
-- Real chapter data model.
-- Chapter 2 content after Room 304 validation.
+- User-owned normal gameplay flow, actual scene transitions, input and visual verification.
+- Reproducing any reported runtime issues after automated acceptance.
 
 ## Blocked Systems
 
-- Chapter 2 content is blocked until data-driven Room 304 is manually validated.
-- Persistent progression is blocked until in-session progression is stable.
-- Final story content is blocked until the investigation and deduction systems prove usable.
-- Art polish is blocked until gameplay architecture is stable.
+- New playable content: wait for the full Hub-to-case-to-Hub acceptance chain.
+- Final narrative/art: wait for validated gameplay architecture.
 
 ## Technical Debt
 
-- `Room304GameStateController` is legacy.
-- Some generated scene, prefab, and input assets in the working tree may be stale until the generator is rerun.
-- Unity batchmode generation may fail on local licensing IPC, requiring editor menu generation.
-- There are no automated Play Mode tests for the generated Room 304 chain.
-- `Room304RewardSelectionUI` is data-driven but still has a Room304-specific name.
-- `CombatSandboxCreator` still seeds the default Room 304 data so the sandbox can be recreated from an empty project; future content should be authored as ScriptableObject assets first.
+- Large legacy sandbox generator; only the new Hub builder is separated.
+- Prototype CJK font fallback, not a packaged localization/font pipeline.
+- Simple deduction accepts configured clue sets, not natural-language reasoning.
+- Single-writer local JSON; no cloud, profiles, or concurrent writers.
+- Generated resources need refresh after serialized-field changes.
+- Manual gameplay and balance verification remain necessary.
+
+## Future Systems
+
+After Phase 6 acceptance: stronger authoring validation, more investigation interactions, migration tests for actual save schema additions, then carefully scoped content. No Chapter 2 is authorized now.
 
 ## Recommended Next Phase
 
-1. Regenerate the sandbox from the Unity Editor menu.
-2. Verify generated `CaseDefinition`, `BossDefinition`, `RewardDefinition`, and `GamePromptManager` references.
-3. Manually test the full Room 304 chain.
-4. Commit regenerated scene, prefab, and input assets after validation.
-5. Remove or archive stale `Assets/Room.unity` if confirmed unused.
-6. Add reference validation to `CombatSandboxCreator`.
+Stability, not content: test Room 304 normally and with shortcuts, confirm real quit/relaunch persistence and replay, and report input/lifecycle regressions. The license issue is resolved and native automation has run. Do not delete unrelated local assets such as `Assets/Room.unity`.

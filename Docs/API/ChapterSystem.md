@@ -1,110 +1,69 @@
 # ChapterSystem
 
-## Purpose
+## Definition
 
-The Phase 6 chapter system derives chapter and case progression from ordered case IDs, chapter prerequisites, and completed case IDs.
+`LostCity.Meta.ChapterDefinition` is a ScriptableObject with `ChapterId`,
+`ChapterName`, `Description`, ordered `CaseDefinition[] Cases`, and
+`string[] RequiredCompletedCaseIds`. Empty display names fall back to the asset
+name. Array getters return copies and tolerate null serialized fields.
 
-The existing Room 304 completion UI remains in place. Task 2 adds the pure selection rules that later Hub and catalog tasks will consume.
+The generated catalog discovers chapters automatically. Chapter order follows
+ordinal asset path, then stable sub-asset local ID. Case order follows the
+chapter array, independent of case filenames and IDs.
 
-## Responsibilities
+## Progression
 
-- Define ordered cases for each chapter.
-- Require all chapter prerequisite case IDs before unlocking that chapter.
-- Select the first unlocked chapter that still has incomplete cases.
-- Fall back to the latest unlocked non-empty chapter when all unlocked chapters are complete.
-- Ignore null and empty chapter definitions.
-- Preserve the existing chapter-complete UI flow until later runtime integration.
+`LostCity.Meta.Core.CaseProgressionInput` holds copied ordered IDs and
+prerequisites. Core rules derive case state:
 
-## Public Types
+1. Completed cases stay completed and may replay when content is valid.
+2. Incomplete chapter prerequisites lock incomplete cases.
+3. The first case in an unlocked chapter is available.
+4. Later cases require their immediately preceding case to be completed.
 
-`CaseProgressionInput` is the chapter-level input:
+Metadata-only cases participate in progression and can become available, but
+`CaseRegistry.CanStart` always rejects them. Truly unassigned catalog cases
+remain visible outside chapters, with playability validated separately.
 
-- `OrderedCaseIds`: Sequential case order within the chapter.
-- `RequiredCompletedCaseIds`: Completion prerequisites for the entire chapter.
-
-It is a pure C# type in `LostCity.Meta.Core`.
-
-## Public Properties
-
-`GameFlowManager.CurrentState` continues to report `ChapterComplete` after reward selection.
-
-## Public Methods
-
-### `CaseProgressionRules.GetCurrentChapterIndex`
+## Current Chapter
 
 ```csharp
-int GetCurrentChapterIndex(
+int CaseProgressionRules.GetCurrentChapterIndex(
     IReadOnlyList<CaseProgressionInput> chapters,
-    ISet<string> completedCaseIds)
+    ISet<string> completedCaseIds);
+
+ChapterDefinition CaseRegistry.GetCurrentChapter();
+ChapterDefinition CaseRegistry.GetChapterForCase(CaseDefinition definition);
 ```
 
-The method:
+Selection returns the first unlocked nonempty chapter with incomplete cases.
+When all unlocked chapters are complete, it returns the latest unlocked
+nonempty chapter. Null/empty chapters are skipped; no match returns -1/null.
+Availability and current chapter are computed, not persisted.
 
-1. Returns `-1` for a null list, an empty list, or no unlocked non-empty chapter.
-2. Skips null chapters and chapters with no case IDs.
-3. Skips chapters whose prerequisite IDs are not all completed.
-4. Returns the first unlocked chapter containing any incomplete case.
-5. Returns the latest unlocked non-empty chapter when every unlocked case is complete.
+## Validation And Ownership
 
-A null completion set is treated as empty.
+IDs must be stable, nonblank, and trimmed. Duplicate chapter IDs exclude every
+ambiguous chapter. Null/missing/ambiguous cases, duplicate references, and
+cross-chapter membership block affected cases instead of treating them as
+unlocked unassigned content. Invalid progression chapters are not current.
 
-### Existing Completion UI
+`GameRuntime` owns the registry. Definitions do not own mutable player state.
+Save completion and `DataChanged` drive fresh views. Shared scene names belong to
+SceneFlowManager, not chapter definitions or individual case branches.
 
-- `Room304CompletionUI.ShowChapterComplete()`
-- `Room304CompletionUI.ShowChapterComplete(string caseName, string completionText)`
-- `Room304CompletionUI.ShowNextChapterPlaceholder()`
-- `Room304CompletionUI.Hide()`
+## Extending Content
 
-## Sequential Unlocking
+Create a valid CaseDefinition with a new stable ID. Add it at the intended
+position in one chapter's Cases array, or leave it unassigned. Use prerequisite
+case IDs for chapter gates. The postprocessor rebuilds the catalog; the explicit
+menu is `Tools/Lost City/Rebuild Content Catalog`. No case-specific registry or
+Hub code is needed. Seeding belongs to the Editor generator; this phase does not
+add a second playable chapter.
 
-Chapter prerequisites and case order are separate gates:
+## Tests
 
-- Chapter prerequisites lock every case in the chapter until all prerequisite IDs complete.
-- After the chapter unlocks, its first case is available.
-- Each later case requires the immediately preceding case to complete.
-- A completed case remains completed and does not regress to available.
-
-## Dependencies
-
-Meta Core:
-
-- `System.Collections.Generic`
-- No `UnityEngine` dependency
-
-Existing completion UI:
-
-- `GameFlowManager`
-- `CaseDefinition`
-- Unity Input System
-- Unity UI text
-
-## Events
-
-- `Room304CompletionUI.ContinueRequested`
-- `GameFlowManager.StateChanged`
-
-The pure chapter progression rules raise no events.
-
-## Usage Example
-
-```csharp
-CaseProgressionInput[] chapters =
-{
-    new CaseProgressionInput(new[] { "room_304" }, new string[0]),
-    new CaseProgressionInput(new[] { "future_case" }, new[] { "room_304" })
-};
-
-int currentChapter = CaseProgressionRules.GetCurrentChapterIndex(
-    chapters,
-    new HashSet<string> { "room_304" });
-```
-
-`currentChapter` is `1` because the first chapter is complete and its completion unlocks the second chapter.
-
-## Common Pitfalls
-
-- Do not select a locked chapter merely because it appears later in the list.
-- Do not select null or empty chapter definitions as the current chapter.
-- Keep chapter prerequisites as stable case IDs, not scene names or display text.
-- Do not persist the current chapter index; recompute it from definitions and completion data.
-- Do not add Chapter 2 content as part of Task 2.
+Core tests cover predecessor gates, prerequisites, completed states, current
+chapter, and metadata start rejection. `MetaRuntimeTests` covers Unity-facing
+chapter order, unassigned discovery, placeholder unlocking, and ambiguous
+membership. Native EditMode execution remains separate from compilation.

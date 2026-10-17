@@ -11,19 +11,21 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 41299631eda7408b87f122326264a68c, type: 3}
   m_Name: Room304_CaseDefinition
-  m_EditorClassIdentifier:
+  m_EditorClassIdentifier: 
   caseId: room_304
-  caseName: 304号病房
-  description: 被封锁的病房保存着一段被回避的记忆。
+  caseName: "304\u53F7\u75C5\u623F"
+  description: "\u88AB\u5C01\u9501\u7684\u75C5\u623F\u4FDD\u5B58\u7740\u4E00\u6BB5\u88AB\u56DE\u907F\u7684\u8BB0\u5FC6\u3002"
   clues:
   - {fileID: 11400000, guid: 91135cb3bdccc4652b9a3b92af7cdfbc, type: 2}
   - {fileID: 11400000, guid: a54446c1318a64d3eb9090aa949380bf, type: 2}
   - {fileID: 11400000, guid: cd99b1d0226034db887413d43c34cd08, type: 2}
-  deductionQuestion: 304号病房真正封存的遗憾是什么？
-  correctAnswer: 304号病房封存的不是陌生人的案件，而是玩家一直逃避的道歉。
+  deductionQuestion: "304\u53F7\u75C5\u623F\u771F\u6B63\u5C01\u5B58\u7684\u9057\u61BE\u662F\u4EC0\u4E48\uFF1F"
+  correctAnswer: "304\u53F7\u75C5\u623F\u5C01\u5B58\u7684\u4E0D\u662F\u964C\u751F\u4EBA\u7684\u6848\u4EF6\uFF0C\u800C\u662F\u73A9\u5BB6\u4E00\u76F4\u9003\u907F\u7684\u9053\u6B49\u3002"
   bossDefinition: {fileID: 11400000, guid: d91d2d67c62d47a88ca23fa514fb28a7, type: 2}
   rewardPool:
   - {fileID: 11400000, guid: 82ea0188d1be4d73a0d3f6e399c99610, type: 2}
   - {fileID: 11400000, guid: b7c4d60426454aa0ae3fd0d9ce73a371, type: 2}
   - {fileID: 11400000, guid: c4af8b7daed948d3a31ac8b7d1e09df1, type: 2}
-  completionText: 304号病房已解封
+  completionText: "304\u53F7\u75C5\u623F\u5DF2\u89E3\u5C01"
+  caseSummary: "304\u53F7\u75C5\u623F\u5C01\u5B58\u7684\u4E0D\u662F\u964C\u751F\u4EBA\u7684\u6848\u4EF6\uFF0C\u800C\u662F\u73A9\u5BB6\u4E00\u76F4\u9003\u907F\u7684\u9053\u6B49\u3002"
+  isPlayable: 1

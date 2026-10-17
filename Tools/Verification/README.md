@@ -1,0 +1,69 @@
+# Phase 6 Verification
+
+## Managed Checks Without Unity Activation
+
+```sh
+node Tools/Verification/verify-phase6.mjs "/path/to/an/imported/Lost City"
+```
+
+The optional argument supplies a read-only reference project whose `Library/Bee`
+response files and package DLLs already exist. Sources always come from the
+checkout containing this script. `LOST_CITY_UNITY_CONTENTS` can override the Unity
+2022.3.32f1 installation path. Node.js, Unity's bundled Roslyn and Mono are used;
+no packages are downloaded. Temporary outputs and NUnit XML are placed in the
+OS temporary directory printed by the command.
+Project assemblies named by local `.asmdef` files are excluded from cached
+references and rebuilt from source, so an already-imported project cannot silently
+substitute an old Core/Persistence DLL for the current code.
+
+The script executes the production core NUnit tests with NUnit's assembly runner,
+then compiles runtime, persistence, Editor and test sources. This is not a Unity
+runtime emulator. Native `JsonUtility`, filesystem persistence tests using
+MonoBehaviour, scene serialization, lifecycle and UI behavior still require Unity.
+
+## Unity Checks
+
+Use a licensed Unity Editor with the project closed in other Editor instances:
+
+```sh
+"/path/to/Unity" -batchmode -nographics -projectPath "/path/to/Lost City" \
+  -runTests -testPlatform EditMode -testResults /tmp/lost-city-editmode.xml \
+  -logFile /tmp/lost-city-editmode.log
+```
+
+Do not add `-quit` to a test run: the test runner exits after recording results.
+Scene generation is a separate command:
+
+```sh
+"/path/to/Unity" -batchmode -nographics -projectPath "/path/to/Lost City" \
+  -executeMethod LostCity.CombatSandbox.EditorTools.CombatSandboxCreator.CreateCombatSandbox \
+  -logFile /tmp/lost-city-generate.log -quit
+```
+
+After generation, run `Tools > Lost City > Validate Meta Framework` or use
+`-executeMethod LostCity.CombatSandbox.EditorTools.Phase6EditorValidation.ValidateGeneratedAssets`.
+It checks build order, scenes/catalog, missing scripts, camera, EventSystem input
+bindings, player Move/Fire actions, raycasters, scrolling panels, weapon definitions,
+projectile 2D physics and required component references. Interactive validation
+requires a saved open scene; batch mode may start with no scene setup. It
+does not enter Play Mode or click UI, and is not proof of the complete gameplay loop.
+
+`Tools > Lost City > Validate Meta Contracts` runs session/unlock/replay/native JSON
+reload checks against a unique temporary save and verifies one-clue and five-clue
+layouts. Batch entry point:
+`LostCity.CombatSandbox.EditorTools.Phase6EditorValidation.ValidateMetaContracts`.
+The temporary objects/files are removed in `finally`; the player's save is untouched.
+
+For a single batch command that generates, reopens and validates both scenes, then
+runs the temporary-save contracts, use
+`-executeMethod LostCity.CombatSandbox.EditorTools.Phase6EditorValidation.GenerateAndValidate`
+with `-quit`. It never enters Play Mode. A zero exit code plus both validation
+success messages is required; merely finding `.unity` files is not sufficient.
+
+Unity-generated YAML retains Unity's own whitespace formatting. Run the source
+whitespace check separately with
+`git diff --check -- '*.cs' '*.md' '*.mjs' '*.asmdef' '*.meta'` rather than rewriting
+serialized assets only to remove native trailing spaces.
+
+The user owns Play Mode interaction and gameplay feel validation. Do not use
+desktop automation to click upgrades or play the game.

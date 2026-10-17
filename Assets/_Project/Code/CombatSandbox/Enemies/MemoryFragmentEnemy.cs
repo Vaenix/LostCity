@@ -1,3 +1,4 @@
+using LostCity.Meta;
 using UnityEngine;
 
 namespace LostCity.CombatSandbox
@@ -44,12 +45,15 @@ namespace LostCity.CombatSandbox
 
         private void OnEnable()
         {
+            damageable = GetComponent<Damageable>();
+            damageable.Died -= HandleDied;
             damageable.Died += HandleDied;
+            MetaProgressionRecorder.RecordEnemy(definition);
         }
 
         private void OnDisable()
         {
-            damageable.Died -= HandleDied;
+            if (damageable != null) damageable.Died -= HandleDied;
         }
 
         private void FixedUpdate()

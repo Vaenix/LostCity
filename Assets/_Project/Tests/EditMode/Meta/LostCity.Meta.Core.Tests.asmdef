@@ -2,7 +2,8 @@
   "name": "LostCity.Meta.Core.Tests",
   "rootNamespace": "LostCity.Meta.Core.Tests",
   "references": [
-    "LostCity.Meta.Core"
+    "LostCity.Meta.Core",
+    "LostCity.Meta.Persistence"
   ],
   "includePlatforms": [
     "Editor"

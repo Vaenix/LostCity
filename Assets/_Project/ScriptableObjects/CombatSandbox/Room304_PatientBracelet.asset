@@ -11,14 +11,14 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ab67b754950704b46bef5803f7bd9d72, type: 3}
   m_Name: Room304_PatientBracelet
-  m_EditorClassIdentifier:
+  m_EditorClassIdentifier: 
   id: room304_patient_bracelet
-  clueName: 病人腕带
-  description: 腕带上的病人姓名与玩家一致。
-  title: 病人腕带
-  category: 医疗物件
+  clueName: "\u75C5\u4EBA\u8155\u5E26"
+  description: "\u8155\u5E26\u4E0A\u7684\u75C5\u4EBA\u59D3\u540D\u4E0E\u73A9\u5BB6\u4E00\u81F4\u3002"
+  title: "\u75C5\u4EBA\u8155\u5E26"
+  category: "\u533B\u7597\u7269\u4EF6"
   type: 1
   icon: {fileID: 21300000, guid: 37af4b62a67d3499798200d7ada1860d, type: 3}
-  journalText: 304号病房留下的褪色腕带写着玩家的名字。被封锁的房间并不是别人的遗憾。
-  shortDescription: 腕带上的病人姓名与玩家一致。
-  fullDescription: 304号病房留下的褪色腕带写着玩家的名字。被封锁的房间并不是别人的遗憾。
+  journalText: "304\u53F7\u75C5\u623F\u7559\u4E0B\u7684\u892A\u8272\u8155\u5E26\u5199\u7740\u73A9\u5BB6\u7684\u540D\u5B57\u3002\u88AB\u5C01\u9501\u7684\u623F\u95F4\u5E76\u4E0D\u662F\u522B\u4EBA\u7684\u9057\u61BE\u3002"
+  shortDescription: "\u8155\u5E26\u4E0A\u7684\u75C5\u4EBA\u59D3\u540D\u4E0E\u73A9\u5BB6\u4E00\u81F4\u3002"
+  fullDescription: "304\u53F7\u75C5\u623F\u7559\u4E0B\u7684\u892A\u8272\u8155\u5E26\u5199\u7740\u73A9\u5BB6\u7684\u540D\u5B57\u3002\u88AB\u5C01\u9501\u7684\u623F\u95F4\u5E76\u4E0D\u662F\u522B\u4EBA\u7684\u9057\u61BE\u3002"

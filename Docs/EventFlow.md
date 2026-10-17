@@ -1,143 +1,134 @@
 # Event Flow
 
-## Clue Pickup
+All chains below separate triggers, owning systems, and results. API details live in Docs/API.
+This describes the Phase 6 implementation; actual verification is tracked in PhaseReport.
 
-```text
-Trigger
-Player enters a clue trigger, then presses E.
-
-System
-CluePickup shows a `GamePromptManager` clue prompt, then calls `InvestigationProgress.TryCollectClue()`.
-
-Result
-Clue is added, `ClueCollected` fires, `GamePromptManager` shows the collected clue prompt, and journal/deduction UI can refresh.
-```
+## Startup And Case Selection
 
 ```mermaid
 flowchart TD
-    Near["Player enters clue trigger"] --> Prompt["GamePromptManager: 发现可调查线索"]
-    Input["E pressed near clue"] --> Pickup["CluePickup"]
-    Pickup --> Progress["InvestigationProgress.TryCollectClue"]
-    Pickup --> CollectedPrompt["GamePromptManager: 获得新线索"]
-    Progress --> Event["ClueCollected"]
-    Event --> Journal["EvidenceJournal refresh"]
-    Event --> Board["DeductionBoard refresh if open"]
+    A["BeforeSceneLoad"] --> B["RuntimeBootstrap / GameRuntime"]
+    B --> C["Load SaveGameManager -> catalog -> CaseRegistry"]
+    C --> D["Hub refreshes case states, archive and bestiary"]
+    D --> E["Player selects a valid case"]
+    E --> F["CaseSessionManager.BeginCase"]
+    F --> G["SceneFlowManager loads shared scene"]
+    G --> H["InvestigationProgress.Awake selects definition"]
+    H --> I["CaseClueLayout.Start spawns required clue pickups"]
 ```
 
-## Journal Update
+## Clue Pickup And Journal Update
 
 ```text
-Trigger
-InvestigationProgress.ClueCollected.
-
-System
-EvidenceJournal rebuilds text from `ClueDefinition.Name`, `Category`, and `JournalText`.
-
-Result
-The journal shows collected clue titles, categories, and descriptions.
+Player presses E near pickup
+  -> CluePickup / InvestigationProgress.TryCollectClue
+  -> Add transient clue and MetaProgressionRecorder.RecordClue
+  -> SaveGameManager.DiscoverClue: autosave if new
+  -> ClueCollected: EvidenceJournal refreshes
+  -> AllRequiredCluesCollected: GameFlowManager enters Deduction
 ```
 
-## Deduction Submission
+Repeated pickup IDs do not create repeated archive entries or save writes.
+Unrelated clues are rejected. Archive history does not auto-collect run clues on replay.
+
+## Deduction And Truth Reconstruction
 
 ```text
-Trigger
-Player clicks 提交推理.
-
-System
-DeductionBoard reads `CaseDefinition.DeductionQuestion` and checks `InvestigationProgress.IsCorrectDeduction()`.
-
-Result
-Correct deduction displays 真相已重构 and `CaseDefinition.CorrectAnswer`, then marks the case solved.
-Incorrect deduction displays 证据还无法成立。
+Submit Deduction
+  -> DeductionBoard validates selected configured clues
+  -> InvestigationProgress.MarkCaseSolved
+  -> CaseSolved
+  -> GameFlowManager disables deduction, enables combat, requests boss spawn
+  -> Truth text / prompt is read from the active CaseDefinition
 ```
 
-## Truth Reconstruction
+## Enemy And Boss Encounters
 
 ```text
-Trigger
-DeductionBoard accepts the selected clues.
-
-System
-InvestigationProgress.MarkCaseSolved() raises CaseSolved.
-
-Result
-GameFlowManager enters Combat.
+Enemy OnEnable / BossSpawnController.SpawnBoss
+  -> MetaProgressionRecorder.RecordEnemy / RecordBoss
+  -> SaveGameManager.EncounterEnemy / EncounterBoss
+  -> Stable ID stored once; bestiary can reveal registered content
 ```
 
-## Boss Spawn
-
-```text
-Trigger
-GameFlowManager enters Combat.
-
-System
-EnemySpawner is enabled. BossSpawnController receives `CaseDefinition.BossDefinition` and spawns its configured prefab.
-
-Result
-The configured boss appears and GameFlowManager tracks its Damageable.Died event.
-```
+BossSpawned also binds its Damageable.Died event in GameFlowManager.
+The boss XP dropper is disabled for this flow; XP is paid once directly on death.
 
 ## Boss Death
 
 ```text
-Trigger
-The configured boss Damageable reaches 0 health.
-
-System
-GameFlowManager receives Damageable.Died.
-
-Result
-Combat stops, remaining enemies are destroyed, and reward UI appears.
-```
-
-## Reward Selection
-
-```text
-Trigger
-Player clicks one reward button.
-
-System
-Room304RewardSelectionUI applies the selected `RewardDefinition` to PlayerStats or CombatUpgradeStats.
-
-Result
-RewardSelected fires and GameFlowManager enters ChapterComplete.
+Damageable.Died
+  -> GameFlowManager enters Reward and stops combat
+  -> Stop EnemySpawner, disable weapons, clear enemies/projectiles/loose XP
+  -> PlayerExperience receives boss XP; further XP intake stops
+  -> Resolve pending level-up choices
+  -> Show filtered CaseDefinition.GetCompletionRewards
 ```
 
 ## Level Up
 
 ```text
-Trigger
-PlayerExperience receives enough XP.
-
-System
-UpgradeSelectionController shows `RewardDefinition` upgrade choices.
-
-Result
-CombatUpgradeStats applies attack speed, attack, or drone projectile rewards from data.
+XP pickup or boss XP settlement
+  -> PlayerExperience updates level/XP/threshold and upgrade queue
+  -> ProgressChanged -> PlayerProgressPersistence capture
+  -> UpgradeSelectionController.Show pauses gameplay
+  -> Choice modifies PlayerStats / CombatUpgradeStats
+  -> PermanentProgressChanged -> capture/save
+  -> Clear old choice callback before invoking it
+  -> Show next queued choice, or notify GameFlowManager that rewards may begin
 ```
 
-## Scene Transition
+Clearing callback state before invoking it prevents a synchronous next-choice Show
+from being erased. UI input continues when timeScale is zero.
+The player persistence adapter defers writes during this mutation, then commits
+the stat/unlock effect and decremented PendingUpgradeChoices together. Restoring
+a player resumes saved pending choices after initialization.
+
+## Reward, Completion And Return
+
+```mermaid
+sequenceDiagram
+    participant UI as RewardSelectionUI
+    participant Flow as GameFlowManager
+    participant Player as PlayerProgressPersistence
+    participant Save as SaveGameManager
+    participant Complete as CaseCompletionUI
+    participant Scenes as SceneFlowManager
+    UI->>Flow: RewardSelected(definition)
+    Flow->>Flow: validate once / apply once
+    Flow->>Player: RecordReward and Capture
+    Player->>Save: progress and optional UnlockId
+    Flow->>Save: CompleteCase(active ID)
+    alt durable save succeeds
+        Flow->>Complete: show case completion
+        Complete->>Flow: ReturnRequested after 3s or Space
+        Flow->>Scenes: LoadHub
+        Scenes->>Scenes: EndCase / timeScale=1
+    else storage failure
+        Flow->>Complete: Chinese error / retry
+        Complete->>Flow: RetryRequested
+        Flow->>Save: retry without reapplying reward
+    end
+```
+
+ChapterComplete is retained as a GameFlowState identifier; progression to the next
+case is derived on Hub rather than a hardcoded next-chapter screen.
+
+## Failure Reload
 
 ```text
-Trigger
-Currently none.
-
-System
-ChapterComplete remains in the same scene.
-
-Result
-Placeholder text displays 下一章节开发中.
+Player Damageable.Died
+  -> PlayerDeathHandler disables control and XP intake
+  -> CombatGameManager captures progress
+  -> On success: unscaled delay, reset timeScale, reload current scene path
+  -> CaseSession remains; player stats restore and run clue state starts fresh
+  -> On save failure: keep current scene and expose retry
 ```
 
-## Chapter Completion
+## UI Refresh And Storage Recovery
 
-```text
-Trigger
-Reward selected, then Space pressed on the chapter complete screen.
-
-System
-Room304CompletionUI raises ContinueRequested.
-
-Result
-GameFlowManager logs Room304 Completed and shows the next chapter placeholder.
-```
+SaveGameManager.DataChanged refreshes currently visible Hub views. Hidden archive and
+bestiary panels refresh on enable; disable removes subscriptions. Hub blocks entry when
+storage is read-only or dirty. Explicit 重试存档 invokes Reload for read-only storage,
+otherwise SaveNow, then refreshes eligibility. No UI retry deletes or bypasses a
+future-version save.

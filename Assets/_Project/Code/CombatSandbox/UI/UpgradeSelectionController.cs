@@ -1,4 +1,5 @@
 using System;
+using LostCity.Meta;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem.UI;
@@ -22,6 +23,7 @@ namespace LostCity.CombatSandbox
         private CombatUpgradeStats activeStats;
         private Action choiceCompleted;
         private float previousTimeScale = 1f;
+        private bool choosing;
 
         public bool IsShowing => panelRoot != null && panelRoot.activeSelf;
 
@@ -79,7 +81,7 @@ namespace LostCity.CombatSandbox
 
         public void Show(CombatUpgradeStats stats, int level, Action onChoiceCompleted)
         {
-            if (stats == null || panelRoot == null)
+            if (stats == null || panelRoot == null || activeStats != null)
             {
                 return;
             }
@@ -118,25 +120,40 @@ namespace LostCity.CombatSandbox
 
         private void Choose(int choiceIndex, CombatUpgradeType fallbackUpgradeType)
         {
-            if (activeStats == null)
+            if (activeStats == null || choosing)
             {
                 return;
             }
 
-            RewardDefinition rewardDefinition = GetReward(choiceIndex);
-            if (rewardDefinition != null)
+            var persistence = activeStats.GetComponent<PlayerProgressPersistence>();
+            if (persistence != null && persistence.SaveGame != null && persistence.SaveGame.IsReadOnly)
             {
-                activeStats.ApplyReward(rewardDefinition);
+                persistence.SaveGame.Reload();
+                if (persistence.SaveGame.IsReadOnly)
+                {
+                    if (titleText != null) titleText.text = "存档只读，暂不能选择奖励";
+                    return;
+                }
             }
-            else
+            choosing = true;
+            persistence?.BeginProgressMutation();
+            try
             {
-                activeStats.ApplyUpgrade(fallbackUpgradeType);
+                RewardDefinition rewardDefinition = GetReward(choiceIndex);
+                if (rewardDefinition != null) activeStats.ApplyReward(rewardDefinition);
+                else activeStats.ApplyUpgrade(fallbackUpgradeType);
+                Action completed = choiceCompleted;
+                choiceCompleted = null;
+                activeStats = null;
+                choosing = false;
+                Hide();
+                completed?.Invoke();
             }
-
-            Hide();
-            choiceCompleted?.Invoke();
-            choiceCompleted = null;
-            activeStats = null;
+            finally
+            {
+                persistence?.EndProgressMutation();
+                choosing = false;
+            }
         }
 
         private string GetChoiceLabel(int index, string fallback)
@@ -159,7 +176,8 @@ namespace LostCity.CombatSandbox
                 return null;
             }
 
-            return upgradeChoices[index];
+            var reward = upgradeChoices[index];
+            return reward != null && reward.IsApplicable ? reward : null;
         }
 
         private void Hide()

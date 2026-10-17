@@ -1,0 +1,7 @@
+{
+  "name": "LostCity.Meta.Persistence",
+  "rootNamespace": "LostCity.Meta.Persistence",
+  "references": ["LostCity.Meta.Core"],
+  "autoReferenced": true,
+  "noEngineReferences": false
+}

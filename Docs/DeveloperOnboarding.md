@@ -2,87 +2,106 @@
 
 ## Start Here
 
-1. Read `README.md`.
-2. Read `Docs/Architecture.md`.
-3. Read `Docs/GameplayLoop.md`.
-4. Run `Tools > Lost City > Create Combat Sandbox`.
-5. Open `Assets/_Project/Scenes/CombatSandbox.unity`.
-6. Enter Play Mode and verify Room 304.
+1. Read README, Architecture, GameplayLoop, and the current PhaseReport.
+2. Open Unity 2022.3.32f1 with an active license. Import packages.
+3. Save scene changes, then run `Tools > Lost City > Create Combat Sandbox`.
+4. Run `Validate Meta Framework` and `Validate Meta Contracts`.
+5. Open Hub and manually verify the flow in PhaseReport.
+6. Run the EditMode test suite. Managed fallback commands live in Tools/Verification.
 
-## Project Architecture
+Do not equate a successful compiler check with generated-scene or Play Mode verification.
+The user performs gameplay interactions; automation operates on code, assets, and tests.
 
-The current architecture is generated-scene first. `CombatSandboxCreator` creates the scene, assets, and serialized references. Most runtime systems should not require manual scene wiring.
+## Architecture In One Page
 
-`GameFlowManager` owns the chapter state flow:
+`RuntimeBootstrap` creates one persistent `GameRuntime` before the scene starts.
+It loads SaveGameManager, catalog/registry, session, and scene-flow services in that order.
+Hub lists registry entries. Selecting one starts a session; the shared investigation scene
+reads its CaseDefinition. GameFlowManager owns local Investigation/Deduction/Combat/Reward/
+ChapterComplete states. Meta services own persistence and scene transitions.
 
-```text
-Investigation -> Deduction -> Combat -> Reward -> ChapterComplete
-```
+ScriptableObjects describe content, save DTOs store IDs and player modifiers, and scene
+components own transient objects. Never store scene object references in JSON. See
+[CaseRegistry](API/CaseRegistry.md) and [SaveSystem](API/SaveSystem.md).
 
-## How To Add Weapons
+## Adding A Case Or Clue
 
-1. Add or reuse a `ProjectileDefinition`.
-2. Add a `WeaponDefinition`.
-3. Add a runtime weapon component if behavior differs from `PistolWeapon` or `MemoryOrbWeapon`.
-4. Update `CombatSandboxCreator` to generate and assign references.
-5. Update `Docs/API/WeaponSystem.md`.
+1. Create assets outside the generator's seeded asset paths.
+2. Create each ClueDefinition with a unique, nonblank, trimmed ID and Chinese visible text.
+3. Create CaseDefinition with unique CaseId, name, summary, required clues, question,
+   answer, BossDefinition, and at least one applicable reward.
+4. Set IsPlayable only when this content is complete. Metadata-only cases remain visible
+   but cannot be started.
+5. The asset postprocessor rebuilds the catalog automatically. Use
+   `Tools > Lost City > Rebuild Content Catalog` if needed.
+6. Add the case to exactly one ChapterDefinition in progression order; unassigned valid
+   cases appear under 未归档案件 and are available without a chapter predecessor.
+7. Do not edit Hub or GameFlowManager for another case. CaseClueLayout generates a
+   pickup for every configured clue from its disabled template.
 
-## How To Add Enemies
+Duplicate IDs exclude all ambiguous definitions. A missing predecessor or duplicate
+chapter membership blocks starting, rather than silently unlocking content. Do not
+rename stable IDs after players have saves; asset filenames may change independently.
+Saved old IDs are preserved even if their definitions disappear.
 
-1. Add or reuse an `EnemyDefinition`.
-2. Add behavior to `MemoryFragmentEnemy` only if the archetype fits the existing simple model.
-3. Create a generated prefab in `CombatSandboxCreator`.
-4. Add a weighted spawn entry.
-5. Update `Docs/API/EnemySystem.md`.
+Deduction relationships remain handcrafted. This framework does not generate mystery truth.
 
-## How To Add Bosses
+## Adding A Chapter
 
-1. Create a dedicated boss behavior class when attacks are boss-specific.
-2. Create or duplicate a boss prefab.
-3. Create a `BossDefinition` asset and assign the prefab, health, speed, skills, XP, and reward pool.
-4. Assign the `BossDefinition` to the active `CaseDefinition`.
-5. Ensure the prefab has `Damageable` and `TeamMember`.
-6. Only update `CombatSandboxCreator` if the default generated sandbox needs to include the new boss.
-7. Update `Docs/API/BossSystem.md`.
+Real Chapter 2 content is not yet authorized. When authorized, create ChapterDefinition,
+assign its stable ID/name and ordered case list, and set RequiredCompletedCaseIds.
+A later case depends on its immediate predecessor. Chapters are catalog-ordered by asset
+path, not by a numeric chapter-name parser. Keep ordering intentional.
+The current generator creates Chapter_01 with Room 304 plus one non-playable placeholder.
 
-## How To Add Clues
+## Adding Enemies Or Bosses
 
-1. Add a `ClueDefinition` asset through the Unity Editor.
-2. Add the clue to the active `CaseDefinition.Clues`.
-3. Add a `CluePickup` in the scene or scene generator so the clue can be collected.
-4. Update `Docs/API/InvestigationSystem.md` and `Docs/API/DeductionSystem.md`.
+Enemies need an EnemyDefinition with stable EnemyId, Chinese display name, and bestiary
+description, a compatible prefab, and a weighted spawn entry. Reuse MemoryFragmentEnemy
+for existing archetypes. A new behavior warrants a focused component, not a new framework.
 
-Do not procedurally generate mystery logic. Clue relationships are handcrafted.
+Bosses need a BossDefinition with stable BossId, description, prefab, stats, skills, and
+rewards. The prefab must contain root Damageable, TeamMember, and appropriate behavior.
+Assign it to the case. Catalog inclusion and encounter recording are separate: content
+appears as unknown until actually encountered. No new boss is part of Phase 6.
 
-## How To Add Chapters
+## Adding Weapons Or Rewards
 
-1. Do not add real Chapter 2 content until Room 304 is validated.
-2. Create a `CaseDefinition` for the chapter's first playable case.
-3. Assign clue, boss, and reward definitions from data assets.
-4. Keep `GameFlowManager` readable. Do not build a large abstract framework before two chapters exist.
-5. Update `Docs/API/ChapterSystem.md`.
+Reuse ProjectileDefinition and WeaponDefinition for data-only changes; add a runtime
+component only for genuinely different behavior. Keep manual and auto weapon input separate.
 
-## How To Add UI Panels
+Create RewardDefinition and add it to an upgrade, case, or boss pool. Use existing stat
+types for attack, health, fire rate, crit, dodge, and drone count. Unlock rewards persist
+their UnlockId; a weapon reward is not a general inventory/unlock implementation.
+Case completion uses GetCompletionRewards: valid case rewards first, boss fallback only
+when no applicable case reward remains. Keep UI and start validation on this shared resolver.
 
-1. Create a focused UI controller script.
-2. Generate the Canvas, panel, text, buttons, and references from `CombatSandboxCreator`.
-3. Ensure buttons have `Button` components, target graphics, and listeners.
-4. Ensure Canvas has `GraphicRaycaster` when interaction is required.
-5. Update `Docs/API/UISystem.md`.
+## Adding UI Panels
 
-## How To Add Rewards
+Use focused controllers and serialized references. HubSceneBuilder owns Hub generation;
+CombatSandboxCreator owns the sandbox. Interactive Canvases need GraphicRaycaster and the
+scene needs one EventSystem with InputSystemUIInputModule and persisted action references.
+Subscribe/unsubscribe listeners symmetrically. Paused gameplay must not block UI input.
+Visible strings are Chinese; identifiers and asset names remain English. This is not a
+localization framework.
 
-1. Add a `RewardDefinition`.
-2. Choose `RewardType` and `RewardStatType`.
-3. Add it to a case, boss, or upgrade reward pool.
-4. Keep reward effects visible in HUD where possible.
-5. Do not add code for simple stat rewards; use the existing reward stat types.
-6. Update `Docs/API/RewardSystem.md`.
+## Saves And Tests
 
-## Common Rules
+Production data lives at Application.persistentDataPath/lost-city-save.json.
+Never run destructive tests on that path. Tests and Meta Contracts use a unique temporary
+directory. Do not delete a real save to hide a regression. Future schema files stay read-only;
+corrupt files are preserved before defaults are created. Back up real data before recovery.
 
-- Keep systems small and explicit.
-- Do not add save data until session flow is stable.
-- Do not add final art or VFX before architecture validation.
-- Do not leave generated references for manual setup unless unavoidable.
-- Every behavior change needs documentation.
+When changing schema, add a version/migration and tests for sparse, corrupt, and future data.
+When changing flow, test normal completion, replay, interruption, repeated callbacks, and
+save failure. Health damage is not a permanent-progress save trigger.
+
+## Collaboration And Handoff
+
+Preserve other work, keep .meta GUIDs with moved scripts, and avoid generated-asset churn.
+The generator resets seeded definitions but preserves asset GUIDs; it is not an authoring
+tool for custom content. Document deviations and test gaps.
+
+Each commit updates relevant documentation, including Architecture, EventFlow, GameplayLoop,
+and PhaseReport when required by the active phase. A handoff lists commit hash, changed files,
+documentation, architecture/gameplay/event changes, technical debt, known issues, and next steps.

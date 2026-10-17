@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a30e0cc18c57b4d4fab56fe1e59c712c, type: 3}
   m_Name: PistolWeaponDefinition
   m_EditorClassIdentifier: 
-  displayName: Pistol
+  displayName: "\u624B\u67AA"
   projectilePrefab: {fileID: 4364917132293224186, guid: 5ce2c582b882f4869807b8db78128920, type: 3}
   projectileDefinition: {fileID: 11400000, guid: 395a90cd91f1c4f368f5031770976a61, type: 2}
   cooldownSeconds: 0.25

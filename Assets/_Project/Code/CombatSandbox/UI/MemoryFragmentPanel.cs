@@ -9,7 +9,7 @@ namespace LostCity.CombatSandbox
         [SerializeField] private Text titleText;
         [SerializeField] private Text bodyText;
         [SerializeField] private string title = "记忆片段";
-        [SerializeField] private string body = "304号病房被封锁，因为访客从未到来。遗憾属于你。";
+        [SerializeField] private string body = "案件真相已揭开。";
 
         private void Awake()
         {

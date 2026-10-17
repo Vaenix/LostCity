@@ -2,51 +2,72 @@
 
 ## Root
 
-| Path | Purpose |
+| Path | Responsibility |
 | --- | --- |
-| `README.md` | Project overview and quick start. |
-| `Docs/` | Permanent project documentation. |
-| `Assets/` | Unity assets and project code. |
-| `Packages/` | Unity package manifest and lock files. |
-| `ProjectSettings/` | Unity project settings. |
+| README.md | Overview, controls, run instructions, roadmap, known issues |
+| Docs/ | Permanent design, API, event, onboarding, phase evidence |
+| Tools/Verification/ | Reproducible managed compilation/core tests; native command guide |
+| Assets/ | Unity source, content, prefabs, scenes and metadata |
+| Packages/ | Package manifest and lock file |
+| ProjectSettings/ | Unity project settings, including scene build order |
+
+## Meta Code
+
+All paths below are under `Assets/_Project/Code/Meta`.
+
+| Folder | Responsibility | Key types |
+| --- | --- | --- |
+| Core | Unity-independent DTOs, sanitization, progression/start rules | SaveGameData, PlayerProgressData, CaseProgressionRules, CaseStartRules |
+| Persistence | Unity JSON and filesystem adapter; separate assembly | SaveGameManager |
+| Definitions | Chapter/catalog ScriptableObjects and ID validation | ChapterDefinition, GameContentCatalog, ContentDefinitionIndex |
+| Runtime | Persistent services and player/discovery integration | GameRuntime, CaseRegistry, CaseSessionManager, SceneFlowManager, PlayerProgressPersistence |
+| UI | Hub selection, archive, bestiary and shared view helper | HubController, HubCaseRow, InvestigationArchiveUI, BestiaryUI |
+
+Core has no UnityEngine references. Persistence depends on Core. Runtime/UI remain in
+Assembly-CSharp; Editor utilities stay in Assembly-CSharp-Editor. EditMode tests use
+reflection for predefined assemblies instead of illegal asmdef references.
+
+## Combat Sandbox Code
+
+All paths below are under `Assets/_Project/Code/CombatSandbox`.
+
+| Folder | Responsibility | Key types |
+| --- | --- | --- |
+| Camera | Top-down following | SimpleTopDownCameraFollow |
+| Core | Damage, teams and local flow | Damageable, GameFlowManager, GameFlowState |
+| Debug | Prototype shortcuts | PrototypeDebugTools |
+| Editor | Asset/scene creation, catalog indexing and validation | CombatSandboxCreator, HubSceneBuilder, GameContentCatalogBuilder, Phase6EditorValidation |
+| Enemies | Definitions and behavior | EnemyDefinition, MemoryFragmentEnemy, BossDefinition, WardenBoss |
+| Feedback | Combat feedback | HitFlash, WorldHealthBar |
+| Investigation | Case/clue data, pickups and transient clue state | CaseDefinition, ClueDefinition, CluePickup, CaseClueLayout, InvestigationProgress |
+| Pickups | XP drops and collection | XpDropper, XpOrb |
+| Player | Input, movement, aiming, health/death and stats | PlayerInputReader, PlayerMotor, PlayerAim, PlayerStats |
+| Progression | Experience and data-driven rewards | PlayerExperience, CombatUpgradeStats, RewardDefinition |
+| Spawning | Weighted enemies and case boss | EnemySpawner, BossSpawnController |
+| UI | HUD/minimap, journal, deduction, prompts and rewards | PlayerHud, DeductionBoard, RewardSelectionUI, CaseCompletionUI |
+| Weapons | Manual/automatic weapon and projectile logic | PistolWeapon, MemoryOrbWeapon, Projectile |
+
+## Content And Generated Assets
+
+| Path under Assets/_Project | Contents |
+| --- | --- |
+| Art/CombatSandbox/Generated | Existing graybox circle/square sprites |
+| Prefabs/CombatSandbox | Player, projectiles, XP orb, four enemies, Warden |
+| Scenes | Hub.unity and shared CombatSandbox.unity |
+| ScriptableObjects/CombatSandbox | Existing case/clues, boss/enemies, weapons, projectiles, rewards |
+| ScriptableObjects/Meta | Chapter_01 and metadata-only Case_Placeholder |
+| Resources | Generated GameContentCatalog.asset for runtime loading |
+| Settings/Input | CombatSandbox.inputactions plus persistent action references |
+| Tests/EditMode/Meta | Pure core tests and Unity-native save/content/UI tests |
+
+Generation status is in PhaseReport; paths describe intended generator output, not a claim
+that ungenerated scenes already exist. Add custom content outside seeded paths because
+Create Combat Sandbox overwrites its seed values.
 
 ## Documentation
 
-| Path | Purpose |
-| --- | --- |
-| `Docs/README.md` | Documentation index and development rules. |
-| `Docs/Architecture.md` | System architecture and diagrams. |
-| `Docs/GameplayLoop.md` | Current gameplay loop and phase flow. |
-| `Docs/EventFlow.md` | Trigger to system to result event chains. |
-| `Docs/DeveloperOnboarding.md` | How to extend the project safely. |
-| `Docs/Roadmap.md` | Current phase, completed systems, blockers, and next steps. |
-| `Docs/API/` | Major gameplay system API notes. |
-
-## Unity Project
-
-| Path | Purpose |
-| --- | --- |
-| `Assets/_Project/Art/CombatSandbox/Generated` | Generated graybox sprites. |
-| `Assets/_Project/Code/CombatSandbox` | Runtime and editor C# scripts for the prototype. |
-| `Assets/_Project/Prefabs/CombatSandbox` | Generated prefabs. |
-| `Assets/_Project/Scenes` | Generated playable scene. |
-| `Assets/_Project/ScriptableObjects/CombatSandbox` | ScriptableObject definitions for cases, clues, bosses, rewards, weapons, enemies, and projectiles. |
-| `Assets/_Project/Settings/Input` | Generated Input System assets and action references. |
-
-## Code Folders
-
-| Path | Purpose | Contains |
-| --- | --- | --- |
-| `Camera` | Camera follow behavior. | `SimpleTopDownCameraFollow` |
-| `Core` | Shared combat and flow primitives. | `Damageable`, `DamageInfo`, `TeamMember`, `GameFlowManager`, `GameFlowState` |
-| `Debug` | Temporary prototype debug tools. | `Room304DebugTools` |
-| `Editor` | Scene and asset generation. | `CombatSandboxCreator` |
-| `Enemies` | Enemy data and behavior. | `EnemyDefinition`, `MemoryFragmentEnemy`, `WardenBoss` |
-| `Feedback` | Runtime feedback components. | `HitFlash`, `WorldHealthBar` |
-| `Investigation` | Case, clue, and case progress systems. | `CaseDefinition`, `ClueDefinition`, `ClueType`, `CluePickup`, `InvestigationProgress` |
-| `Pickups` | XP pickup flow. | `XpDropper`, `XpOrb` |
-| `Player` | Player input, movement, aim, death, and stats. | `PlayerInputReader`, `PlayerMotor`, `PlayerAim`, `PlayerDeathHandler`, `PlayerStats` |
-| `Progression` | XP, levels, upgrades, rewards. | `PlayerExperience`, `CombatUpgradeStats`, `RewardDefinition`, `RewardType`, `RewardStatType` |
-| `Spawning` | Enemy and boss spawning. | `EnemySpawner`, `BossSpawnController`, `EnemySpawnEntry` |
-| `UI` | HUD, prompts, journal, deduction, reward, completion, minimap. | `GamePromptManager`, `PromptType`, `PlayerHud`, `EvidenceJournal`, `DeductionBoard`, `Room304RewardSelectionUI`, `Room304CompletionUI` |
-| `Weapons` | Manual and automatic weapon logic. | `PistolWeapon`, `MemoryOrbWeapon`, `Projectile`, `WeaponDefinition`, `ProjectileDefinition` |
+Docs/API covers the system contracts. Architecture describes ownership and dependencies;
+EventFlow describes triggers and results; GameplayLoop describes player-facing flow.
+DeveloperOnboarding is the extension guide, Roadmap tracks remaining scope, PhaseReport
+records actual verification and blockers. Historical plans under Docs/superpowers are design
+records; current API documentation and source take precedence after documented adjustments.

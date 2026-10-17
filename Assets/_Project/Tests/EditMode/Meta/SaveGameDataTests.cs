@@ -20,6 +20,7 @@ namespace LostCity.Meta.Core.Tests
             Assert.That(data.PlayerProgress.Level, Is.EqualTo(1));
             Assert.That(data.PlayerProgress.CurrentExperience, Is.Zero);
             Assert.That(data.PlayerProgress.ExperienceToNextLevel, Is.EqualTo(5));
+            Assert.That(data.PlayerProgress.PendingUpgradeChoices, Is.Zero);
             Assert.That(data.PlayerProgress.AttackMultiplier, Is.EqualTo(1f));
             Assert.That(data.PlayerProgress.MaxHpMultiplier, Is.EqualTo(1f));
             Assert.That(data.PlayerProgress.FireRateMultiplier, Is.EqualTo(1f));
@@ -90,6 +91,7 @@ namespace LostCity.Meta.Core.Tests
             data.PlayerProgress.Level = 0;
             data.PlayerProgress.CurrentExperience = -1;
             data.PlayerProgress.ExperienceToNextLevel = -1;
+            data.PlayerProgress.PendingUpgradeChoices = -2;
             data.PlayerProgress.AttackMultiplier = -2f;
             data.PlayerProgress.MaxHpMultiplier = float.NaN;
             data.PlayerProgress.FireRateMultiplier = float.PositiveInfinity;
@@ -102,12 +104,23 @@ namespace LostCity.Meta.Core.Tests
             Assert.That(data.PlayerProgress.Level, Is.EqualTo(1));
             Assert.That(data.PlayerProgress.CurrentExperience, Is.Zero);
             Assert.That(data.PlayerProgress.ExperienceToNextLevel, Is.EqualTo(5));
+            Assert.That(data.PlayerProgress.PendingUpgradeChoices, Is.Zero);
             Assert.That(data.PlayerProgress.AttackMultiplier, Is.EqualTo(1f));
             Assert.That(data.PlayerProgress.MaxHpMultiplier, Is.EqualTo(1f));
             Assert.That(data.PlayerProgress.FireRateMultiplier, Is.EqualTo(1f));
             Assert.That(data.PlayerProgress.CritChanceBonus, Is.Zero);
             Assert.That(data.PlayerProgress.DodgeChanceBonus, Is.Zero);
             Assert.That(data.PlayerProgress.DroneProjectileBonus, Is.Zero);
+        }
+
+        [Test]
+        public void Sanitize_RetainsOutstandingLevelChoices()
+        {
+            var data = SaveGameData.CreateDefault();
+            data.PlayerProgress.Level = 4;
+            data.PlayerProgress.PendingUpgradeChoices = 3;
+            SaveDataSanitizer.Sanitize(data);
+            Assert.That(data.PlayerProgress.PendingUpgradeChoices, Is.EqualTo(3));
         }
 
         [Test]

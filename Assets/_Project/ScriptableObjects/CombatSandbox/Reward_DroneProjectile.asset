@@ -11,14 +11,14 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 81ce39ae6b3b453ea72a6e22af17a5a9, type: 3}
   m_Name: Reward_DroneProjectile
-  m_EditorClassIdentifier:
+  m_EditorClassIdentifier: 
   rewardId: drone_projectile_1
-  displayName: +1 无人机弹幕数量
-  description: 记忆浮游炮每次额外发射一枚投射物。
+  displayName: "+1 \u65E0\u4EBA\u673A\u5F39\u5E55\u6570\u91CF"
+  description: "\u8BB0\u5FC6\u6D6E\u6E38\u70AE\u6BCF\u6B21\u989D\u5916\u53D1\u5C04\u4E00\u679A\u6295\u5C04\u7269\u3002"
   rewardType: 1
   statType: 6
   multiplier: 1
   additiveValue: 0
   integerValue: 1
   weaponDefinition: {fileID: 11400000, guid: 1f9b4592fab4b4b2f9d84246a65e58a2, type: 2}
-  unlockId:
+  unlockId: 

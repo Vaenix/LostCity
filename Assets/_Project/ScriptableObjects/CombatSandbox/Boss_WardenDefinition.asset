@@ -11,21 +11,23 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 399b9b244de64563aea1ea1df2e72e5f, type: 3}
   m_Name: Boss_WardenDefinition
-  m_EditorClassIdentifier:
-  bossName: 看守者
-  bossPrefab: {fileID: 3847339049632894326, guid: 6a75a1de2e086454c9093f0218c02873, type: 3}
+  m_EditorClassIdentifier: 
+  bossId: boss_warden
+  bestiaryDescription: "\u62E5\u6709\u51B2\u950B\u3001\u53EC\u5524\u4E0E\u73AF\u5F62\u5F39\u5E55\u80FD\u529B\u3002"
+  bossName: "\u770B\u5B88\u8005"
+  bossPrefab: {fileID: 7073557482628034983, guid: 6a75a1de2e086454c9093f0218c02873, type: 3}
   health: 320
   moveSpeed: 2
   skills:
   - skillId: warden_charge
-    skillName: 冲锋
-    description: 看守者向玩家快速冲撞。
+    skillName: "\u51B2\u950B"
+    description: "\u770B\u5B88\u8005\u5411\u73A9\u5BB6\u5FEB\u901F\u51B2\u649E\u3002"
   - skillId: warden_summon
-    skillName: 召唤
-    description: 看守者召唤记忆碎片加入战斗。
+    skillName: "\u53EC\u5524"
+    description: "\u770B\u5B88\u8005\u53EC\u5524\u8BB0\u5FC6\u788E\u7247\u52A0\u5165\u6218\u6597\u3002"
   - skillId: warden_radial_burst
-    skillName: 环形弹幕
-    description: 看守者释放一圈投射物。
+    skillName: "\u73AF\u5F62\u5F39\u5E55"
+    description: "\u770B\u5B88\u8005\u91CA\u653E\u4E00\u5708\u6295\u5C04\u7269\u3002"
   xpReward: 12
   rewardPool:
   - {fileID: 11400000, guid: 82ea0188d1be4d73a0d3f6e399c99610, type: 2}

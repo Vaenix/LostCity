@@ -1,5 +1,17 @@
 # Phase 6 Meta Framework Implementation Plan
 
+## Execution Record (2026-10-17)
+
+Tasks 1-12 are implemented and documented. Task 13's automated gates pass:
+83 native EditMode tests, generated-scene reopen/reference validation, and native
+temporary-save contracts. Manual gameplay acceptance is intentionally user-owned
+and remains pending; see `Docs/PhaseReport.md` for the authoritative checklist.
+
+Documented refinements: persistence has its own assembly, Hub generation has a
+separate builder, variable clue layout replaces fixed scene clues, and v1 saves
+include unspent upgrade choices with atomic effect/choice capture. The original
+step-level examples below are design history, not the current API reference.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Build a data-driven Hub, case registry, progression, save, archive, bestiary, chapter, and automatic return flow around the existing Room 304 investigation loop.
@@ -151,8 +163,7 @@ Use this command for EditMode tests:
   -runTests \
   -testPlatform EditMode \
   -testResults "/tmp/lost-city-phase6-editmode.xml" \
-  -logFile "/tmp/lost-city-phase6-editmode.log" \
-  -quit
+  -logFile "/tmp/lost-city-phase6-editmode.log"
 ```
 
 If Unity licensing prevents batch mode, compile with the current Unity response files and report EditMode execution as manually pending. Do not use Computer Use.

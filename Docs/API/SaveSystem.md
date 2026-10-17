@@ -1,119 +1,150 @@
 # SaveSystem
 
-## Purpose
+## Ownership
 
-The Phase 6 save contract defines versioned, JSON-compatible meta progression data without owning file storage.
+`LostCity.Meta.Core` owns Unity-independent DTOs and sanitization; its
+`noEngineReferences` boundary is unchanged. `LostCity.Meta.Persistence` references
+Core and UnityEngine and contains `LostCity.Meta.Persistence.SaveGameManager`.
+`GameRuntime` initializes this manager before the registry.
 
-## Responsibilities
+Default path: `Application.persistentDataPath/lost-city-save.json`.
+`Initialize(string explicitPath = null)` is idempotent; later calls do not
+change paths or reload. Explicit paths isolate EditMode tests.
 
-- Store completed case, permanent unlock, discovered clue, encountered enemy, and encountered boss IDs.
-- Store permanent player progression separately from run-only combat state.
-- Provide stable defaults for a new save.
-- Repair null collections, blank IDs, duplicate IDs, and invalid progression values.
-- Upgrade recognized older DTO data to the current schema version while preserving valid fields.
-- Reject newer schema versions before modifying the input DTO.
-- Keep the data assembly independent from `UnityEngine`.
+## Version 1 Fields
 
-File IO, save paths, backup policy, and automatic saving are not part of Task 1. A later runtime save manager owns those responsibilities, must preserve unsupported future-version files before fallback, and must sanitize supported data after JSON deserialization.
+JSON uses the exact public DTO field names (PascalCase):
 
-## Public Fields
+- `Version`, currently `SaveGameData.CurrentVersion` (`1`).
+- `CompletedCaseIds`, `PermanentUnlockIds`, `DiscoveredClueIds`.
+- `EncounteredEnemyIds`, `EncounteredBossIds`.
+- `PlayerProgress`: `Level`, `CurrentExperience`, `ExperienceToNextLevel`, `PendingUpgradeChoices`,
+  `AttackMultiplier`, `MaxHpMultiplier`, `FireRateMultiplier`, `CritChanceBonus`,
+  `DodgeChanceBonus`, `DroneProjectileBonus`.
 
-### `SaveGameData`
+Defaults: level 1, XP threshold 5, multipliers 1, additive values 0.
+Current HP, spawned entities, pending UI, and derived case/chapter state are not
+saved. Unknown legacy IDs remain even when their definitions are absent.
 
-- `Version`: Serialized schema version. The current version is `SaveGameData.CurrentVersion`.
-- `CompletedCaseIds`: Stable IDs for completed cases.
-- `PermanentUnlockIds`: Stable IDs for permanent reward unlocks.
-- `DiscoveredClueIds`: Stable IDs for clues discovered in any case.
-- `EncounteredEnemyIds`: Stable IDs for encountered standard enemies.
-- `EncounteredBossIds`: Stable IDs for encountered bosses.
-- `PlayerProgress`: Permanent player progression values.
-
-### `PlayerProgressData`
-
-- `Level`: Permanent player level. Default `1`.
-- `CurrentExperience`: Experience accumulated toward the next level. Default `0`.
-- `ExperienceToNextLevel`: Current level threshold. Default `5`.
-- `AttackMultiplier`: Permanent attack multiplier. Default `1`.
-- `MaxHpMultiplier`: Permanent maximum HP multiplier. Default `1`.
-- `FireRateMultiplier`: Permanent fire-rate multiplier. Default `1`.
-- `CritChanceBonus`: Permanent critical-hit chance bonus. Default `0`.
-- `DodgeChanceBonus`: Permanent dodge chance bonus. Default `0`.
-- `DroneProjectileBonus`: Permanent additional drone projectile count. Default `0`.
-
-`CaseState` defines `Locked`, `Available`, and `Completed` enum values for later case progression rules. It is JSON-compatible when used as a field on a serializable DTO, but Task 1 does not persist derived case-state records.
-
-## Public Properties
-
-No public properties. The DTO uses public fields because Unity `JsonUtility` serializes fields rather than general C# properties.
-
-## Public Methods
-
-### `SaveGameData`
-
-- `CreateDefault()`: Creates a version 1 save with initialized collections and default player progression.
-
-### `SaveDataSanitizer`
-
-- `Sanitize(SaveGameData data)`: Returns a usable save, initializes missing data, removes invalid IDs, normalizes invalid progression values, and sets recognized data to the current version. Throws `NotSupportedException` before mutation when `Version` is newer than `CurrentVersion`.
-- `AddUnique(List<string> values, string id)`: Adds a non-blank ID once and reports whether the list changed.
-
-## Dependencies
-
-- `System`
-- `System.Collections.Generic`
-- NUnit for EditMode tests
-
-The production assembly has `noEngineReferences: true` and does not depend on `UnityEngine`, PlayerPrefs, third-party packages, or file APIs.
-
-## Events
-
-No events. Runtime save services introduced by later tasks will own change notifications and autosave triggers.
-
-## Usage Example
+## Public API
 
 ```csharp
-SaveGameData data = SaveGameData.CreateDefault();
+string SavePath { get; }
+bool IsReadOnly { get; }
+bool HasUnsavedChanges { get; }
+string LastError { get; }
+event Action DataChanged;
 
-SaveDataSanitizer.AddUnique(data.DiscoveredClueIds, "room_304_chart");
-data.PlayerProgress.Level = 2;
+IReadOnlyList<string> CompletedCaseIds { get; }
+IReadOnlyList<string> PermanentUnlockIds { get; }
+IReadOnlyList<string> DiscoveredClueIds { get; }
+IReadOnlyList<string> EncounteredEnemyIds { get; }
+IReadOnlyList<string> EncounteredBossIds { get; }
 
-data = SaveDataSanitizer.Sanitize(data);
+void Initialize(string explicitPath = null);
+bool IsCaseCompleted(string caseId);
+PlayerProgressData GetPlayerProgress();
+SaveGameData GetSnapshot();
+bool CompleteCase(string caseId);
+bool DiscoverClue(string clueId);
+bool EncounterEnemy(string enemyId);
+bool EncounterBoss(string bossId);
+bool AddPermanentUnlock(string unlockId);
+void SetPlayerProgress(PlayerProgressData progress);
+void SetPlayerProgressAndUnlocks(PlayerProgressData progress, IEnumerable<string> unlockIds);
+void SaveNow();
+void Reload();
 ```
 
-A Unity-facing persistence service can pass this DTO to `JsonUtility.ToJson` and must call `SaveDataSanitizer.Sanitize` after `JsonUtility.FromJson`.
+Initialize before persistence operations. Collection getters return copied
+arrays; progress and snapshots are deep copies. Input progress is also copied.
+Pass changed progress back through `SetPlayerProgress`.
 
-## JSON Collection Design
+## Mutation And Autosave
 
-Phase 6 uses `List<string>` DTO fields instead of `Dictionary` or `HashSet` because Unity `JsonUtility` does not serialize those collection types. The sanitizer restores set semantics by removing blank and duplicate IDs while preserving the first valid occurrence and list order.
+IDs are trimmed and behave as sets. Blank/duplicate mutations return false
+without saving or notifying. Equal sanitized player progress is also a no-op.
+Accepted changes mark dirty, attempt `SaveNow`, then raise `DataChanged` once.
 
-This keeps the JSON stable and inspectable while allowing runtime systems to build temporary lookup sets when faster membership checks are needed.
+Mutation success reports an in-memory change, not durable IO success. Check
+`HasUnsavedChanges` and `LastError`. Successful retries clear both.
+The runtime root retries dirty data on application pause/quit; force termination
+cannot guarantee these callbacks execute. Hub should show storage diagnostics.
 
-## Versioning And Corrupt Data
+## Atomic Writes And IO Failures
 
-- Version 1 is the first schema.
-- Null save data becomes a new default save.
-- Null collections become empty lists.
-- IDs are trimmed; null, blank, and duplicate entries are removed.
-- Levels have a minimum of `1`.
-- A missing or invalid `ExperienceToNextLevel` value of `0` or less is restored to the DTO default of `5`.
-- Experience and additive bonuses have a minimum of `0`.
-- Multipliers must be finite and greater than `0`; otherwise they reset to `1`.
-- Valid recognized fields are retained when older data is normalized.
-- A version newer than `CurrentVersion` throws `NotSupportedException` before any input field or collection is changed.
+1. Recheck an existing file for an unsupported future version.
+2. Sanitize and write UTF-8 JSON to `<save>.tmp`, flushing the file to disk.
+3. Use `File.Replace` for existing saves, retaining the previous version in
+   `<save>.bak`; use same-directory `File.Move` for the first save.
 
-Task 1 does not implement raw JSON backup. The later file persistence layer must catch the future-version rejection, preserve the original file, and then apply its backup or fallback policy.
+There is no delete-then-move fallback. Unsupported atomic replacement fails
+diagnostically, preserving the old destination and dirty in-memory progress.
+Temporary files are cleaned where possible. Retry through `SaveNow`.
+The backup is for manual recovery; no automatic rollback is performed.
 
-## Autosave Behavior
+`Reload` first flushes dirty supported data and refuses to discard it when
+that fails. Read/backup failures enter read-only mode so an unreadable original
+is not overwritten. Resolve the external IO problem and explicitly reload.
+Multiple concurrent writers to the same save path are unsupported.
 
-There is no autosave behavior in the data contract. Later runtime code is responsible for deciding when mutations trigger serialization and file writes. This separation keeps DTO sanitization deterministic and testable.
+## Corruption And Versions
 
-## Common Pitfalls
+Missing files create defaults and attempt an initial save. Malformed JSON is
+moved to a unique `<save>.corrupt-<UTC>-<GUID>.json` before defaults are created.
+If preservation fails, the original stays and the manager becomes read-only.
 
-- Do not replace the lists with `Dictionary`, `HashSet`, interfaces, or properties; `JsonUtility` will not preserve them as this contract expects.
-- Do not persist current HP. Only the permanent maximum HP multiplier belongs in meta progression.
-- Do not persist derived case availability. Task 2 computes `CaseState` from completed IDs and content definitions.
-- Call `Sanitize` after deserialization before reading or mutating save data.
-- Handle `NotSupportedException` at the file layer; do not overwrite a future-version save with older schema data.
-- Pass normalized stable IDs to `AddUnique`; load-time sanitization trims legacy entries.
-- ID matching is case-sensitive. Changing an ID after release requires an explicit migration.
-- Do not add PlayerPrefs or file IO to the core assembly.
+Sparse valid objects are sanitized: null collections, blank/duplicate IDs, and
+invalid values are repaired. IDs are trimmed. Invalid XP threshold restores 5;
+nonfinite/nonpositive multipliers restore 1; invalid additive bonuses restore 0.
+
+`Migrate` is the persistence migration entry point. Version 0/missing fields
+currently use v1 defaults and Core sanitization. Add explicit migrations there
+when adding supported schemas.
+
+Future versions are detected before sanitization. The file stays in place,
+with no backup/move/write. `IsReadOnly` and `LastError` identify the incompatible
+version and path; mutations are rejected and `SaveNow` cannot bypass this state.
+Explicit `Reload` can resolve it only after a supported file is provided.
+Core independently throws `NotSupportedException` before modifying a future DTO.
+This is not a fallback that silently autosaves defaults over newer data.
+
+## Usage
+
+```csharp
+var save = LostCity.Meta.GameRuntime.Instance.SaveGame;
+save.DiscoverClue("case_a_clue");
+var progress = save.GetPlayerProgress();
+progress.Level = 2;
+save.SetPlayerProgress(progress);
+```
+
+## Gameplay Integration
+
+PlayerProgressPersistence restores once in Start after Damageable/PlayerStats
+Awake, then subscribes only to permanent stats, experience and drone changes.
+It captures all approved player fields; damage/healing never writes the save.
+RecordReward captures progression and registers unlocks through focused methods.
+
+GameFlowManager marks completion only after a selected reward has been applied
+once and captured durably. Failed writes/read-only state cancel the success
+countdown and retain a retryable scene. Retry flushes/captures/registers without
+applying the reward again. Death reload also refuses to discard dirty progress.
+
+PendingUpgradeChoices is an additive v1 field; missing old fields default to 0,
+and negative values sanitize to 0. XP/level changes save outstanding choice debt.
+Player initialization resumes it only after all Awake methods and subscriptions.
+During a choice, Begin/EndProgressMutation suppresses stat/XP intermediate writes;
+after decrement, SetPlayerProgressAndUnlocks commits stats, choice count and
+unlock IDs in one root mutation, write and DataChanged event. A failed write
+retains that consistent dirty snapshot for retry. Old saves cannot recover debt
+that a previous build never recorded. Boss reward selection/retry remains scene
+state, so force termination during failed IO is still a durability limitation.
+
+## Verification
+
+`SaveGameDataTests` covers pure sanitization. `SaveGameManagerTests` uses
+temporary files and native JsonUtility to cover all fields, copies, idempotency,
+sparse JSON, corruption, future-version protection, and IO retry.
+Manager tests require native EditMode execution; compilation alone does not
+verify serialization or filesystem behavior inside Unity.

@@ -1,8 +1,36 @@
 # InvestigationSystem
 
+## Phase 6 Clue Layout
+
+`CaseClueLayout` owns only graybox pickup placement. Its serialized inputs are
+`investigationProgress`, an inactive `pickupTemplate`, `center` and `radius`.
+`Start()` calls `Rebuild()`, which replaces previous instances using the current
+required clue list. `SpawnedPickups` exposes a read-only view for inspection.
+
+`CluePickup.Initialize(ClueDefinition, InvestigationProgress)` assigns runtime
+data before a clone is activated; `Definition` exposes the assigned clue.
+The layout has no events. Collection continues through `TryCollectClue`.
+
+Usage: the Editor generator creates one disabled pickup template, assigns it and
+the scene investigation progress to the layout, and leaves spawning to `Start`.
+Do not also leave fixed case-specific pickups active. Invalid or duplicate clue
+IDs are skipped defensively; the registry should reject invalid playable cases
+before entering the scene. Actual scene wiring is pending Phase 6 generation.
+
 ## Purpose
 
 The investigation system tracks clues collected for the active `CaseDefinition`.
+
+In Awake it prefers GameRuntime.CaseSession.ActiveCase, preserving the serialized
+caseDefinition as a direct-scene fallback. This happens before CaseClueLayout.Start
+places pickups. Missing both sources logs an error and requests Hub return.
+Generic fallback text contains no case-specific constants.
+
+Accepted clues must belong to the selected required set, have a nonblank ID, and
+not already be collected. Collection calls MetaProgressionRecorder.RecordClue
+before notifications. Required/collected arrays are copied for external readers.
+MarkCaseSolved requires every required clue; deduction still uses the exact set.
+RewardPool exposes the shared filtered GetCompletionRewards result.
 
 ## Responsibilities
 

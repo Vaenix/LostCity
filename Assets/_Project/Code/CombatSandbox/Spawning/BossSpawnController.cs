@@ -1,4 +1,5 @@
 using System;
+using LostCity.Meta;
 using UnityEngine;
 
 namespace LostCity.CombatSandbox
@@ -22,10 +23,7 @@ namespace LostCity.CombatSandbox
 
         public void SetBossDefinition(BossDefinition definition)
         {
-            if (definition != null)
-            {
-                bossDefinition = definition;
-            }
+            bossDefinition = definition;
         }
 
         private void Start()
@@ -46,6 +44,7 @@ namespace LostCity.CombatSandbox
 
         public GameObject SpawnBoss()
         {
+            ResolveReferences();
             if (activeBoss != null)
             {
                 return activeBoss;
@@ -66,6 +65,7 @@ namespace LostCity.CombatSandbox
             hasSpawned = true;
 
             ApplyBossDefinition(activeBoss);
+            MetaProgressionRecorder.RecordBoss(bossDefinition);
 
             WardenBoss wardenBoss = activeBoss.GetComponent<WardenBoss>();
             if (wardenBoss != null && player != null)

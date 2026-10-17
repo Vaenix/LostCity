@@ -17,17 +17,21 @@ namespace LostCity.CombatSandbox
 
         private void OnEnable()
         {
+            damageable = GetComponent<Damageable>();
+            damageable.Died -= HandleDied;
             damageable.Died += HandleDied;
         }
 
         private void OnDisable()
         {
-            damageable.Died -= HandleDied;
+            if (damageable != null) damageable.Died -= HandleDied;
         }
 
         private void HandleDied(Damageable source, DamageInfo damageInfo)
         {
-            for (int i = 0; i < disableOnDeath.Length; i++)
+            GetComponent<PlayerExperience>()?.SetAcceptsExperience(false);
+            Time.timeScale = 1f;
+            for (int i = 0; disableOnDeath != null && i < disableOnDeath.Length; i++)
             {
                 if (disableOnDeath[i] != null)
                 {

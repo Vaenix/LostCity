@@ -3,92 +3,79 @@
 ## Core Loop
 
 ```mermaid
-flowchart TD
-    Explore["探索"]
-    Collect["收集线索"]
-    Deduce["推理"]
-    Truth["真相重现"]
-    BossSpawn["Boss生成"]
-    BossFight["Boss战"]
-    BossDeath["Boss死亡"]
-    Reward["奖励选择"]
-    Complete["章节完成"]
-    Next["下一章节开发中"]
-
-    Explore --> Collect
-    Collect --> Deduce
-    Deduce --> Truth
-    Truth --> BossSpawn
-    BossSpawn --> BossFight
-    BossFight --> BossDeath
-    BossDeath --> Reward
-    Reward --> Complete
-    Complete --> Next
+flowchart LR
+    Hub["大厅"] --> Select["选择可用案件"]
+    Select --> Explore["探索 / 收集线索"]
+    Explore --> Deduce["推理 / 真相重现"]
+    Deduce --> Boss["首领战"]
+    Boss --> Upgrades["结算经验 / 待选升级"]
+    Upgrades --> Reward["选择案件奖励"]
+    Reward --> Save["保存进度与案件完成"]
+    Save --> Complete["案件完成"]
+    Complete --> Hub
 ```
 
-## Investigation
+## Investigation And Deduction
 
-The player explores the active case, finds clue pickups, and collects all required clues from `CaseDefinition.Clues`. Collecting the full required clue set moves `GameFlowManager` from `Investigation` to `Deduction`.
+The active CaseDefinition supplies all clues, question, answer, boss, and completion
+rewards. The shared scene places every required clue using CaseClueLayout.
+E collects a nearby clue, J opens the journal, Tab opens deduction.
+Clues remain handcrafted; the current deduction prototype validates a configured clue
+set, not free-form natural-language hypotheses.
 
-## Deduction
-
-The player opens the deduction board, selects collected clues, and submits them. The current MVP requires selecting all required clues exactly. Correct submission shows `真相已重构`, displays `CaseDefinition.CorrectAnswer`, and raises `CaseSolved`.
-
-## Combat
-
-`GameFlowManager` receives `CaseSolved`, disables the deduction board, enables combat spawning, passes `CaseDefinition.BossDefinition` to `BossSpawnController`, and spawns the configured boss.
-
-Combat uses:
-
-- Pistol manual weapon.
-- Memory orb automatic weapon.
-- Weighted enemy spawning.
-- Boss from `BossDefinition`.
-- Player stats for damage, crit, defense, dodge, health, and movement.
-
-## Reward
-
-When the boss dies, combat stops, remaining enemies are removed, and the reward screen appears.
-
-Temporary rewards are `RewardDefinition` assets:
-
-- `+10%攻击力`
-- `+10%生命值`
-- `+5%暴击率`
-
-Rewards modify `PlayerStats` and remain active for the current session.
-
-## Next Chapter
-
-After reward selection, the chapter completion screen appears. Pressing Space shows `下一章节开发中`. This validates chapter progression architecture only. There is no Chapter 2 content.
+Each collection updates transient investigation state and the permanent archive.
+A failed/replayed investigation starts fresh locally while previous discoveries remain
+reviewable from Hub. Previously discovered clues do not auto-solve a replay.
 
 ## Player Progression
 
-Player progression currently has two layers:
+XP levels offer one upgrade choice per gained level. Attack, maximum health, fire rate,
+crit, dodge, and drone count modifiers persist through the player persistence adapter.
+Level, partial XP, next threshold, and unspent upgrade choices persist. Current HP and spawned pickups are not saves.
+A new run starts at restored maximum health.
+An upgrade choice and its stat/unlock effect are saved together; quitting between
+level-up and selection restores the choice on the next run without duplicating an effect.
 
-- Run XP and level-up choices from combat XP.
-- Chapter reward choices after boss death.
-
-There is no save system yet, so progression is not persistent across editor Play Mode sessions.
+Permanent unlock rewards record stable UnlockIds. They do not invent a general inventory.
+Normal damage/healing refreshes HUD without an autosave on every hit.
 
 ## Boss Progression
 
-The Room 304 boss is configured through `BossDefinition`. It exists to validate:
+Correct deduction starts combat and spawns the case boss. Encountering it updates the
+bestiary. Boss death stops spawning and player fire, removes remaining enemies,
+projectiles, and loose XP pickups. Boss XP is awarded directly once at death so a
+delayed pickup cannot reopen upgrade UI over the victory screen.
 
-- Boss spawn after deduction.
-- Boss death event handling.
-- Combat shutdown.
-- Reward transition.
+Pending level-up choices finish before the case reward is shown. Applying the chosen
+case reward, capturing player progress, and recording case completion precede the
+completion screen. Save retries must not apply the reward twice.
+
+## Chapter Progression
+
+Registry derives Locked, Available, and Completed from chapter prerequisites and ordered
+predecessor completion. Valid unassigned cases appear separately. Completed cases can
+be investigated again. Room 304 completion unlocks the next-case placeholder, but its
+IsPlayable=false keeps its start button disabled. This is not Chapter 2 content.
 
 ## Failure States
 
-- Player death uses `PlayerDeathHandler` and restarts after a delay.
-- Incorrect deduction submission keeps the player in deduction flow.
-- Missing generated references can break UI or scene flow. Use the generator before testing.
+- Incorrect/incomplete deduction: remain in investigation/deduction; no boss.
+- Player death: capture permanent progress, reset timeScale, reload the selected case.
+- Storage failure: keep dirty progress in memory, show Chinese status/retry; do not claim
+  durable case completion or unload pending progress.
+- Future save schema: read-only, no destructive fallback; Hub blocks starting.
+- Missing/ambiguous content: refuse starting with a configuration reason.
+- Scene load failure: restore timeScale and report failure; completion offers retry.
 
 ## Victory States
 
-- Boss defeated.
-- Reward selected.
-- Chapter complete screen shown.
-- Placeholder next chapter state shown.
+Boss Defeated is the transition into Reward, not final completion. ChapterComplete is
+the retained local enum name for a completed case. The UI says 案件完成 and returns to
+Hub after three unscaled seconds, or Space immediately. Archive/bestiary and case states
+refresh from persistent services without restarting the game.
+
+## Verification Boundary
+
+See PhaseReport for actual command results. EditMode covers rules, native save data,
+UI/controller contracts and generated references. It is not proof of rendering, clicking,
+combat feel, or real scene-transition gameplay; those manual checks belong to the user.

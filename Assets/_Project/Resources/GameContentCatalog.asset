@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ee4bf47e63ac4ea8baf7c8d8e33a0d78, type: 3}
+  m_Name: GameContentCatalog
+  m_EditorClassIdentifier: 
+  cases:
+  - {fileID: 11400000, guid: f3e7be4c0ec54c359778d27660509721, type: 2}
+  - {fileID: 11400000, guid: 590b0aff1918448f681fa64bfbd5da1d, type: 2}
+  chapters:
+  - {fileID: 11400000, guid: 1ac4ed0b4e6364a13b9d02f2a963bfad, type: 2}
+  clues:
+  - {fileID: 11400000, guid: a54446c1318a64d3eb9090aa949380bf, type: 2}
+  - {fileID: 11400000, guid: cd99b1d0226034db887413d43c34cd08, type: 2}
+  - {fileID: 11400000, guid: 91135cb3bdccc4652b9a3b92af7cdfbc, type: 2}
+  enemies:
+  - {fileID: 11400000, guid: a2e7cb14f9cad49f09187bdf7ab19efe, type: 2}
+  - {fileID: 11400000, guid: fd68aac5fc9324267bf1ff392a43c2b5, type: 2}
+  - {fileID: 11400000, guid: 846c7bea9cedc41feafaaea4a060524c, type: 2}
+  - {fileID: 11400000, guid: 6eb4a862365c540fcb3a02bb09e7d605, type: 2}
+  bosses:
+  - {fileID: 11400000, guid: d91d2d67c62d47a88ca23fa514fb28a7, type: 2}

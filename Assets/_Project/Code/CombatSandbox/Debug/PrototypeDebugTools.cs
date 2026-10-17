@@ -3,7 +3,7 @@ using UnityEngine.InputSystem;
 
 namespace LostCity.CombatSandbox
 {
-    public sealed class Room304DebugTools : MonoBehaviour
+    public sealed class PrototypeDebugTools : MonoBehaviour
     {
         [SerializeField] private GameFlowManager gameFlowManager;
 

@@ -356,6 +356,7 @@ GameObject:
   - component: {fileID: 2275886645593883506}
   - component: {fileID: 2501992688363430064}
   - component: {fileID: 4555022318438269549}
+  - component: {fileID: 4583154246667917852}
   - component: {fileID: 2758744111328649278}
   m_Layer: 0
   m_Name: Player
@@ -658,6 +659,21 @@ MonoBehaviour:
   currentExperience: 0
   experienceToNextLevel: 5
   nextLevelExperienceMultiplier: 1.35
+--- !u!114 &4583154246667917852
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5703686875371781869}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e6cd32a85b07b4729bba443164634613, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerStats: {fileID: 3232038580865093327}
+  playerExperience: {fileID: 4555022318438269549}
+  combatUpgradeStats: {fileID: 4450736707726040053}
 --- !u!114 &2758744111328649278
 MonoBehaviour:
   m_ObjectHideFlags: 0

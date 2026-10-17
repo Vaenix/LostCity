@@ -1,122 +1,139 @@
 # Architecture
 
+## Phase Status
+
+Phase 6 integrates the existing Room 304 prototype into a multi-case framework.
+Source and generated assets must pass the gates in PhaseReport before release.
+No second chapter, new boss, new weapon, final story, or art is added.
+
 ## System Overview
-
-Lost City currently runs as a generated Unity combat sandbox scene with Room 304 investigation and chapter flow layered on top. Phase 5 freezes the demo into a data-driven framework for cases, clues, bosses, rewards, and prompts.
-
-The prototype is intentionally simple:
-
-- One generated scene.
-- One playable player.
-- One `CaseDefinition` for Room 304.
-- One deduction board.
-- One boss encounter.
-- One reward screen.
-- One placeholder next chapter state.
-
-## Manager Overview
-
-| Manager or Controller | Purpose |
-| --- | --- |
-| `GameFlowManager` | Owns Room 304 state transitions. |
-| `InvestigationProgress` | Reads `CaseDefinition`, tracks collected clues, and reports deduction success. |
-| `DeductionBoard` | Lets the player choose clues and submit the deduction. |
-| `EnemySpawner` | Spawns weighted enemy archetypes during combat. |
-| `BossSpawnController` | Reads `BossDefinition`, spawns the boss prefab, and exposes the active boss. |
-| `PlayerStats` | Stores player combat and progression stats for the current session. |
-| `Room304RewardSelectionUI` | Displays and applies `RewardDefinition` choices. |
-| `Room304CompletionUI` | Shows chapter completion and placeholder next chapter text. |
-| `GamePromptManager` | Centralizes prototype prompts by prompt type. |
-| `CombatSandboxCreator` | Editor automation that generates scene, prefabs, ScriptableObjects, input actions, and references. |
-
-## State Machine
-
-```mermaid
-stateDiagram-v2
-    [*] --> Investigation
-    Investigation --> Deduction: all required clues collected
-    Deduction --> Combat: correct deduction submitted
-    Combat --> Reward: boss dies
-    Reward --> ChapterComplete: reward selected
-    ChapterComplete --> ChapterComplete: Space shows placeholder next chapter
-```
-
-## Scene Flow
 
 ```mermaid
 flowchart TD
-    Create["Tools/Lost City/Create Combat Sandbox"]
-    Scene["CombatSandbox.unity"]
-    Play["Enter Play Mode"]
-    Explore["Investigation"]
-    Deduce["Deduction"]
-    Fight["Combat"]
-    Reward["Reward"]
-    Complete["ChapterComplete"]
-
-    Create --> Scene
-    Scene --> Play
-    Play --> Explore
-    Explore --> Deduce
-    Deduce --> Fight
-    Fight --> Reward
-    Reward --> Complete
+    Data["Case / Chapter / Clue / Enemy / Boss definitions"] --> Builder["Editor catalog builder"]
+    Builder --> Catalog["Resources/GameContentCatalog"]
+    Bootstrap["RuntimeBootstrap"] --> Runtime["GameRuntime: persistent root"]
+    Runtime --> Save["SaveGameManager"]
+    Runtime --> Registry["CaseRegistry"]
+    Catalog --> Registry
+    Save --> Registry
+    Runtime --> Session["CaseSessionManager"]
+    Runtime --> Scenes["SceneFlowManager"]
+    Registry --> Hub["Hub selection / archive / bestiary"]
+    Hub --> Session
+    Session --> Investigation["InvestigationProgress"]
+    Investigation --> Layout["CaseClueLayout"]
+    Investigation --> Flow["GameFlowManager"]
+    Flow --> Boss["BossSpawnController / Damageable"]
+    Boss --> Flow
+    Flow --> Reward["RewardSelectionUI"]
+    Reward --> Flow
+    Flow --> Stats["PlayerStats / PlayerExperience / CombatUpgradeStats"]
+    Stats --> Persistence["PlayerProgressPersistence"]
+    Persistence --> Save
+    Investigation --> Recorder["MetaProgressionRecorder"]
+    Boss --> Recorder
+    Recorder --> Save
+    Flow --> Scenes
+    Scenes --> Hub
 ```
 
-## Data Flow
+## Manager Overview
+
+| Owner | Responsibility |
+| --- | --- |
+| RuntimeBootstrap / GameRuntime | Create one persistent root; initialize save before registry, session, and scene flow |
+| SaveGameManager | JSON load, atomic save, version protection, focused mutations, IO diagnostics |
+| CaseRegistry | Validated definition indices; derive case states and start eligibility |
+| CaseSessionManager | Selected case for the active run; survives scene reload |
+| SceneFlowManager | Hub/shared-scene loading and timeScale reset |
+| InvestigationProgress | Transient collected clues and deduction success for the active definition |
+| GameFlowManager | Local investigation-to-completion transitions; durable case completion |
+| PlayerProgressPersistence | Restore permanent modifiers/XP once, capture relevant mutations |
+| MetaProgressionRecorder | Idempotent clue/enemy/boss discovery writes |
+| CombatGameManager | Failure reload while retaining selected case and permanent progress |
+
+UI presents state; it does not decide unlock rules. Boss reward application and completion
+persistence belong to GameFlowManager. Generic RewardSelectionUI only reports a choice.
+
+## State Machines
 
 ```mermaid
-flowchart LR
-    Case["CaseDefinition"]
-    Clue["ClueDefinition"]
-    Pickup["CluePickup"]
-    Progress["InvestigationProgress"]
-    Board["DeductionBoard"]
-    Flow["GameFlowManager"]
-    BossData["BossDefinition"]
-    Boss["BossSpawnController"]
-    RewardData["RewardDefinition"]
-    Reward["Room304RewardSelectionUI"]
-    Stats["PlayerStats"]
-    Prompt["GamePromptManager"]
-
-    Case --> Clue
-    Case --> BossData
-    Case --> RewardData
-    Clue --> Pickup
-    Pickup --> Progress
-    Pickup --> Prompt
-    Progress --> Board
-    Board --> Progress
-    Progress --> Flow
-    BossData --> Boss
-    Flow --> Boss
-    Boss --> Flow
-    RewardData --> Reward
-    Flow --> Reward
-    Reward --> Stats
+stateDiagram-v2
+    [*] --> Hub
+    Hub --> Investigation: valid unlocked playable case
+    Investigation --> Deduction: all required clues collected
+    Deduction --> Combat: correct submission
+    Combat --> Reward: boss dies / stop combat
+    Reward --> Reward: finish queued level-up choices
+    Reward --> ChapterComplete: apply reward and persist completion
+    Reward --> SaveRetry: storage failure
+    SaveRetry --> ChapterComplete: retry succeeds without duplicate reward
+    ChapterComplete --> Hub: unscaled countdown or Space
+    Combat --> Investigation: player dies / reload selected case
 ```
 
-## Dependencies
+GameFlowState remains Investigation, Deduction, Combat, Reward, ChapterComplete.
+Hub is a scene, not an added local enum member. SaveRetry is an error presentation while
+remaining in Reward; it is not a persisted state. CaseState is separately derived as
+Locked, Available, or Completed. Completed cases can replay; placeholders can unlock
+without becoming playable.
 
-- Runtime input uses Unity Input System.
-- UI uses Unity UI.
-- Combat physics uses Unity 2D physics.
-- Generated assets are graybox placeholders.
-- `CombatSandboxCreator` depends on UnityEditor APIs and only runs in the Editor.
+## Scene Flow
 
-## Subsystem Relationships
+Build order: 0 Hub, 1 CombatSandbox. GameRuntime uses DontDestroyOnLoad.
+Selecting a case establishes a session before loading the shared scene.
+InvestigationProgress.Awake reads the session; its serialized definition is only a
+direct-scene fallback. CaseClueLayout.Start creates pickups from that definition.
+Completion returns to Hub and ends the session. Failure reload retains the session.
 
-- Investigation and deduction are data-driven by `CaseDefinition` and `ClueDefinition`; mystery logic remains handcrafted data.
-- Combat starts only after deduction success or debug spawn.
-- Rewards are `RewardDefinition` assets and apply to `PlayerStats` or `CombatUpgradeStats`.
-- Boss setup is driven by `BossDefinition` plus the boss prefab.
-- Prototype prompts route through `GamePromptManager`.
-- Chapter progression currently ends at a placeholder state. No Chapter 2 content exists.
+The generator seeds Room 304 and one metadata-only placeholder in Chapter_01.
+Runtime controllers contain no Room304 identifiers or story constants.
 
-## Known Architecture Debt
+## Data Flow And Lifetime
 
-- `Room304GameStateController` is legacy and should be retired after generated scenes fully migrate to `GameFlowManager`.
-- Scene generation still needs a stronger automated validation pass for all serialized references.
-- Session persistence exists only in-memory through scene objects. There is no save system.
-- `Room304RewardSelectionUI` is now data-driven but still carries a Room304-specific class name.
+| Data | Lifetime / owner |
+| --- | --- |
+| Content names, IDs, clue relations, reward pools | ScriptableObjects, read-only at runtime |
+| Level, XP, pending upgrade choices and permanent modifiers | SaveGameData.PlayerProgress |
+| Completed cases, discoveries and unlocks | Sets of stable IDs in SaveGameData |
+| Current case selection | CaseSessionManager, across scene changes but not application restarts |
+| Current HP, enemies, projectiles, collected run clues | Scene components, reset per run |
+| Locked/Available/Completed | Derived from definitions and completion IDs; not redundantly saved |
+
+Restore occurs after Awake so Damageable cannot overwrite restored maximum health.
+Current HP is not a permanent upgrade; entering a fresh run restores health.
+Health changes refresh HUD but do not write the save.
+Upgrade selection batches its stat effect, consumed choice, and any unlock into a
+single save snapshot. An interrupted run restores unspent choices after all Awake
+callbacks, rather than silently granting a level without its upgrade.
+
+## Dependencies And Boundaries
+
+- LostCity.Meta.Core: no UnityEngine references; DTOs, sanitization, progression rules.
+- LostCity.Meta.Persistence: Core + UnityEngine; JSON/filesystem adapter.
+- Assembly-CSharp: runtime services, definition assets, combat and UI.
+- Assembly-CSharp-Editor: generators, postprocessor and validation utilities.
+- Tests reference Core/Persistence directly and predefined assemblies through reflection.
+- Existing packages: Unity Input System, Unity UI, 2D physics, Test Framework. No new package.
+
+## Extension Relationships
+
+Catalog discovery is editor-only and automatically follows definition assets. Duplicate
+IDs exclude all ambiguous entries. Chapter ordering/prerequisites drive progression;
+unassigned cases remain discoverable. A valid playable case requires clues, deduction
+text, registered boss with Damageable, and applicable rewards.
+
+CaseClueLayout removes the former three-clue scene assumption. The layout is a temporary
+graybox arrangement, not a procedural mystery generator. Reward validation and presentation
+share GetCompletionRewards, avoiding a startable case with an empty reward screen.
+
+## Failure Boundaries And Debt
+
+Save writes use same-directory temporary files and atomic replacement with a previous
+backup. Corruption is preserved; future schemas are read-only. IO errors remain visible
+and retryable, not silently reported as completion. One local writer is supported.
+
+Native save/reload and generated references are distinct from gameplay verification.
+The user owns normal UI, combat feel, and full-loop Play Mode acceptance. The large
+sandbox generator, prototype font fallback, and simple deduction model remain deliberate debt.

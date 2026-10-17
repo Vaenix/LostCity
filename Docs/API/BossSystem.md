@@ -21,6 +21,8 @@ No public fields. Boss prefab and spawn references are serialized.
 
 - `BossSpawnController.ActiveBoss`
 - `BossDefinition.Name`
+- `BossDefinition.BossId`
+- `BossDefinition.BestiaryDescription`
 - `BossDefinition.Health`
 - `BossDefinition.MoveSpeed`
 - `BossDefinition.Skills`
@@ -43,6 +45,16 @@ No public fields. Boss prefab and spawn references are serialized.
 
 - `BossSpawnController.BossSpawned`
 - `Damageable.Died`
+
+SpawnBoss records the configured BossId through MetaProgressionRecorder after
+applying its definition. Repeated spawn requests return the active instance and
+do not duplicate encounters. Setting a null definition clears stale selection.
+
+GameFlowManager disables the tracked boss's XpDropper and awards XpReward directly
+once on death, before closing XP intake. This intentionally replaces the old
+late boss-orb pickup behavior. Enemies, projectiles and remaining XP orbs are
+cleared, but every existing/boss-earned level choice is drained before showing
+the case reward. GameplayMetaIntegrationTests verifies this ordering.
 
 ## Usage Example
 

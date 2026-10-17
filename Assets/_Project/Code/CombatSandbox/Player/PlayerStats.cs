@@ -1,4 +1,5 @@
 using System;
+using LostCity.Meta.Core;
 using UnityEngine;
 
 namespace LostCity.CombatSandbox
@@ -19,8 +20,15 @@ namespace LostCity.CombatSandbox
         [SerializeField] private float pickupRadius = 3.5f;
 
         private Damageable damageable;
+        private float baseMaxHp;
+        private float baseAttack;
+        private float baseFireRate;
+        private float baseCritChance;
+        private float baseDodgeChance;
+        private bool baselineCaptured;
 
         public event Action StatsChanged;
+        public event Action PermanentProgressChanged;
 
         public float MaxHp => Mathf.Max(1f, maxHp);
         public float CurrentHp => Mathf.Clamp(currentHp, 0f, MaxHp);
@@ -33,10 +41,16 @@ namespace LostCity.CombatSandbox
         public float DodgeChance => Mathf.Clamp01(dodgeChance);
         public float XpMultiplier => Mathf.Max(0.01f, xpMultiplier);
         public float PickupRadius => Mathf.Max(0.1f, pickupRadius);
+        public float AttackMultiplier => Attack / Mathf.Max(0.01f, baseAttack);
+        public float MaxHpMultiplier => MaxHp / Mathf.Max(1f, baseMaxHp);
+        public float FireRateMultiplier => FireRate / Mathf.Max(0.01f, baseFireRate);
+        public float CritChanceBonus => Mathf.Max(0f, CritChance - baseCritChance);
+        public float DodgeChanceBonus => Mathf.Max(0f, DodgeChance - baseDodgeChance);
 
         private void Awake()
         {
             damageable = GetComponent<Damageable>();
+            CaptureBaseline();
             maxHp = MaxHp;
             currentHp = Mathf.Clamp(currentHp <= 0f ? maxHp : currentHp, 0f, maxHp);
             damageable.SetMaxHealth(maxHp, resetCurrentHealth: true);
@@ -45,18 +59,55 @@ namespace LostCity.CombatSandbox
 
         private void OnEnable()
         {
+            damageable = GetComponent<Damageable>();
+            damageable.HealthChanged -= HandleHealthChanged;
             damageable.HealthChanged += HandleHealthChanged;
         }
 
         private void OnDisable()
         {
-            damageable.HealthChanged -= HandleHealthChanged;
+            if (damageable != null) damageable.HealthChanged -= HandleHealthChanged;
+        }
+
+        public void ApplyPermanentProgress(PlayerProgressData progress)
+        {
+            CaptureBaseline();
+            var sanitized = SaveGameData.CreateDefault();
+            sanitized.PlayerProgress = new PlayerProgressData
+            {
+                AttackMultiplier = progress?.AttackMultiplier ?? 1f,
+                MaxHpMultiplier = progress?.MaxHpMultiplier ?? 1f,
+                FireRateMultiplier = progress?.FireRateMultiplier ?? 1f,
+                CritChanceBonus = progress?.CritChanceBonus ?? 0f,
+                DodgeChanceBonus = progress?.DodgeChanceBonus ?? 0f
+            };
+            var valid = SaveDataSanitizer.Sanitize(sanitized).PlayerProgress;
+            attack = baseAttack * valid.AttackMultiplier;
+            maxHp = baseMaxHp * valid.MaxHpMultiplier;
+            fireRate = baseFireRate * valid.FireRateMultiplier;
+            critChance = Mathf.Clamp01(baseCritChance + valid.CritChanceBonus);
+            dodgeChance = Mathf.Clamp01(baseDodgeChance + valid.DodgeChanceBonus);
+            damageable = GetComponent<Damageable>();
+            damageable.SetMaxHealth(MaxHp, resetCurrentHealth: true);
+            currentHp = damageable.CurrentHealth;
+            StatsChanged?.Invoke();
+        }
+
+        private void CaptureBaseline()
+        {
+            if (baselineCaptured) return;
+            baseMaxHp = MaxHp;
+            baseAttack = Attack;
+            baseFireRate = FireRate;
+            baseCritChance = CritChance;
+            baseDodgeChance = DodgeChance;
+            baselineCaptured = true;
         }
 
         public void MultiplyAttack(float multiplier)
         {
             attack = Mathf.Max(0.01f, attack * Mathf.Max(0.01f, multiplier));
-            NotifyChanged();
+            NotifyPermanentChanged();
         }
 
         public void MultiplyMaxHp(float multiplier)
@@ -68,25 +119,25 @@ namespace LostCity.CombatSandbox
                 currentHp = damageable.CurrentHealth;
             }
 
-            NotifyChanged();
+            NotifyPermanentChanged();
         }
 
         public void MultiplyFireRate(float multiplier)
         {
             fireRate = Mathf.Max(0.01f, fireRate * Mathf.Max(0.01f, multiplier));
-            NotifyChanged();
+            NotifyPermanentChanged();
         }
 
         public void AddCritChance(float amount)
         {
             critChance = Mathf.Clamp01(critChance + amount);
-            NotifyChanged();
+            NotifyPermanentChanged();
         }
 
         public void AddDodgeChance(float amount)
         {
             dodgeChance = Mathf.Clamp01(dodgeChance + amount);
-            NotifyChanged();
+            NotifyPermanentChanged();
         }
 
         public float RollOutgoingDamageMultiplier()
@@ -125,6 +176,12 @@ namespace LostCity.CombatSandbox
         private void NotifyChanged()
         {
             StatsChanged?.Invoke();
+        }
+
+        private void NotifyPermanentChanged()
+        {
+            StatsChanged?.Invoke();
+            PermanentProgressChanged?.Invoke();
         }
     }
 }

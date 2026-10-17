@@ -4,7 +4,8 @@ This folder is the source of truth for Lost City development. Code is not consid
 
 ## Current Phase
 
-Lost City is entering **Phase 6, Meta Framework**.
+Lost City has implemented **Phase 6, Meta Framework**. Automated acceptance passes;
+manual Play Mode acceptance remains pending. See [PhaseReport](PhaseReport.md).
 
 - [Approved design](superpowers/specs/2026-06-12-phase-6-meta-framework-design.md)
 - [Implementation plan](superpowers/plans/2026-06-12-phase-6-meta-framework.md)
@@ -12,7 +13,7 @@ Lost City is entering **Phase 6, Meta Framework**.
 The active prototype validates this chain:
 
 ```text
-探索 -> 收集线索 -> 推理成功 -> Boss生成 -> Boss战 -> Boss死亡 -> 奖励选择 -> 章节完成
+大厅 -> 选择案件 -> 探索 -> 收集线索 -> 推理 -> Boss -> 奖励 -> 案件完成 -> 大厅
 ```
 
 Phase 6 adds Hub, registry, progression, persistence, archive, bestiary, chapter, and return-flow architecture without adding final story, art, VFX, Chapter 2, or new playable content.
@@ -41,6 +42,11 @@ Phase 6 adds Hub, registry, progression, persistence, archive, bestiary, chapter
 - [EnemySystem](API/EnemySystem.md)
 - [WeaponSystem](API/WeaponSystem.md)
 - [UISystem](API/UISystem.md)
+- [SaveSystem](API/SaveSystem.md)
+- [CaseRegistry](API/CaseRegistry.md)
+- [ArchiveSystem](API/ArchiveSystem.md)
+- [BestiarySystem](API/BestiarySystem.md)
+- [Verification commands](../Tools/Verification/README.md)
 
 ## Development Rules
 

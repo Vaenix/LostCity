@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace LostCity.CombatSandbox
@@ -26,9 +27,27 @@ namespace LostCity.CombatSandbox
         public int IntegerValue => integerValue;
         public WeaponDefinition WeaponDefinition => weaponDefinition;
         public string UnlockId => unlockId;
+        public bool IsApplicable
+        {
+            get
+            {
+                switch (rewardType)
+                {
+                    case RewardType.Attribute:
+                    case RewardType.Passive:
+                        return Enum.IsDefined(typeof(RewardStatType), statType) && statType != RewardStatType.None
+                            && !float.IsNaN(multiplier) && !float.IsInfinity(multiplier)
+                            && !float.IsNaN(additiveValue) && !float.IsInfinity(additiveValue);
+                    case RewardType.Weapon: return statType == RewardStatType.DroneProjectileAdd;
+                    case RewardType.Unlock: return !string.IsNullOrWhiteSpace(unlockId);
+                    default: return false;
+                }
+            }
+        }
 
         public void Apply(PlayerStats playerStats, CombatUpgradeStats upgradeStats)
         {
+            if (!IsApplicable) return;
             switch (rewardType)
             {
                 case RewardType.Attribute:

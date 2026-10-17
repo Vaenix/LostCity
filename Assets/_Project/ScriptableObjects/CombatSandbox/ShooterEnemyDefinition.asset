@@ -12,7 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b540fb516239e42f4a78f3b202ae410e, type: 3}
   m_Name: ShooterEnemyDefinition
   m_EditorClassIdentifier: 
-  displayName: Shooter
+  enemyId: enemy_shooter
+  bestiaryDescription: "\u5C04\u624B\uFF0C\u6218\u6597\u539F\u578B\u654C\u4EBA\u3002"
+  displayName: "\u5C04\u624B"
   archetype: 2
   maxHealth: 34
   moveSpeed: 2.4

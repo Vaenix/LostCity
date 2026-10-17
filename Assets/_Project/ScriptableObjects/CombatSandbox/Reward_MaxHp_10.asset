@@ -11,14 +11,14 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 81ce39ae6b3b453ea72a6e22af17a5a9, type: 3}
   m_Name: Reward_MaxHp_10
-  m_EditorClassIdentifier:
+  m_EditorClassIdentifier: 
   rewardId: reward_max_hp_10
-  displayName: +10%生命值
-  description: 永久提高最大生命值。
+  displayName: "+10%\u751F\u547D\u503C"
+  description: "\u6C38\u4E45\u63D0\u9AD8\u6700\u5927\u751F\u547D\u503C\u3002"
   rewardType: 0
   statType: 2
   multiplier: 1.1
   additiveValue: 0
   integerValue: 0
   weaponDefinition: {fileID: 0}
-  unlockId:
+  unlockId: 

@@ -51,8 +51,17 @@ Null arrays are normalized to empty arrays.
 - `BossDefinition`
 - `RewardPool`
 - `CompletionText`
+- `CaseSummary`
+- `IsPlayable`
 
-Phase 6 Task 2 does not modify `CaseDefinition`; later catalog work supplies its metadata to these pure rules.
+CaseDefinition.GetCompletionRewards() returns applicable case rewards, or the
+filtered boss pool when none remain. CaseRegistry validates this same result;
+GameFlow and RewardSelectionUI must not consume unfiltered reward slots.
+
+InvestigationProgress resolves the selected CaseSession definition in Awake,
+before graybox clue layout in Start. A serialized definition remains available
+for direct-scene testing. Completion is recorded only after a real reward is
+applied and progression captured; failed storage remains retryable.
 
 ## Public Methods
 
