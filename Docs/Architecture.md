@@ -23,6 +23,8 @@ flowchart TD
     Hub --> Session
     Session --> Investigation["InvestigationProgress"]
     Investigation --> Layout["CaseClueLayout"]
+    Authored["Optional authored pickups"] --> Layout
+    Layout --> Pickups["Reuse matching placements / generate missing clues"]
     Investigation --> Flow["GameFlowManager"]
     Flow --> Boss["BossSpawnController / Damageable"]
     Boss --> Flow
@@ -84,11 +86,16 @@ without becoming playable.
 Build order: 0 Hub, 1 CombatSandbox. GameRuntime uses DontDestroyOnLoad.
 Selecting a case establishes a session before loading the shared scene.
 InvestigationProgress.Awake reads the session; its serialized definition is only a
-direct-scene fallback. CaseClueLayout.Start creates pickups from that definition.
+direct-scene fallback. CaseClueLayout.Start reuses matching authored pickups and
+creates missing pickups from that definition.
 Completion returns to Hub and ends the session. Failure reload retains the session.
 
 The generator seeds Room 304 and one metadata-only placeholder in Chapter_01.
-Runtime controllers contain no Room304 identifiers or story constants.
+Active Phase 6 controllers contain no Room304 identifiers or story constants.
+The deprecated `Room304GameStateController` is a passive serialization shell with
+the historical script GUID and five private serialized references. It keeps untouched
+legacy scenes free of Missing Script without restoring a competing state machine.
+It does not make a legacy Room scene a playable Phase 6 entry point; start from Hub.
 
 ## Data Flow And Lifetime
 
@@ -125,7 +132,9 @@ unassigned cases remain discoverable. A valid playable case requires clues, dedu
 text, registered boss with Damageable, and applicable rewards.
 
 CaseClueLayout removes the former three-clue scene assumption. The layout is a temporary
-graybox arrangement, not a procedural mystery generator. Reward validation and presentation
+graybox arrangement, not a procedural mystery generator. Its optional authored pickup
+list retains existing scene placements during migration; only generated clones are
+destroyed on rebuild. Reward validation and presentation
 share GetCompletionRewards, avoiding a startable case with an empty reward screen.
 
 ## Failure Boundaries And Debt

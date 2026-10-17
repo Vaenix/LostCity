@@ -3,9 +3,11 @@
 ## Phase 6 Clue Layout
 
 `CaseClueLayout` owns only graybox pickup placement. Its serialized inputs are
-`investigationProgress`, an inactive `pickupTemplate`, `center` and `radius`.
-`Start()` calls `Rebuild()`, which replaces previous instances using the current
-required clue list. `SpawnedPickups` exposes a read-only view for inspection.
+`investigationProgress`, an inactive `pickupTemplate`, optional `authoredPickups`,
+`center` and `radius`. `Start()` calls `Rebuild()`, which replaces only previously
+generated instances. Matching authored pickups are reused by clue ID without moving
+or reparenting them; missing required clues are generated from the template.
+`SpawnedPickups` exposes the resulting authored-plus-generated set as a read-only view.
 
 `CluePickup.Initialize(ClueDefinition, InvestigationProgress)` assigns runtime
 data before a clone is activated; `Definition` exposes the assigned clue.
@@ -13,9 +15,12 @@ The layout has no events. Collection continues through `TryCollectClue`.
 
 Usage: the Editor generator creates one disabled pickup template, assigns it and
 the scene investigation progress to the layout, and leaves spawning to `Start`.
-Do not also leave fixed case-specific pickups active. Invalid or duplicate clue
-IDs are skipped defensively; the registry should reject invalid playable cases
-before entering the scene. Actual scene wiring is pending Phase 6 generation.
+Existing authored scenes register their fixed pickups in `authoredPickups`; do not
+leave extra, unmanaged duplicates active. Unused authored pickups are hidden at runtime,
+never destroyed. An empty authored array keeps the generator's original behavior.
+Invalid or duplicate clue IDs are skipped defensively; the registry should reject
+invalid playable cases before entering the scene. The template must be distinct from
+the authored objects. Rebuild is a run setup operation, not a collection-event handler.
 
 ## Purpose
 

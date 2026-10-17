@@ -34,9 +34,9 @@ All paths below are under `Assets/_Project/Code/CombatSandbox`.
 | Folder | Responsibility | Key types |
 | --- | --- | --- |
 | Camera | Top-down following | SimpleTopDownCameraFollow |
-| Core | Damage, teams and local flow | Damageable, GameFlowManager, GameFlowState |
+| Core | Damage, teams and local flow; passive legacy serialization compatibility | Damageable, GameFlowManager, GameFlowState, deprecated Room304GameStateController |
 | Debug | Prototype shortcuts | PrototypeDebugTools |
-| Editor | Asset/scene creation, catalog indexing and validation | CombatSandboxCreator, HubSceneBuilder, GameContentCatalogBuilder, Phase6EditorValidation |
+| Editor | Asset/scene creation, additive migration, catalog indexing and validation | CombatSandboxCreator, HubSceneBuilder, Phase6ProjectMigration, GameContentCatalogBuilder, Phase6EditorValidation |
 | Enemies | Definitions and behavior | EnemyDefinition, MemoryFragmentEnemy, BossDefinition, WardenBoss |
 | Feedback | Combat feedback | HitFlash, WorldHealthBar |
 | Investigation | Case/clue data, pickups and transient clue state | CaseDefinition, ClueDefinition, CluePickup, CaseClueLayout, InvestigationProgress |
@@ -60,8 +60,7 @@ All paths below are under `Assets/_Project/Code/CombatSandbox`.
 | Settings/Input | CombatSandbox.inputactions plus persistent action references |
 | Tests/EditMode/Meta | Pure core tests and Unity-native save/content/UI tests |
 
-Generation status is in PhaseReport; paths describe intended generator output, not a claim
-that ungenerated scenes already exist. Add custom content outside seeded paths because
+Generation and integration status are in PhaseReport and Phase6Integration. Add custom content outside seeded paths because
 Create Combat Sandbox overwrites its seed values.
 
 ## Documentation

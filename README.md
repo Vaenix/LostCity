@@ -12,7 +12,7 @@ The current content is **Room 304**, a graybox architecture prototype, not final
 
 ## Current Development Phase
 
-**Phase 6: Meta Framework implemented; manual acceptance pending.** Phase 6 adds case selection, chapter progression, local saves, archives, bestiary, and return to Hub. Unity EditMode tests pass **83/83**, and generated scenes pass saved-reference validation. These are not a played end-to-end run: see [PhaseReport](Docs/PhaseReport.md).
+**Phase 6: Meta Framework integrated into the original project; manual acceptance pending.** Phase 6 adds case selection, chapter progression, local saves, archives, bestiary, and return to Hub. Unity EditMode tests pass **89/89**, and migrated scenes pass saved-reference validation. These are not a played end-to-end run: see [PhaseReport](Docs/PhaseReport.md).
 
 ## Current Playable Features
 
@@ -48,10 +48,17 @@ Phase 6 includes automatic content indexing, locked/available/completed case sta
 
 ## How To Run
 
-1. Save scene changes. Generation overwrites seeded sandbox assets.
-2. Run `Tools > Lost City > Create Combat Sandbox`.
-3. Run `Tools > Lost City > Validate Meta Framework`.
-4. Open `Assets/_Project/Scenes/Hub.unity`, press Play, and select `304号病房`.
+1. Open the existing project in Unity 2022.3.32f1 and wait for compilation.
+2. Open `Assets/_Project/Scenes/Hub.unity`; the scenes and seed assets are already included.
+3. Run `Tools > Lost City > Validate Meta Framework` without regenerating assets.
+4. Press Play and select `304号病房`.
+
+The original local project is `/Users/vaema/Documents/Lost City`; Phase 6 no longer
+requires opening the temporary worktree. Local authoring changes and `Assets/Room.unity`
+are retained separately from the committed baseline. Do not use `Create Combat Sandbox`
+to start testing an existing project: that command resets seeded content. It is only
+for deliberately rebuilding the graybox after backing up authoring work. See the
+[integration report](Docs/Phase6Integration.md) for backup and migration details.
 
 Build order is Hub, then CombatSandbox. The shared scene retains Room 304 as a direct-debug fallback; a Hub-selected session takes precedence. The next-case placeholder is metadata only and cannot be played.
 
@@ -119,7 +126,8 @@ Richer exploration and emotionally grounded mysteries built on a maintainable da
 ## Known Issues
 
 - Actual runtime scene transitions and the normal played loop still need manual verification.
-- Regenerate seed resources after future serialized-field or generator changes.
+- Migrate existing authored resources after serialized-field changes; regeneration
+  resets seed values and is not a safe substitute for preserving local edits.
 - Managed compilation cannot verify native serialization, lifecycle, UI, or scene loading.
 - Chinese graybox text uses installed CJK font fallback, not guaranteed shipping font coverage.
 - Saves assume one local writer, not cloud sync or concurrent game instances.

@@ -1,5 +1,8 @@
 # Lost City Documentation
 
+For testing Phase 6 in the original project while preserving local authoring work,
+see [Phase 6 Integration](Phase6Integration.md).
+
 This folder is the source of truth for Lost City development. Code is not considered complete unless the relevant documentation is updated in the same change.
 
 ## Current Phase

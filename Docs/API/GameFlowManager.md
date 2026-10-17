@@ -1,5 +1,15 @@
 # GameFlowManager
 
+## Legacy Scene Compatibility
+
+`Room304GameStateController` is deprecated and hidden from Add Component. Its sole
+purpose is retaining the old script GUID and serialized `investigationProgress`,
+`deductionBoard`, `enemySpawner`, `bossSpawnController` and `memoryFragmentPanel`
+references in untouched legacy scenes. It has no public API, events or active flow
+logic, and must not be added to new scenes. It warns on Play when the scene lacks a
+GameFlowManager. Use Hub and GameFlowManager for Phase 6; keeping this shell is not
+a conversion of the user's Room scene into a complete gameplay scene.
+
 ## Flow And Ownership
 
 The scene manager uses the selected CaseDefinition, without specific case IDs.

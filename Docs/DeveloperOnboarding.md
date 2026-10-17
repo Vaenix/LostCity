@@ -4,13 +4,16 @@
 
 1. Read README, Architecture, GameplayLoop, and the current PhaseReport.
 2. Open Unity 2022.3.32f1 with an active license. Import packages.
-3. Save scene changes, then run `Tools > Lost City > Create Combat Sandbox`.
+3. Open the included Hub scene. Do not regenerate already-authored sandbox assets.
 4. Run `Validate Meta Framework` and `Validate Meta Contracts`.
 5. Open Hub and manually verify the flow in PhaseReport.
 6. Run the EditMode test suite. Managed fallback commands live in Tools/Verification.
 
 Do not equate a successful compiler check with generated-scene or Play Mode verification.
 The user performs gameplay interactions; automation operates on code, assets, and tests.
+For an older local scene retained during a Phase 6 merge, see
+[Phase6Integration](Phase6Integration.md). Back up local changes before migration;
+`Create Combat Sandbox` is a destructive seed rebuild, not a normal startup step.
 
 ## Architecture In One Page
 
@@ -36,8 +39,9 @@ components own transient objects. Never store scene object references in JSON. S
    `Tools > Lost City > Rebuild Content Catalog` if needed.
 6. Add the case to exactly one ChapterDefinition in progression order; unassigned valid
    cases appear under 未归档案件 and are available without a chapter predecessor.
-7. Do not edit Hub or GameFlowManager for another case. CaseClueLayout generates a
-   pickup for every configured clue from its disabled template.
+7. Do not edit Hub or GameFlowManager for another case. CaseClueLayout reuses optional
+   authored pickups by clue ID and generates remaining clues from its disabled template.
+   Register fixed pickups in the layout instead of leaving unmanaged duplicates active.
 
 Duplicate IDs exclude all ambiguous definitions. A missing predecessor or duplicate
 chapter membership blocks starting, rather than silently unlocking content. Do not

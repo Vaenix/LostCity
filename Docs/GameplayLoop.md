@@ -19,6 +19,8 @@ flowchart LR
 
 The active CaseDefinition supplies all clues, question, answer, boss, and completion
 rewards. The shared scene places every required clue using CaseClueLayout.
+Migrated scenes retain authored clue positions; the layout generates only missing
+required clues and does not duplicate or delete authored pickup objects.
 E collects a nearby clue, J opens the journal, Tab opens deduction.
 Clues remain handcrafted; the current deduction prototype validates a configured clue
 set, not free-form natural-language hypotheses.

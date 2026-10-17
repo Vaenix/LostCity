@@ -7,8 +7,27 @@ remains user-owned and has not been performed. The prototype now has a data-driv
 Hub-to-case-to-Hub framework around existing Room 304 content. No Chapter 2, new
 boss, new weapon, final story, art, VFX pass, or localization framework was added.
 
-Work is isolated on `codex/phase-6-meta-framework`. The preexisting generated changes
-and untracked Room scene in the main checkout are preserved, not included in this work.
+Phase 6 was developed on `codex/phase-6-meta-framework`. On 2026-10-17 the user
+requested integration into the original Lost City project on `master`, preserving
+local asset edits and the untracked Room scene. Integration is complete: 89 native
+EditMode tests pass, scene references and meta contracts pass, and a second migration
+leaves asset hashes unchanged. See [Phase6Integration](Phase6Integration.md) for evidence.
+
+### Main Project Integration Record
+
+- Affected systems: saved scene/prefab wiring, UI Input Actions, case metadata and
+  the existing Phase 6 services; no content or combat redesign.
+- Preserve the original local asset IDs, tuning, scene hierarchy and Room files.
+  Add only missing Phase 6 components/references; do not regenerate seed assets.
+- The pre-integration snapshot is `228b5ad0c15d078b18c022a04033ca03a40950a7`, retained
+  by `refs/backup/lost-city/pre-phase6-20261017` and a named stash. Its third parent
+  stores the originally untracked Room and UI input files. This backup stays local.
+- Keep the user's asset edits unstaged/uncommitted. Push Phase 6 plus integration
+  tooling/documentation, not the user's unpublished scene or unrelated Design files.
+- Updated README, onboarding, verification instructions and this report with the
+  original-project entry point, migration precautions and actual test evidence.
+- Validated native EditMode tests and saved references in the original project;
+  compared Room hashes and original asset data against the backup. No Play Mode.
 
 ## Completed Features
 
@@ -20,7 +39,9 @@ and untracked Room scene in the main checkout are preserved, not included in thi
 - Persistent levels, partial XP, modifiers, drone count, pending upgrades and unlocks.
 - Investigation archive and encounter-driven enemy/boss bestiary.
 - Shared-scene clue generation from each case's complete clue list.
-- Generic reward/completion/debug components; legacy Room304-only controller removed.
+- Generic reward/completion/debug components; the legacy Room304 state machine is
+  removed. A passive serialization shell preserves untouched legacy scenes during
+  main-project integration; it does not participate in Phase 6 gameplay.
 - Boss cleanup, XP/upgrade settlement, durable reward completion and automatic Hub return.
 - Editor generation and saved-scene reference validation.
 
@@ -65,7 +86,8 @@ Runtime UI remains on existing Unity UI and Input System.
 - Completion requires reward application and durable save before the success screen.
 - Save retry does not reapply the reward. Death reload retains the selected case.
 - The completion screen returns after three unscaled seconds, with optional Space skip.
-- Runtime controllers contain no Room304-specific names or story strings.
+- Active flow controllers contain no Room304-specific names or story strings.
+  Only the deprecated serialization shell retains its historical class name/GUID.
 
 ## Verification Results
 
@@ -84,7 +106,7 @@ No Computer Use, Play Mode, manual clicks, or game balance tests were performed.
 | GenerateAndValidate | Exit 0; both scenes generated and reopened successfully |
 | Generated references | Cameras, missing scripts, UI/player actions, raycasters, scroll panels, flow references and projectile 2D components passed |
 | Temporary save contracts | Session, unlock, replay, native JSON reload, one/five-clue layouts passed |
-| Runtime hardcoding audit | No Room304/304-specific runtime code outside editor seed content |
+| Runtime hardcoding audit | Active Phase 6 flow is generic; a passive legacy shell preserves the user's Room scene |
 | Source/docs whitespace | Passed; native Unity YAML formatting retained |
 | Main checkout preservation | Existing user changes remain untouched |
 
@@ -92,6 +114,9 @@ Reproduction commands and their limits are in [Tools/Verification](../Tools/Veri
 The successful test run recorded 83 cases at 03:36:04 UTC. The first run was 66/67:
 a whitespace-ID fixture also generated invalid child IDs. The fixture was corrected
 to isolate its intended invalid-case condition without weakening production validation.
+These are the feature-branch baseline results. The merged original-project results
+and authored-resource preservation checks are recorded separately in
+[Phase6Integration](Phase6Integration.md).
 
 Initial batch startup reported no valid Editor license. After the user's Hub license
 confirmation, the same Editor resolved entitlements and all native checks ran. License
@@ -154,6 +179,9 @@ clue collection and deduction acceptance.
 - Forced termination during unresolved IO failure can lose dirty in-memory data.
 - Old saves cannot recover upgrade choices that an earlier build never recorded.
 - Boss reward retry state is scene-local, not a suspend/resume checkpoint.
+- The legacy Room scene is preserved for authoring, not promoted to the Phase 6
+  gameplay entry point. Its compatibility shell can be removed only after that
+  scene is deliberately migrated by its owner.
 - Unity-generated YAML retains its native trailing-space formatting.
 - The local Git code-review-graph hook cannot refresh its index because its Python
   environment lacks `tree_sitter_c_sharp`. Git commits still succeed; this does not

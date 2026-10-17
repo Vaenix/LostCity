@@ -14,7 +14,9 @@ flowchart TD
     E --> F["CaseSessionManager.BeginCase"]
     F --> G["SceneFlowManager loads shared scene"]
     G --> H["InvestigationProgress.Awake selects definition"]
-    H --> I["CaseClueLayout.Start spawns required clue pickups"]
+    H --> I["CaseClueLayout.Start"]
+    I --> J["Reuse matching authored pickups at existing positions"]
+    I --> K["Generate missing required clues / hide unrelated authored pickups"]
 ```
 
 ## Clue Pickup And Journal Update

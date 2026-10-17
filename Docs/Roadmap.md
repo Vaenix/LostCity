@@ -8,7 +8,7 @@
 
 Phase 5 established movement, manual/automatic weapons, four enemy archetypes, The Warden, XP/upgrades, HUD/minimap, Room 304 investigation/deduction, data-driven rewards, and editor generation. These form the existing baseline, not evidence that new Phase 6 assets were generated.
 
-Phase 6 includes core DTO/rules, catalog discovery, registry, atomic storage, session/scene services, Hub/archive/bestiary, player progression persistence, discovery recording, and automatic completion flow. Native EditMode tests pass 83/83; generated scenes and data contracts pass.
+Phase 6 includes core DTO/rules, catalog discovery, registry, atomic storage, session/scene services, Hub/archive/bestiary, player progression persistence, discovery recording, and automatic completion flow. Integrated into the original project with authored-layout preservation and passive legacy-scene compatibility. Native EditMode tests pass 89/89; migrated scenes and data contracts pass. See Phase6Integration.md.
 
 ## In Progress
 

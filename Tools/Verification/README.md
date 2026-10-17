@@ -32,7 +32,8 @@ Use a licensed Unity Editor with the project closed in other Editor instances:
 ```
 
 Do not add `-quit` to a test run: the test runner exits after recording results.
-Scene generation is a separate command:
+Scene generation is a separate, destructive seed-rebuild command. Do not run it
+to test an existing project with authored assets or uncommitted changes:
 
 ```sh
 "/path/to/Unity" -batchmode -nographics -projectPath "/path/to/Lost City" \
@@ -62,8 +63,21 @@ success messages is required; merely finding `.unity` files is not sufficient.
 
 Unity-generated YAML retains Unity's own whitespace formatting. Run the source
 whitespace check separately with
-`git diff --check -- '*.cs' '*.md' '*.mjs' '*.asmdef' '*.meta'` rather than rewriting
+`git diff --check -- '*.cs' '*.md' '*.mjs' '*.asmdef'` rather than rewriting
 serialized assets only to remove native trailing spaces.
+
+## Original Project Integration
+
+The original project is `/Users/vaema/Documents/Lost City`; no temporary worktree
+is required for gameplay testing. Use the included Hub scene and validation menus.
+For explicitly migrating an older retained sandbox, the additive batch entry point is
+`LostCity.CombatSandbox.EditorTools.Phase6ProjectMigration.MigrateExistingProject`.
+Use `-executeMethod` with `-quit`, not `-runTests`; back up authoring work first.
+It is already applied to this local project and is not required before each test.
+The integration backup, local asset ownership and actual checks are documented in
+[Phase6Integration](../../Docs/Phase6Integration.md). `.meta` files are also Unity
+YAML and can contain native trailing spaces; preserve their GUIDs rather than
+rewriting them to satisfy the source whitespace check.
 
 The user owns Play Mode interaction and gameplay feel validation. Do not use
 desktop automation to click upgrades or play the game.
