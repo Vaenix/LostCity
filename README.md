@@ -14,7 +14,7 @@ The current content is **Room 304**, a graybox architecture prototype, not final
 
 **Phase 6 integrated; Room 304 spatial/character sample ready for manual acceptance.** Phase 6
 adds case selection, progression, saves, archives, bestiary and return to Hub.
-The latest Unity EditMode suite passes **176/176** (131 existing + 45 character tests).
+The latest Unity EditMode suite passes **186/186** (131 existing + 55 character tests).
 Migrated scenes and the new sample pass saved-reference validation; sample offline
 world renders pass at three aspect ratios. None is a played end-to-end run:
 see [PhaseReport](Docs/PhaseReport.md).
@@ -36,6 +36,12 @@ It retains 2D physics and the existing clue/save transaction. Native skin, pose,
 saved-reference and event/save regression checks pass; see
 [CharacterMotion](Docs/CharacterMotion.md) and the [actual previews](Docs/Previews/CharacterMotion/README.md)
 for evidence and remaining manual checks. No combat animation library is claimed.
+
+The reported missing walking animation is corrected by observing completed 2D
+physics displacement instead of raw Rigidbody2D.velocity. Existing movement and
+mouse aim are unchanged; reopen the saved sample after compilation, without
+regenerating scenes or prefabs. Ten native movement-observation tests now cover
+this connection; actual input and animation feel remain user-owned acceptance.
 
 ## Core Gameplay Loop
 

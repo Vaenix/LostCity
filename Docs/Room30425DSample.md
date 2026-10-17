@@ -163,8 +163,11 @@ presentation bridge. It preserves all physics roots/footprints and IDs, and shif
 only three owned clue visuals toward their table edges for reachable contact.
 The 131-test results above predate this follow-up; current motion evidence is recorded
 separately in [CharacterMotion](CharacterMotion.md), not inferred from that baseline.
-The combined native suite now passes 176/176; saved sample reference/route/framing
-checks and all three offline camera renders were rerun with the skinned character.
+The combined native suite now passes 186/186, including ten native movement-observation
+regressions added after the missing-walk report. Saved sample reference/route/framing
+checks and all three offline camera renders passed in the preceding character
+delivery. The walking correction changes only visual movement observation, not
+the controller, mouse aim or saved scene; no rebuild is needed.
 
 The first suite was 130/131: one new fixture incorrectly required clue array order.
 It now checks the original ID set without ordering. Count, duplicate, replay,

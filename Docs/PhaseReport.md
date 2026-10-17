@@ -1,13 +1,80 @@
 # Phase 6 Report: Meta Framework
 
+## Walking Observation Regression
+
+User report: the player translates but has no walking animation; mouse-facing works.
+The first-delivery driver consumed Rigidbody2D.velocity, whereas the unchanged
+PlayerMotor uses MovePosition. A native EditMode physics probe on 2026-10-17 measured
+.064 m actual displacement per .02 s step with velocity remaining zero, both with
+and without interpolation. This explains the stationary locomotion state.
+
+The prior 176 tests verified bone posing and collection integration, but injected
+movement velocity and missed the native movement-to-pose connection. This follow-up
+is scoped to movement observation and its regression coverage, not a controller,
+animation-library or asset redesign. No gameplay UI is automated.
+
+### Correction And Commit Scope
+
+- Runtime file: `Assets/_Project/Code/Characters/Runtime/ProtagonistVisualMotion.cs`.
+  FixedUpdate samples completed Rigidbody2D.position displacement; LateUpdate
+  consumes the cached velocity. Enable/disable/direct reparent reset the baseline.
+  Pickup gating also checks observed motion before locomotion blend catches up.
+- Test files: `Assets/_Project/Tests/EditMode/Meta/ProtagonistMovementObservationTests.cs`
+  and its Unity `.meta`. Ten cases use actual MovePosition/native simulation and
+  production observation/pose methods, not injected Advance velocity.
+- Documentation: README, CharacterMotion, CharacterVisual and PlayerControl APIs,
+  Architecture, EventFlow, Roadmap, Room30425DSample, PhaseReport and
+  Tools/Verification/README.
+- Architecture change: completed physical displacement replaces velocity-property
+  readback at the visual boundary. No public API, GameFlow state, package, input,
+  progression or save-schema change.
+- Gameplay change: movement now drives the existing in-place gait; stopped or
+  blocked motion settles idle. Mouse-facing remains independent. No controller,
+  aim, pose-curve, model, prefab or scene changes; no generator was run.
+- Event flow: Motor -> native physics -> next fixed observation -> cached speed
+  -> late visual pose. Collection/save events remain unchanged and authoritative.
+- Debt/known issues: one fixed-step observation lag (20 ms at current settings),
+  existing flat-plane gait/skin limitations and unverified actual-input feel.
+  No new blocker found in native tests. Optional local Git graph-hook dependency
+  remains missing as documented below; it is not used as verification evidence.
+- Next steps: user tests the saved Room304Greybox directly for WASD/arrows,
+  stop/wall idle, mouse-only turns, movement plus aim and existing E/J behavior.
+  No scene regeneration, new chapter or content expansion is needed.
+
+Commit hash is supplied by the final Git report; the commit's file list is the
+authoritative scope. User-authored dirty assets, Room scene and Design files stay
+unstaged and are not included in this fix.
+
+### Walking Regression Results
+
+| Gate | Actual result |
+| --- | --- |
+| New native movement-observation fixture | 10/10 passed: interpolation on/off, stop, aim-only turns, wall blocking, pause, two render cadences, lifecycle/reparent and pickup guards |
+| Full native EditMode suite in original project | 186/186 passed, 0 failed/skipped; 2026-10-17 08:32:26 UTC; original 176 cases retained |
+| Managed verification | Core 24/24 passed; 80 runtime, 14 Editor and 12 test sources compile; five existing unused-field warnings in passive Room304GameStateController |
+| Physics isolation | Disposable Editor preview scenes verified non-default before simulation; no user scene simulation or scene save |
+| Existing movement/aim/assets | PlayerMotor, PlayerAim, Room304Greybox, character prefab/art unchanged; all 54 protected local-file hashes unchanged |
+| Manual gameplay | Not run; no Play Mode, UI input, upgrade selection or gameplay automation |
+
+The first new-fixture run failed in setup because SceneManager.CreateScene is
+PlayMode-only. The fixture was corrected to EditorSceneManager.NewPreviewScene,
+retaining non-default-physics and all behavioral assertions. The subsequent native
+run passed; no gameplay code was changed to accommodate this fixture error.
+
+Local evidence: `/private/tmp/lost-city-walk-physics-probe.log` (root-cause probe),
+`/private/tmp/lost-city-walk-regression.xml` / `.log` (initial fixture failure), and
+`/private/tmp/lost-city-walk-regression-final.xml` / `.log` (186 passing). Reproduction
+instructions are in [the verification guide](../Tools/Verification/README.md).
+
 ## Approved Character Motion Follow-Up
 
 The first-pass protagonist and motion brief were separately approved and delegated
 on 2026-10-17. Source/model and Unity presentation changes are scoped to the independent
 Room304Greybox sample. No Phase 6 progression, save schema, old Player prefab or Room
 scene redesign is authorized. [CharacterMotion](CharacterMotion.md) records the
-implemented motion and acceptance; the older 131-test spatial baseline below is
-superseded by **176/176 native EditMode tests passing** for the combined project.
+implemented motion and acceptance. That delivery expanded the 131-test spatial
+baseline below to **176/176 native EditMode tests passing**; the subsequent walking
+correction and current 186-test result are recorded above.
 
 New systems: 25-bone Generic skin rig with reproducible Blender source,
 ProtagonistVisualMotion procedural posing, ProtagonistCluePresentation success-event

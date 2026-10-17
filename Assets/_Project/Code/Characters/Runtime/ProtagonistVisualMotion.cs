@@ -25,6 +25,8 @@ namespace LostCity.Characters
         private Vector3 pickupPoint, lastFacing, moveDirection = Vector3.forward;
         private float cycle, idleTime, blend, yawOffset, turnCycle, pickupTime = -1f, lookYaw, lookPitch;
         private bool initialized, tracksPickupLifetime;
+        private Rigidbody2D observedBody;
+        private Vector2 previousBodyPosition, observedVelocity;
         private float recoveryTime;
         private readonly Dictionary<Transform, Vector3> recoveryPositions = new Dictionary<Transform, Vector3>();
         private readonly Dictionary<Transform, Quaternion> recoveryRotations = new Dictionary<Transform, Quaternion>();
@@ -43,12 +45,43 @@ namespace LostCity.Characters
         {
             InitializeRig();
             if (movementBody == null) movementBody = GetComponentInParent<Rigidbody2D>();
+            ResetMovementObservation();
             lastFacing = transform.forward;
         }
-        private void LateUpdate()
+        private void OnTransformParentChanged()
         {
-            Vector2 velocity = movementBody != null ? movementBody.velocity : Vector2.zero;
-            Advance(new Vector3(velocity.x, velocity.y, 0f), Time.deltaTime);
+            movementBody = GetComponentInParent<Rigidbody2D>();
+            ResetMovementObservation();
+        }
+        private void FixedUpdate() => SampleMovement(Time.fixedDeltaTime);
+        private void LateUpdate() => UpdateFromMovement(Time.deltaTime);
+
+        private void ResetMovementObservation()
+        {
+            observedBody = movementBody;
+            previousBodyPosition = movementBody != null ? movementBody.position : Vector2.zero;
+            observedVelocity = Vector2.zero;
+        }
+        private void SampleMovement(float fixedDeltaTime)
+        {
+            if (!Finite(fixedDeltaTime) || fixedDeltaTime <= 0f) return;
+            if (movementBody == null) movementBody = GetComponentInParent<Rigidbody2D>();
+            if (movementBody == null || observedBody != movementBody)
+            {
+                ResetMovementObservation();
+                return;
+            }
+            // MovePosition can finish a step with zero velocity. Observe the previous
+            // completed physics step, not input intent or an interpolated visual bone.
+            Vector2 position = movementBody.position;
+            Vector2 velocity = (position - previousBodyPosition) / fixedDeltaTime;
+            previousBodyPosition = position;
+            observedVelocity = Finite(velocity.x) && Finite(velocity.y) ? velocity : Vector2.zero;
+        }
+        private void UpdateFromMovement(float deltaTime)
+        {
+            Vector2 velocity = movementBody != null ? observedVelocity : Vector2.zero;
+            Advance(new Vector3(velocity.x, velocity.y, 0f), deltaTime);
         }
         public void SetAttentionTarget(Transform target) => attentionTarget = target;
 
@@ -56,6 +89,7 @@ namespace LostCity.Characters
         {
             InitializeRig();
             if (!IsReady || IsPickingUp || armedPose || !Finite(worldPoint) || blend > .12f
+                || observedVelocity.sqrMagnitude > .01f
                 || (movementBody != null && movementBody.velocity.sqrMagnitude > .01f)) return false;
             Vector3 local = transform.InverseTransformPoint(worldPoint);
             // Test a bent-torso reach before starting; bone lengths never change.
@@ -291,6 +325,7 @@ namespace LostCity.Characters
         {
             CancelPickup();
             RestoreBones();
+            ResetMovementObservation();
             cycle = idleTime = blend = yawOffset = turnCycle = lookYaw = lookPitch = recoveryTime = 0f;
         }
 #if UNITY_EDITOR

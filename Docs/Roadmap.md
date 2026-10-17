@@ -15,9 +15,14 @@ Phase 6 includes core DTO/rules, catalog discovery, registry, atomic storage, se
 
 Approved protagonist follow-up: editable 25-bone Generic rig, blended skin,
 procedural gait/attention/turn/reach, scoped prefab integration and success-only
-clue presentation. Latest native suite **176/176** passes, including 45 character
+clue presentation. Latest native suite **186/186** passes, including 55 character
 checks. Imported geometry, saved references, three reachable clue contacts and
 actual offline motion rendering pass. See CharacterMotion.md and its preview index.
+
+Walking regression correction: the visual driver observes completed physics
+displacement instead of MovePosition's zero velocity readback. Ten native
+movement-observation tests pass. Controllers, aiming, scenes and prefabs are
+unchanged; normal-input visual acceptance is still pending.
 
 ## In Progress
 

@@ -139,6 +139,26 @@ samples of the real procedural bone driver, not gameplay recordings or AI concep
 Regular native EditMode tests include skin, gait, pause, reach and interruption checks.
 No test should load or mutate the real player's save.
 
+### Walking Observation Regression
+
+Do not rerun InstallIntoSample or any scene generator for the walking fix. The
+runtime change only replaces the gait speed source; existing serialized references
+and assets remain valid. In particular, raw Rigidbody2D.velocity is not reliable
+evidence of travel for the current MovePosition controller.
+
+`ProtagonistMovementObservationTests` advances native 2D physics in a disposable
+Editor preview scene, asserts it is not the default physics scene, and uses the
+production fixed-step observer and late-frame pose path. It does not inject a
+synthetic gait velocity, start Play Mode, send input or save a scene. The fixture
+covers interpolation on/off, stopping, aim-only turns, wall blocking, paused
+poses, render/fixed cadence, rebinding and movement/pickup gating.
+
+For the focused test, add
+`-testFilter LostCity.Meta.Core.Tests.ProtagonistMovementObservationTests` to the
+normal native `-runTests -testPlatform EditMode` command. Omit the filter for the
+full regression suite; do not pass `-quit` to the test runner. Final executed
+counts and local evidence paths are recorded in [PhaseReport](../../Docs/PhaseReport.md).
+
 Implementation notes: Unity's [BakeMesh](https://docs.unity3d.com/2022.3/Documentation/ScriptReference/SkinnedMeshRenderer.BakeMesh.html)
 produces a posed mesh snapshot; [applyRootMotion](https://docs.unity3d.com/2022.3/Documentation/ScriptReference/Animator-applyRootMotion.html)
 must remain off. Runtime movement remains the existing Rigidbody2D controller.

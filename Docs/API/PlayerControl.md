@@ -32,9 +32,12 @@ Do not replace this with Physics.Raycast: 3D rendering is not a physics migratio
 ### Character Motion Boundary
 
 Room304Greybox alone has a connected `ProtagonistVisual` below the canonical-axis
-adapter. Its procedural bones observe Rigidbody2D velocity after PlayerAim updates,
-with a visual body-turn lag and limited head attention. It never rotates the gameplay
-root/AimRoot, changes speed, blocks input or enables root motion. Moving cancels an
+adapter. FixedUpdate observes completed Rigidbody2D.position displacement and caches
+planar velocity; LateUpdate poses bones after PlayerAim updates. This supports the
+existing MovePosition controller even when its velocity property is zero, with one
+physics-step observation lag. Visual body-turn lag and limited head attention remain.
+It never rotates the gameplay root/AimRoot, changes speed, blocks input or enables
+root motion. Moving cancels an
 optional pickup presentation; collection success is already recorded independently.
 The old combat Player prefab is not replaced. See [CharacterVisual](CharacterVisual.md).
 

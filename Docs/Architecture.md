@@ -137,15 +137,19 @@ an exported FBX and persistent built-in-renderer materials. The sample's AimRoot
 owns a CharacterVisual coordinate adapter (+Y model height -> -Z world height,
 +Z model forward -> +X aim forward). The connected visual prefab below it owns
 renderers and a procedural 25-bone Generic rig. Animator stays disabled, with root
-motion off; the driver uses measured planar velocity, analytical limb IK, limited
-head attention, stepped visual turning and an optional left-hand pickup pose.
+motion off; the driver derives planar velocity from completed Rigidbody2D.position
+changes in FixedUpdate and consumes the cached sample in LateUpdate. This avoids
+MovePosition's zero velocity readback without changing movement or aiming. It uses
+analytical limb IK, limited head attention, stepped visual turning and an optional
+left-hand pickup pose.
 
 ```mermaid
 flowchart LR
     Source["Blender source / deterministic generator"] --> FBX["Canonical FBX + material palette"]
     FBX --> Prefab["ProtagonistVisual prefab"]
     Input["Existing input / PlayerMotor"] --> Body["Existing Rigidbody2D"]
-    Body --> Motion["Read-only movement observation / visual gait"]
+    Body --> Observation["Completed fixed-step position delta / dt"]
+    Observation --> Motion["Cached velocity / LateUpdate visual gait"]
     Aim["Existing PlayerAim / AimRoot"] --> Adapter["CharacterVisual axis adapter"]
     Adapter --> Prefab
     Motion --> Prefab

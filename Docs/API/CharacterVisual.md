@@ -27,7 +27,7 @@ rig must exist before initialization; replacing the hierarchy later is unsupport
 
 | Private field | Default | Meaning |
 | --- | --- | --- |
-| `movementBody` | null | Existing parent Rigidbody2D; auto-resolved in OnEnable when unset; only its velocity is read |
+| `movementBody` | null | Existing parent Rigidbody2D; auto-resolved when unset; completed-step position changes drive gait |
 | `cycleDistance` | 1.25 m | Full two-step distance; minimum .5, gait phase advances from actual speed |
 | `blendSeconds` | .18 s | Starting/stopping blend; minimum .05 |
 | `idleSeconds` | 3.2 s | Breathing loop; minimum .1 |
@@ -57,8 +57,20 @@ cancels pickup on the next positive step. Hiding a collected source is deliberat
 not destruction and does not cancel the reach. OnDisable cancels, restores rest
 bones and resets locomotion/look/recovery clocks.
 
+Production movement observation uses `FixedUpdate`, not raw Rigidbody2D.velocity:
+the current controller uses MovePosition, which can move while reporting zero
+velocity. Each fixed tick samples the previous completed step's body.position
+delta divided by fixedDeltaTime. LateUpdate consumes that cached planar velocity
+after the existing PlayerAim update. There is one physics-step observation latency;
+render frames without a new physics tick keep the last sample instead of flickering
+to idle. Blocked movement contributes no displacement and therefore settles idle.
+OnEnable/OnDisable reset the baseline; directly reparenting the visual rebinds to
+its new parent body and resets the baseline, avoiding a cross-parent position jump.
+No movement command, input value or visual-bone displacement is used as gait speed.
+
 `TryPresentPickup` rejects incomplete rig, active pickup, armed pose, invalid point,
-locomotion blend above .12 or Rigidbody2D velocity squared above .01. In canonical
+locomotion blend above .12, observed velocity squared above .01, or direct
+Rigidbody2D velocity squared above .01 (retained as an additional guard). In canonical
 local coordinates it accepts only Y=.72..1.14 and Z=.05...65, then checks geometric
 reach against the unchanged arm lengths and bent-torso pose. It never stretches
 an arm to make a distant interaction look successful.
@@ -128,7 +140,7 @@ Destroy is deferred in Play Mode and immediate in Edit Mode.
   bones. Do not animate old semantic Head/Hair/Boot groups; drive `Rig_` bones.
 - Use unit character scale, canonical joint origins and the supplied sample
   adapter; this is not a general retargeter or nonuniformly scaled IK solver.
-- Feed gameplay velocity once per frame, normally through the existing body;
+- Let FixedUpdate observe the body and LateUpdate advance the pose once per frame;
   do not also call Advance manually while the component's LateUpdate is running.
 - Collection/save decisions must never depend on PickupContact or animation
   success. Do not call TryCollectClue, DiscoverClue or SaveNow from visual phases.
@@ -157,10 +169,18 @@ actual progress event, render-only copy, contact/return timing, duplicate/failed
 collection, stationary/reach gates, missing anchors, concurrent collection,
 movement/destruction/disable cleanup, unsubscribe and source-scale preservation.
 Save mutation counts and disk contents ensure visual ticks do not re-record clues.
-Managed compilation is not execution of these native Unity integration tests;
-the main task subsequently executed the native suite: **176/176 pass**, including
-18 collection-presentation cases and 27 skeletal-pose cases. Imported skin/axes,
-saved references and actual rendered sequences were independently inspected.
+`ProtagonistMovementObservationTests` adds ten native cases using disposable
+Editor preview scenes with non-default 2D physics. MovePosition, the fixed-step
+observer, native simulation and the late-frame pose path are exercised together,
+without injecting velocity into Advance or simulating the user's scene. Coverage
+includes interpolation on/off, stopped/blocked movement, aim-only turning, pause,
+render/fixed cadence, enable/reparent baselines and pickup gating/cancellation.
+
+The main task executed the full native suite after the walking fix: **186/186 pass**,
+including these ten cases, 18 collection-presentation and 27 skeletal-pose cases.
+Managed compilation alone is not execution of native integration tests. Imported
+skin/axes, saved references and actual rendered sequences were inspected in the
+preceding character delivery; this correction changes no asset or pose evaluator.
 See [CharacterMotion](../CharacterMotion.md) for manual checks and limitations.
 
 ## Usage Examples
@@ -168,7 +188,8 @@ See [CharacterMotion](../CharacterMotion.md) for manual checks and limitations.
 The committed prefab and Room304Greybox already contain the normal wiring. For a
 new supported visual instance, keep the rig at unit scale and parent its adapter
 under the existing aim root; leave the physics root unchanged. Its normal
-LateUpdate discovers the existing parent Rigidbody2D automatically.
+OnEnable discovers the existing parent Rigidbody2D automatically; no scene rebuild
+or manual Rigidbody reference assignment is needed for this walking fix.
 
 ```csharp
 // Optional gaze only; this does not change gameplay aim.

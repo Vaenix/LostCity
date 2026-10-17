@@ -59,10 +59,13 @@ The optional presentation hook leaves existing text-only journals unchanged.
 ### Protagonist Visual Motion
 
 ```text
-Existing PlayerMotor moves the Rigidbody2D in XY
-  -> ProtagonistVisualMotion observes actual Rigidbody2D velocity
+Existing PlayerMotor queues MovePosition in XY
+  -> Native 2D physics resolves movement/collisions
+  -> Next FixedUpdate observes completed body.position delta / fixedDeltaTime
+  -> Cache measured velocity across render frames
+  -> Existing PlayerAim updates parent AimRoot
+  -> ProtagonistVisualMotion.LateUpdate consumes cached measured velocity
   -> Update only imported Rig_ bones: in-place gait, feet, arms and constrained head
-  -> Existing PlayerAim rotates the parent AimRoot independently
 ```
 
 The character layer emits no gameplay/save events and consumes no input actions.
