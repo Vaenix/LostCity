@@ -1,5 +1,25 @@
 # Developer Onboarding
 
+## Character Source And Motion
+
+The sample protagonist is generated from `Tools/Art/GenerateProtagonist.py` and
+`ProtagonistRig.py` using Blender 4.2.1. Editable source lives outside Assets in
+`SourceArt/Characters/Protagonist/Protagonist.blend`; Unity consumes the committed FBX,
+so collaborators do not need Blender merely to open/test the project.
+
+Use `Tools > Lost City > Install Protagonist In Room 304` after changing/re-exporting
+the rig. It rebuilds the independent character prefab and updates only recognized
+sample presentation objects; save open scenes first. Never use Create Combat Sandbox
+to install art. `Validate Protagonist First Pass` checks actual imported skinning and
+saved references; `Render Protagonist Motion Previews` samples the real bone driver
+in Edit Mode. Do not run another Editor against an already-open project.
+
+Read [CharacterMotion](CharacterMotion.md), [CharacterVisual API](API/CharacterVisual.md)
+and the source [Rigging contract](../SourceArt/Characters/Protagonist/Rigging.md) before
+changing bone names, axes or pickup timing. No clips/root motion are authored; this
+is a procedural Generic skeleton. Offline previews do not substitute for user input,
+foot sliding, strafing, cancellation or actual game-feel checks in Play Mode.
+
 ## Start Here
 
 1. Read README, Architecture, GameplayLoop, and the current PhaseReport.

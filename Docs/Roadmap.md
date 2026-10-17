@@ -13,14 +13,23 @@ Phase 5 established movement, manual/automatic weapons, four enemy archetypes, T
 
 Phase 6 includes core DTO/rules, catalog discovery, registry, atomic storage, session/scene services, Hub/archive/bestiary, player progression persistence, discovery recording, and automatic completion flow. Integrated into the original project with authored-layout preservation and passive legacy-scene compatibility. Native EditMode tests pass 89/89; migrated scenes and data contracts pass. See Phase6Integration.md.
 
+Approved protagonist follow-up: editable 25-bone Generic rig, blended skin,
+procedural gait/attention/turn/reach, scoped prefab integration and success-only
+clue presentation. Latest native suite **176/176** passes, including 45 character
+checks. Imported geometry, saved references, three reachable clue contacts and
+actual offline motion rendering pass. See CharacterMotion.md and its preview index.
+
 ## In Progress
 
 - Independent Room304Greybox manual acceptance: implementation, saved-scene/static
-  validation, three offline renders and latest EditMode suite (131/131) pass.
+  validation, three offline renders and pre-character EditMode suite (131/131) pass.
   Actual walking, pickup, journal input and Hub return remain unplayed. See
   Room30425DSample.md for evidence and manual gates.
 - User-owned normal gameplay flow, actual scene transitions, input and visual verification.
 - Reproducing any reported runtime issues after automated acceptance.
+- User-owned character feel acceptance: actual-speed stride, start/stop, mouse-facing
+  turns, strafing/backpedaling, arm/bag clearance and E-triggered table reach. No
+  automated Play Mode or gameplay input was performed.
 
 ## Blocked Systems
 
@@ -37,6 +46,10 @@ Phase 6 includes core DTO/rules, catalog discovery, registry, atomic storage, se
 - Manual gameplay and balance verification remain necessary.
 - Sample pickup range uses a single player overlap flag; keep triggers separate.
 - Sample art retains source pixels, including small nonzero alpha residue.
+- First-pass character has simplified finger groups, linear skinning and separate
+  garment meshes; no corrective shapes, facial rig, clip retargeting or cloth simulation.
+- Pocket/collar/strap attachment is coarse; 94 readable/offscreen-updated skin
+  renderers prioritize inspection, not shipping performance. Gait assumes a flat plane.
 - The independent sample is not yet the shared case scene; integrating its spatial
   layout with combat/deduction requires a separately scoped follow-up.
 

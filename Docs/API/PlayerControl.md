@@ -29,6 +29,15 @@ Usage: PlayerAim.LateUpdate calls TryGetAimPoint at yawRoot.position.z, then com
 Atan2 in XY and MoveTowardsAngle. A 3D visual child must not rotate the physics root.
 Do not replace this with Physics.Raycast: 3D rendering is not a physics migration.
 
+### Character Motion Boundary
+
+Room304Greybox alone has a connected `ProtagonistVisual` below the canonical-axis
+adapter. Its procedural bones observe Rigidbody2D velocity after PlayerAim updates,
+with a visual body-turn lag and limited head attention. It never rotates the gameplay
+root/AimRoot, changes speed, blocks input or enables root motion. Moving cancels an
+optional pickup presentation; collection success is already recorded independently.
+The old combat Player prefab is not replaced. See [CharacterVisual](CharacterVisual.md).
+
 ## Room304SampleController
 
 Purpose: safely leave the isolated spatial sample for the existing Hub.

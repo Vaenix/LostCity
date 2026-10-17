@@ -29,3 +29,7 @@ sysinfo.txt
 
 # OS files
 .DS_Store
+
+# Blender local save backups (keep the editable .blend source)
+*.blend1
+*.blend2

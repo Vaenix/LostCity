@@ -129,6 +129,39 @@ preserving the existing untilted sandbox behavior. No save schema or global flow
 state changes. See [sample contract](Room30425DSample.md) and
 [EvidencePresentation API](API/EvidencePresentation.md).
 
+### Protagonist Visual Boundary
+
+The character first pass is an independent model/prefab, not a new player controller.
+Blender source and its reproducible generator stay outside Assets; Unity consumes
+an exported FBX and persistent built-in-renderer materials. The sample's AimRoot
+owns a CharacterVisual coordinate adapter (+Y model height -> -Z world height,
++Z model forward -> +X aim forward). The connected visual prefab below it owns
+renderers and a procedural 25-bone Generic rig. Animator stays disabled, with root
+motion off; the driver uses measured planar velocity, analytical limb IK, limited
+head attention, stepped visual turning and an optional left-hand pickup pose.
+
+```mermaid
+flowchart LR
+    Source["Blender source / deterministic generator"] --> FBX["Canonical FBX + material palette"]
+    FBX --> Prefab["ProtagonistVisual prefab"]
+    Input["Existing input / PlayerMotor"] --> Body["Existing Rigidbody2D"]
+    Body --> Motion["Read-only movement observation / visual gait"]
+    Aim["Existing PlayerAim / AimRoot"] --> Adapter["CharacterVisual axis adapter"]
+    Adapter --> Prefab
+    Motion --> Prefab
+    Collected["InvestigationProgress.ClueCollected: already recorded"] --> Bridge["ProtagonistCluePresentation"]
+    Anchor["Authored tabletop contact / visual root"] --> Bridge
+    Bridge --> Motion
+    Bridge --> Proxy["Temporary render-only clue proxy"]
+```
+
+No physics, save, stats or investigation ownership moves into the art layer. Model
+regeneration and sample installation have separate, scoped editor entry points.
+This is genuine skinned deformation, but not a Humanoid retargeting or AnimationClip
+library. Its visual substate is Idle/Walking/Turning/Pickup/Recovery; these are not
+new GameFlow states and are never saved. See [motion contract](CharacterMotion.md)
+and [CharacterVisual API](API/CharacterVisual.md) for current verification status.
+
 ## Data Flow And Lifetime
 
 | Data | Lifetime / owner |

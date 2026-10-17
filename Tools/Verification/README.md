@@ -109,3 +109,46 @@ The regular EditMode suite includes Room304SampleInteractionTests and
 EvidencePresentationTests. Tests use temporary save data, not the real player save.
 Static clearance and camera renders do not replace user walking, pointer input,
 scrolling, font, save/relaunch or return-to-Hub Play Mode checks.
+
+## Protagonist Skin And Motion
+
+Regenerate source/FBX with Blender 4.2.1 using
+`--background --factory-startup --python Tools/Art/GenerateProtagonist.py`.
+This also performs source weight/deformation and FBX roundtrip assertions. Preserve
+the FBX `.meta`; changing Blender source does not automatically install the prefab.
+
+With the original project saved and closed in other Unity instances, use these
+existing `-executeMethod` entry points and `-quit`:
+
+```text
+LostCity.Characters.EditorTools.ProtagonistPrefabBuilder.InstallIntoSample
+LostCity.Characters.EditorTools.ProtagonistAcceptance.Validate
+LostCity.Characters.EditorTools.ProtagonistAcceptance.RenderPreviews
+LostCity.Characters.EditorTools.ProtagonistMotionPreview.RenderSequences
+```
+
+Install updates the recognized character visual subtree and authored clue display
+anchors/bridge only. It never invokes full sandbox/sample regeneration. Validation
+bakes actual skin geometry, checks bone/weight/axis/material contracts and reopens
+the sample. Renderer bounding boxes alone are not mesh-shape evidence.
+
+Rendering requires a graphics device: omit `-nographics`, use `-force-metal` here.
+Static previews go to OS temp `lost-city-protagonist-preview`; sequence frames and
+eight-panel sheets go to `lost-city-motion-preview`. These are EditMode Camera.Render
+samples of the real procedural bone driver, not gameplay recordings or AI concept art.
+Regular native EditMode tests include skin, gait, pause, reach and interruption checks.
+No test should load or mutate the real player's save.
+
+Implementation notes: Unity's [BakeMesh](https://docs.unity3d.com/2022.3/Documentation/ScriptReference/SkinnedMeshRenderer.BakeMesh.html)
+produces a posed mesh snapshot; [applyRootMotion](https://docs.unity3d.com/2022.3/Documentation/ScriptReference/Animator-applyRootMotion.html)
+must remain off. Runtime movement remains the existing Rigidbody2D controller.
+
+## Optional Local Code-Graph Hook
+
+On this machine the Git `code-review-graph` hook reports
+`ModuleNotFoundError: No module named 'tree_sitter_c_sharp'`. The commit succeeds,
+but its automatic graph refresh does not. This is a separate local Python toolchain
+issue, not a Unity compile/test failure. The character acceptance used actual source,
+native tests and imported assets, not a claimed updated graph. Do not silently
+disable hooks or install dependencies as part of gameplay work; repair the optional
+tool separately before relying on its index.

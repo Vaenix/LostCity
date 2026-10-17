@@ -1,5 +1,81 @@
 # Phase 6 Report: Meta Framework
 
+## Approved Character Motion Follow-Up
+
+The first-pass protagonist and motion brief were separately approved and delegated
+on 2026-10-17. Source/model and Unity presentation changes are scoped to the independent
+Room304Greybox sample. No Phase 6 progression, save schema, old Player prefab or Room
+scene redesign is authorized. [CharacterMotion](CharacterMotion.md) records the
+implemented motion and acceptance; the older 131-test spatial baseline below is
+superseded by **176/176 native EditMode tests passing** for the combined project.
+
+New systems: 25-bone Generic skin rig with reproducible Blender source,
+ProtagonistVisualMotion procedural posing, ProtagonistCluePresentation success-event
+bridge, authored ProtagonistPickupAnchor and EditMode sampling tools. No new Unity
+package dependency. The Blender authoring tool is not required to open Unity.
+
+Data event flow stays `TryCollectClue -> RecordClue -> ClueCollected`; optional visual
+contact/recovery occurs afterward and cannot grant another clue or write saves.
+The user still owns normal Play Mode and game-feel verification.
+
+### Character Acceptance Results
+
+| Gate | Actual result |
+| --- | --- |
+| Editable source and FBX roundtrip | Blender 4.2.1 passes 25-bone/weight assertions and 11 deformation cases |
+| Unity import and accessories | 25 bones, 94 skins, 8,707 split vertices, 13,584 triangles; anatomical LEFT band/tab and RIGHT bag, positive scales, canonical axes pass |
+| Saved prefab/scene | Connected prefab, all script/material/bone references and unchanged 2D physics contract pass |
+| Pose and interruption tests | 27 cases pass: alternating gait, support, ground clearance, cycle continuity, head limits/stability, constant limb lengths, pause, reach and cancellation |
+| Collection/persistence integration | 18 cases pass: actual event chain, duplicate/failed collection, gates, missing anchors, concurrent clues, cleanup, unsubscribe and scale preservation |
+| Full native regression | 176/176 passed, 0 skipped, 2026-10-17 07:36:56 UTC; original 131 tests retained |
+| Managed verification | 24 Core tests pass; runtime, persistence, Editor and test sources compile |
+| Actual clue contact | All three sample anchors have collision-clear approaches and sampled left-hand contact within 2 cm |
+| Offline motion | Four sequences rendered from actual baked posed skin, nonblank/no-magenta/distinct-frame checks pass; sheets visually reviewed |
+| Saved sample camera | Updated skinned player rendered and inspected at 1280x720, 1024x768 and 1680x720; references/routes/framing pass; Overlay UI excluded |
+| Source/local edits | 54 protected file hashes unchanged; 615 existing scene records inspected, only seven permitted presentation changes plus visual-subtree replacement |
+| Manual gameplay | Not run; user owns Play Mode, input, game feel and actual quit/relaunch testing |
+
+The first new collection-fixture run failed before assertions because Unity refused
+an additive scene beside an unsaved untitled scene. The fixture now tracks only
+its own objects and temporary save, without creating/switching/saving/closing scenes.
+The subsequent full native run passes. A real proxy double-scale defect was also
+fixed: the proxy root stays unit scale while each mesh preserves source world TRS.
+Walking hand height now follows pelvis descent, avoiding artificially raised elbows.
+
+### Character Commit Scope
+
+- Files: `Code/Characters`, character FBX/materials/prefab and metadata; source Blend,
+  generators/rig evidence; Room304Sample creator/validator and owned Room304Greybox;
+  two character test fixtures; `.gitignore` for local Blender backup files only.
+- Documentation: README, documentation index, Architecture, EventFlow, FolderStructure,
+  DeveloperOnboarding, Roadmap, PhaseReport, Room30425DSample, ProtagonistFirstPass,
+  CharacterMotion, PlayerControl/CharacterVisual APIs, verification guide, rig contract
+  and actual preview index/assets.
+- Architecture: a visual-only Generic skeleton/IK layer; no new GameFlow state,
+  package dependency, controller, progression transaction or save schema.
+- Gameplay: existing collection remains authoritative; valid stationary collection
+  may show left-hand reach. Movement never locks for animation.
+- Event flow: existing successful clue event feeds presentation only. Rendering,
+  contact, cancellation and cleanup cannot grant clues or trigger saves.
+- Debt/issues: coarse garment attachment/fingers, linear skinning, flat-plane gait,
+  94 skin renderers, no retargetable clips or combat animation library. Actual-speed
+  turn/strafe feel and artifact clipping remain manual acceptance items.
+- Local tooling: the optional Git code-review-graph hook lacks `tree_sitter_c_sharp`;
+  index refresh failed but the commit succeeded. No hook was disabled and no package
+  installed. Native/managed validation evidence is independent of that index.
+- Next: review [actual previews](Previews/CharacterMotion/README.md), test the saved
+  sample directly, then scope only observed motion/interaction defects. No Chapter 2.
+
+Commit hash is reported by Git after committing this report; use `git show --stat`
+on that commit for the exact file list. Existing user assets and Design source kits
+are intentionally left unstaged and unpublished by this change.
+
+Local evidence: `/private/tmp/lost-city-motion-final-editmode.xml` and `.log`,
+`lost-city-motion-final-acceptance.log`, `lost-city-motion-sample-validation.log`,
+`lost-city-motion-render-final.log`, `lost-city-character-final-views.log`, and
+`lost-city-motion-final-room-render.log`. Reproducible command entry points are in
+`Tools/Verification/README.md`; preview outputs are committed, machine logs are not.
+
 ## Room 304 Spatial Sample Follow-Up
 
 The separately approved 2026-10-17 follow-up builds an independent hospital room

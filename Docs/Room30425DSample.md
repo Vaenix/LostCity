@@ -112,8 +112,11 @@ Room304Sample
   MainCamera / Daylight
   InvestigationProgress
   Player (Rigidbody2D, CircleCollider2D, TeamMember, input, motor, aim)
-    AimRoot / Visual_YUp (body, head, feet, facing marker)
-  Clues (bracelet, register, note; grounded trigger + raised visual)
+    AimRoot / CharacterVisual / ProtagonistVisual (connected skinned prefab)
+    ProtagonistCluePresentation (successful pickup visuals only)
+  Clues (bracelet, register, note; original grounded trigger + raised visual)
+    Visual_YUp / MotionContact (authored tabletop contact)
+    ProtagonistPickupAnchor (presentation references)
   EventSystem (InputSystemUIInputModule)
   Room304Canvas (CanvasScaler, GraphicRaycaster, Room304SampleController)
     Toolbar / StatusText / GamePromptManager / InteractionPrompt
@@ -129,7 +132,7 @@ each trigger radius is `1.1`. All physics roots remain at Z=0.
 The camera is fixed orthographic, automatically fitted at generation to all mesh
 bounds for at least 4:3. No camera-follow script or 3D physics component exists.
 
-## Verification Results
+## Spatial Sample Baseline Verification
 
 Executed in `/Users/vaema/Documents/Lost City`, Unity **2022.3.32f1**, 2026-10-17.
 No Play Mode, Computer Use, game clicking or real player-save modification occurred.
@@ -154,6 +157,14 @@ Logs: `/private/tmp/lost-city-room304-create.log`, `lost-city-room304-validate.l
 Offline render PNGs are in the OS temp folder `lost-city-room304-sample`.
 These renders do not include the Overlay UI and are not gameplay screenshots.
 Evidence logs are local diagnostics, not committed build assets.
+
+The approved protagonist follow-up adds a skinned visual prefab and a collection
+presentation bridge. It preserves all physics roots/footprints and IDs, and shifts
+only three owned clue visuals toward their table edges for reachable contact.
+The 131-test results above predate this follow-up; current motion evidence is recorded
+separately in [CharacterMotion](CharacterMotion.md), not inferred from that baseline.
+The combined native suite now passes 176/176; saved sample reference/route/framing
+checks and all three offline camera renders were rerun with the skinned character.
 
 The first suite was 130/131: one new fixture incorrectly required clue array order.
 It now checks the original ID set without ordering. Count, duplicate, replay,

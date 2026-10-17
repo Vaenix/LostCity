@@ -1,0 +1,2275 @@
+{
+  "version": 2,
+  "colorSpace": "srgb",
+  "canonicalAxes": "+Y up, +Z front, +X anatomical right",
+  "authoringAxes": "Blender +Z up, +Y front, +X anatomical right; (x,y,z) -> (x,z,y)",
+  "materials": [
+    {
+      "name": "JacketSage",
+      "color": [
+        0.55,
+        0.59,
+        0.55,
+        1
+      ]
+    },
+    {
+      "name": "JacketSeam",
+      "color": [
+        0.42,
+        0.47,
+        0.43,
+        1
+      ]
+    },
+    {
+      "name": "JacketWear",
+      "color": [
+        0.61,
+        0.64,
+        0.59,
+        1
+      ]
+    },
+    {
+      "name": "ShirtCharcoal",
+      "color": [
+        0.2,
+        0.23,
+        0.22,
+        1
+      ]
+    },
+    {
+      "name": "TrousersCharcoal",
+      "color": [
+        0.19,
+        0.2,
+        0.21,
+        1
+      ]
+    },
+    {
+      "name": "TrouserSeam",
+      "color": [
+        0.15,
+        0.16,
+        0.17,
+        1
+      ]
+    },
+    {
+      "name": "Skin",
+      "color": [
+        0.74,
+        0.6,
+        0.5,
+        1
+      ]
+    },
+    {
+      "name": "SkinShade",
+      "color": [
+        0.59,
+        0.43,
+        0.35,
+        1
+      ]
+    },
+    {
+      "name": "Lip",
+      "color": [
+        0.47,
+        0.32,
+        0.28,
+        1
+      ]
+    },
+    {
+      "name": "HairCharcoal",
+      "color": [
+        0.085,
+        0.077,
+        0.07,
+        1
+      ]
+    },
+    {
+      "name": "HairHighlight",
+      "color": [
+        0.135,
+        0.12,
+        0.1,
+        1
+      ]
+    },
+    {
+      "name": "Eye",
+      "color": [
+        0.1,
+        0.09,
+        0.08,
+        1
+      ]
+    },
+    {
+      "name": "BootBrown",
+      "color": [
+        0.29,
+        0.22,
+        0.16,
+        1
+      ]
+    },
+    {
+      "name": "BootSole",
+      "color": [
+        0.14,
+        0.12,
+        0.1,
+        1
+      ]
+    },
+    {
+      "name": "BootSeam",
+      "color": [
+        0.39,
+        0.31,
+        0.23,
+        1
+      ]
+    },
+    {
+      "name": "CanvasOchre",
+      "color": [
+        0.5,
+        0.39,
+        0.24,
+        1
+      ]
+    },
+    {
+      "name": "CanvasWear",
+      "color": [
+        0.59,
+        0.46,
+        0.28,
+        1
+      ]
+    },
+    {
+      "name": "Buckle",
+      "color": [
+        0.3,
+        0.27,
+        0.21,
+        1
+      ]
+    },
+    {
+      "name": "HospitalIvory",
+      "color": [
+        0.88,
+        0.88,
+        0.83,
+        1
+      ]
+    },
+    {
+      "name": "ChestFadedRed",
+      "color": [
+        0.54,
+        0.3,
+        0.24,
+        1
+      ]
+    }
+  ],
+  "parts": [
+    {
+      "name": "Shirt",
+      "triangles": 676,
+      "materials": [
+        "ShirtCharcoal"
+      ]
+    },
+    {
+      "name": "Neck",
+      "triangles": 252,
+      "materials": [
+        "Skin"
+      ]
+    },
+    {
+      "name": "TrouserSeat",
+      "triangles": 284,
+      "materials": [
+        "TrousersCharcoal"
+      ]
+    },
+    {
+      "name": "Jacket",
+      "triangles": 1796,
+      "materials": [
+        "JacketSage"
+      ]
+    },
+    {
+      "name": "JacketOpeningTrim-1",
+      "triangles": 284,
+      "materials": [
+        "JacketSeam"
+      ]
+    },
+    {
+      "name": "FrontPocket-1",
+      "triangles": 108,
+      "materials": [
+        "JacketSage"
+      ]
+    },
+    {
+      "name": "PocketFlap-1",
+      "triangles": 108,
+      "materials": [
+        "JacketSeam"
+      ]
+    },
+    {
+      "name": "PocketStitch-1",
+      "triangles": 20,
+      "materials": [
+        "JacketWear"
+      ]
+    },
+    {
+      "name": "JacketOpeningTrim1",
+      "triangles": 284,
+      "materials": [
+        "JacketSeam"
+      ]
+    },
+    {
+      "name": "FrontPocket1",
+      "triangles": 108,
+      "materials": [
+        "JacketSage"
+      ]
+    },
+    {
+      "name": "PocketFlap1",
+      "triangles": 108,
+      "materials": [
+        "JacketSeam"
+      ]
+    },
+    {
+      "name": "PocketStitch1",
+      "triangles": 20,
+      "materials": [
+        "JacketWear"
+      ]
+    },
+    {
+      "name": "Collar-1",
+      "triangles": 60,
+      "materials": [
+        "JacketSage"
+      ]
+    },
+    {
+      "name": "Collar1",
+      "triangles": 60,
+      "materials": [
+        "JacketSage"
+      ]
+    },
+    {
+      "name": "BackYokeSeam",
+      "triangles": 56,
+      "materials": [
+        "JacketSeam"
+      ]
+    },
+    {
+      "name": "LeftChestTab",
+      "triangles": 108,
+      "materials": [
+        "ChestFadedRed"
+      ]
+    },
+    {
+      "name": "LeftSleeve",
+      "triangles": 696,
+      "materials": [
+        "JacketSage"
+      ]
+    },
+    {
+      "name": "LeftCuff",
+      "triangles": 52,
+      "materials": [
+        "JacketSeam"
+      ]
+    },
+    {
+      "name": "LeftWrist",
+      "triangles": 116,
+      "materials": [
+        "Skin"
+      ]
+    },
+    {
+      "name": "LeftPalm",
+      "triangles": 68,
+      "materials": [
+        "Skin"
+      ]
+    },
+    {
+      "name": "LeftFinger0",
+      "triangles": 44,
+      "materials": [
+        "Skin"
+      ]
+    },
+    {
+      "name": "LeftFinger1",
+      "triangles": 44,
+      "materials": [
+        "Skin"
+      ]
+    },
+    {
+      "name": "LeftFinger2",
+      "triangles": 44,
+      "materials": [
+        "Skin"
+      ]
+    },
+    {
+      "name": "LeftFinger3",
+      "triangles": 44,
+      "materials": [
+        "Skin"
+      ]
+    },
+    {
+      "name": "LeftThumb",
+      "triangles": 56,
+      "materials": [
+        "Skin"
+      ]
+    },
+    {
+      "name": "LeftWristband",
+      "triangles": 60,
+      "materials": [
+        "HospitalIvory"
+      ]
+    },
+    {
+      "name": "LeftElbowFold",
+      "triangles": 32,
+      "materials": [
+        "JacketSeam"
+      ]
+    },
+    {
+      "name": "LeftTrouserLeg",
+      "triangles": 1004,
+      "materials": [
+        "TrousersCharcoal"
+      ]
+    },
+    {
+      "name": "LeftBootUpper",
+      "triangles": 380,
+      "materials": [
+        "BootBrown"
+      ]
+    },
+    {
+      "name": "LeftBootSole",
+      "triangles": 124,
+      "materials": [
+        "BootSole"
+      ]
+    },
+    {
+      "name": "LeftLace0",
+      "triangles": 32,
+      "materials": [
+        "BootSeam"
+      ]
+    },
+    {
+      "name": "LeftLace1",
+      "triangles": 32,
+      "materials": [
+        "BootSeam"
+      ]
+    },
+    {
+      "name": "LeftLace2",
+      "triangles": 32,
+      "materials": [
+        "BootSeam"
+      ]
+    },
+    {
+      "name": "RightSleeve",
+      "triangles": 696,
+      "materials": [
+        "JacketSage"
+      ]
+    },
+    {
+      "name": "RightCuff",
+      "triangles": 52,
+      "materials": [
+        "JacketSeam"
+      ]
+    },
+    {
+      "name": "RightWrist",
+      "triangles": 116,
+      "materials": [
+        "Skin"
+      ]
+    },
+    {
+      "name": "RightPalm",
+      "triangles": 68,
+      "materials": [
+        "Skin"
+      ]
+    },
+    {
+      "name": "RightFinger0",
+      "triangles": 44,
+      "materials": [
+        "Skin"
+      ]
+    },
+    {
+      "name": "RightFinger1",
+      "triangles": 44,
+      "materials": [
+        "Skin"
+      ]
+    },
+    {
+      "name": "RightFinger2",
+      "triangles": 44,
+      "materials": [
+        "Skin"
+      ]
+    },
+    {
+      "name": "RightFinger3",
+      "triangles": 44,
+      "materials": [
+        "Skin"
+      ]
+    },
+    {
+      "name": "RightThumb",
+      "triangles": 56,
+      "materials": [
+        "Skin"
+      ]
+    },
+    {
+      "name": "RightElbowFold",
+      "triangles": 32,
+      "materials": [
+        "JacketSeam"
+      ]
+    },
+    {
+      "name": "RightTrouserLeg",
+      "triangles": 1004,
+      "materials": [
+        "TrousersCharcoal"
+      ]
+    },
+    {
+      "name": "RightBootUpper",
+      "triangles": 380,
+      "materials": [
+        "BootBrown"
+      ]
+    },
+    {
+      "name": "RightBootSole",
+      "triangles": 124,
+      "materials": [
+        "BootSole"
+      ]
+    },
+    {
+      "name": "RightLace0",
+      "triangles": 32,
+      "materials": [
+        "BootSeam"
+      ]
+    },
+    {
+      "name": "RightLace1",
+      "triangles": 32,
+      "materials": [
+        "BootSeam"
+      ]
+    },
+    {
+      "name": "RightLace2",
+      "triangles": 32,
+      "materials": [
+        "BootSeam"
+      ]
+    },
+    {
+      "name": "FaceVolume",
+      "triangles": 428,
+      "materials": [
+        "Skin"
+      ]
+    },
+    {
+      "name": "Nose",
+      "triangles": 10,
+      "materials": [
+        "Skin"
+      ]
+    },
+    {
+      "name": "LeftEar",
+      "triangles": 68,
+      "materials": [
+        "Skin"
+      ]
+    },
+    {
+      "name": "LeftEarFold",
+      "triangles": 32,
+      "materials": [
+        "SkinShade"
+      ]
+    },
+    {
+      "name": "LeftEye",
+      "triangles": 4,
+      "materials": [
+        "Eye"
+      ]
+    },
+    {
+      "name": "LeftUpperLid",
+      "triangles": 44,
+      "materials": [
+        "SkinShade"
+      ]
+    },
+    {
+      "name": "LeftEyebrow",
+      "triangles": 32,
+      "materials": [
+        "HairCharcoal"
+      ]
+    },
+    {
+      "name": "RightEar",
+      "triangles": 68,
+      "materials": [
+        "Skin"
+      ]
+    },
+    {
+      "name": "RightEarFold",
+      "triangles": 32,
+      "materials": [
+        "SkinShade"
+      ]
+    },
+    {
+      "name": "RightEye",
+      "triangles": 4,
+      "materials": [
+        "Eye"
+      ]
+    },
+    {
+      "name": "RightUpperLid",
+      "triangles": 44,
+      "materials": [
+        "SkinShade"
+      ]
+    },
+    {
+      "name": "RightEyebrow",
+      "triangles": 32,
+      "materials": [
+        "HairCharcoal"
+      ]
+    },
+    {
+      "name": "Mouth",
+      "triangles": 56,
+      "materials": [
+        "Lip"
+      ]
+    },
+    {
+      "name": "HairCap",
+      "triangles": 362,
+      "materials": [
+        "HairCharcoal"
+      ]
+    },
+    {
+      "name": "FringeLock0",
+      "triangles": 76,
+      "materials": [
+        "HairCharcoal"
+      ]
+    },
+    {
+      "name": "FringeLock1",
+      "triangles": 76,
+      "materials": [
+        "HairCharcoal"
+      ]
+    },
+    {
+      "name": "FringeLock2",
+      "triangles": 76,
+      "materials": [
+        "HairHighlight"
+      ]
+    },
+    {
+      "name": "FringeLock3",
+      "triangles": 76,
+      "materials": [
+        "HairCharcoal"
+      ]
+    },
+    {
+      "name": "FringeLock4",
+      "triangles": 76,
+      "materials": [
+        "HairCharcoal"
+      ]
+    },
+    {
+      "name": "FringeLock5",
+      "triangles": 76,
+      "materials": [
+        "HairHighlight"
+      ]
+    },
+    {
+      "name": "FringeLock6",
+      "triangles": 76,
+      "materials": [
+        "HairCharcoal"
+      ]
+    },
+    {
+      "name": "FringeLock7",
+      "triangles": 76,
+      "materials": [
+        "HairCharcoal"
+      ]
+    },
+    {
+      "name": "SideLock-1_0",
+      "triangles": 60,
+      "materials": [
+        "HairCharcoal"
+      ]
+    },
+    {
+      "name": "SideLock-1_1",
+      "triangles": 60,
+      "materials": [
+        "HairCharcoal"
+      ]
+    },
+    {
+      "name": "SideLock-1_2",
+      "triangles": 60,
+      "materials": [
+        "HairCharcoal"
+      ]
+    },
+    {
+      "name": "SideLock-1_3",
+      "triangles": 60,
+      "materials": [
+        "HairCharcoal"
+      ]
+    },
+    {
+      "name": "SideLock1_0",
+      "triangles": 60,
+      "materials": [
+        "HairCharcoal"
+      ]
+    },
+    {
+      "name": "SideLock1_1",
+      "triangles": 60,
+      "materials": [
+        "HairCharcoal"
+      ]
+    },
+    {
+      "name": "SideLock1_2",
+      "triangles": 60,
+      "materials": [
+        "HairCharcoal"
+      ]
+    },
+    {
+      "name": "SideLock1_3",
+      "triangles": 60,
+      "materials": [
+        "HairCharcoal"
+      ]
+    },
+    {
+      "name": "BackLock0",
+      "triangles": 60,
+      "materials": [
+        "HairCharcoal"
+      ]
+    },
+    {
+      "name": "BackLock1",
+      "triangles": 60,
+      "materials": [
+        "HairCharcoal"
+      ]
+    },
+    {
+      "name": "BackLock2",
+      "triangles": 60,
+      "materials": [
+        "HairCharcoal"
+      ]
+    },
+    {
+      "name": "BackLock3",
+      "triangles": 60,
+      "materials": [
+        "HairHighlight"
+      ]
+    },
+    {
+      "name": "BackLock4",
+      "triangles": 60,
+      "materials": [
+        "HairCharcoal"
+      ]
+    },
+    {
+      "name": "BackLock5",
+      "triangles": 60,
+      "materials": [
+        "HairCharcoal"
+      ]
+    },
+    {
+      "name": "BackLock6",
+      "triangles": 60,
+      "materials": [
+        "HairCharcoal"
+      ]
+    },
+    {
+      "name": "SatchelBody",
+      "triangles": 108,
+      "materials": [
+        "CanvasOchre"
+      ]
+    },
+    {
+      "name": "SatchelFlap",
+      "triangles": 108,
+      "materials": [
+        "CanvasWear"
+      ]
+    },
+    {
+      "name": "SatchelLowerPatch",
+      "triangles": 108,
+      "materials": [
+        "CanvasWear"
+      ]
+    },
+    {
+      "name": "SatchelFastener",
+      "triangles": 108,
+      "materials": [
+        "BootBrown"
+      ]
+    },
+    {
+      "name": "SatchelBuckle",
+      "triangles": 108,
+      "materials": [
+        "Buckle"
+      ]
+    },
+    {
+      "name": "StrapFront",
+      "triangles": 188,
+      "materials": [
+        "CanvasOchre"
+      ]
+    },
+    {
+      "name": "StrapBack",
+      "triangles": 188,
+      "materials": [
+        "CanvasOchre"
+      ]
+    },
+    {
+      "name": "StrapShoulderBridge",
+      "triangles": 60,
+      "materials": [
+        "CanvasOchre"
+      ]
+    }
+  ],
+  "triangles": 13692,
+  "vertices": 7051,
+  "boundsMin": [
+    -0.41200006008148193,
+    -1.862645149230957e-09,
+    -0.13199999928474426
+  ],
+  "boundsMax": [
+    0.41200006008148193,
+    1.7698185443878174,
+    0.19499999284744263
+  ],
+  "rig": {
+    "armature": "ProtagonistArmature",
+    "boneCount": 25,
+    "skinnedMeshCount": 94,
+    "bones": [
+      {
+        "name": "Rig_Root",
+        "parent": null,
+        "head": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "tail": [
+          0.0,
+          0.10000000149011612,
+          0.0
+        ]
+      },
+      {
+        "name": "Rig_Pelvis",
+        "parent": "Rig_Root",
+        "head": [
+          0.0,
+          0.9100000262260437,
+          0.0
+        ],
+        "tail": [
+          0.0,
+          1.0800000429153442,
+          0.0
+        ]
+      },
+      {
+        "name": "Rig_Spine",
+        "parent": "Rig_Pelvis",
+        "head": [
+          0.0,
+          1.0800000429153442,
+          0.0
+        ],
+        "tail": [
+          0.0,
+          1.2699999809265137,
+          0.0
+        ]
+      },
+      {
+        "name": "Rig_Chest",
+        "parent": "Rig_Spine",
+        "head": [
+          0.0,
+          1.2699999809265137,
+          0.0
+        ],
+        "tail": [
+          0.0,
+          1.4299999475479126,
+          0.0
+        ]
+      },
+      {
+        "name": "Rig_Neck",
+        "parent": "Rig_Chest",
+        "head": [
+          0.0,
+          1.4299999475479126,
+          0.0
+        ],
+        "tail": [
+          0.0,
+          1.5199999809265137,
+          0.0
+        ]
+      },
+      {
+        "name": "Rig_Head",
+        "parent": "Rig_Neck",
+        "head": [
+          0.0,
+          1.5199999809265137,
+          0.0
+        ],
+        "tail": [
+          0.0,
+          1.7300000190734863,
+          0.0
+        ]
+      },
+      {
+        "name": "Rig_LeftUpperArm",
+        "parent": "Rig_Chest",
+        "head": [
+          -0.2070000022649765,
+          1.4249999523162842,
+          0.0
+        ],
+        "tail": [
+          -0.29600000381469727,
+          1.184999942779541,
+          0.010999999940395355
+        ]
+      },
+      {
+        "name": "Rig_LeftForearm",
+        "parent": "Rig_LeftUpperArm",
+        "head": [
+          -0.29600000381469727,
+          1.184999942779541,
+          0.010999999940395355
+        ],
+        "tail": [
+          -0.3580000102519989,
+          0.9150000214576721,
+          0.023000000044703484
+        ]
+      },
+      {
+        "name": "Rig_LeftHand",
+        "parent": "Rig_LeftForearm",
+        "head": [
+          -0.3580000102519989,
+          0.9150000214576721,
+          0.023000000044703484
+        ],
+        "tail": [
+          -0.37400001287460327,
+          0.8349999785423279,
+          0.029999999329447746
+        ]
+      },
+      {
+        "name": "Rig_LeftFingers",
+        "parent": "Rig_LeftHand",
+        "head": [
+          -0.37400001287460327,
+          0.8349999785423279,
+          0.029999999329447746
+        ],
+        "tail": [
+          -0.37400001287460327,
+          0.7860000133514404,
+          0.04600000008940697
+        ]
+      },
+      {
+        "name": "Rig_LeftThumb",
+        "parent": "Rig_LeftHand",
+        "head": [
+          -0.3370000123977661,
+          0.875,
+          0.026000000536441803
+        ],
+        "tail": [
+          -0.3310000002384186,
+          0.8299999833106995,
+          0.06199999898672104
+        ]
+      },
+      {
+        "name": "Rig_LeftThigh",
+        "parent": "Rig_Pelvis",
+        "head": [
+          -0.10000000149011612,
+          0.9100000262260437,
+          0.0
+        ],
+        "tail": [
+          -0.11699999868869781,
+          0.47999998927116394,
+          0.017999999225139618
+        ]
+      },
+      {
+        "name": "Rig_LeftShin",
+        "parent": "Rig_LeftThigh",
+        "head": [
+          -0.11699999868869781,
+          0.47999998927116394,
+          0.017999999225139618
+        ],
+        "tail": [
+          -0.11999999731779099,
+          0.11999999731779099,
+          -0.008999999612569809
+        ]
+      },
+      {
+        "name": "Rig_LeftFoot",
+        "parent": "Rig_LeftShin",
+        "head": [
+          -0.11999999731779099,
+          0.11999999731779099,
+          -0.008999999612569809
+        ],
+        "tail": [
+          -0.11999999731779099,
+          0.04500000178813934,
+          0.12999999523162842
+        ]
+      },
+      {
+        "name": "Rig_LeftToe",
+        "parent": "Rig_LeftFoot",
+        "head": [
+          -0.11999999731779099,
+          0.04500000178813934,
+          0.12999999523162842
+        ],
+        "tail": [
+          -0.11999999731779099,
+          0.04500000178813934,
+          0.19200000166893005
+        ]
+      },
+      {
+        "name": "Rig_RightUpperArm",
+        "parent": "Rig_Chest",
+        "head": [
+          0.2070000022649765,
+          1.4249999523162842,
+          0.0
+        ],
+        "tail": [
+          0.29600000381469727,
+          1.184999942779541,
+          0.010999999940395355
+        ]
+      },
+      {
+        "name": "Rig_RightForearm",
+        "parent": "Rig_RightUpperArm",
+        "head": [
+          0.29600000381469727,
+          1.184999942779541,
+          0.010999999940395355
+        ],
+        "tail": [
+          0.3580000102519989,
+          0.9150000214576721,
+          0.023000000044703484
+        ]
+      },
+      {
+        "name": "Rig_RightHand",
+        "parent": "Rig_RightForearm",
+        "head": [
+          0.3580000102519989,
+          0.9150000214576721,
+          0.023000000044703484
+        ],
+        "tail": [
+          0.37400001287460327,
+          0.8349999785423279,
+          0.029999999329447746
+        ]
+      },
+      {
+        "name": "Rig_RightFingers",
+        "parent": "Rig_RightHand",
+        "head": [
+          0.37400001287460327,
+          0.8349999785423279,
+          0.029999999329447746
+        ],
+        "tail": [
+          0.37400001287460327,
+          0.7860000133514404,
+          0.04600000008940697
+        ]
+      },
+      {
+        "name": "Rig_RightThumb",
+        "parent": "Rig_RightHand",
+        "head": [
+          0.3370000123977661,
+          0.875,
+          0.026000000536441803
+        ],
+        "tail": [
+          0.3310000002384186,
+          0.8299999833106995,
+          0.06199999898672104
+        ]
+      },
+      {
+        "name": "Rig_RightThigh",
+        "parent": "Rig_Pelvis",
+        "head": [
+          0.10000000149011612,
+          0.9100000262260437,
+          0.0
+        ],
+        "tail": [
+          0.11699999868869781,
+          0.47999998927116394,
+          0.017999999225139618
+        ]
+      },
+      {
+        "name": "Rig_RightShin",
+        "parent": "Rig_RightThigh",
+        "head": [
+          0.11699999868869781,
+          0.47999998927116394,
+          0.017999999225139618
+        ],
+        "tail": [
+          0.11999999731779099,
+          0.11999999731779099,
+          -0.008999999612569809
+        ]
+      },
+      {
+        "name": "Rig_RightFoot",
+        "parent": "Rig_RightShin",
+        "head": [
+          0.11999999731779099,
+          0.11999999731779099,
+          -0.008999999612569809
+        ],
+        "tail": [
+          0.11999999731779099,
+          0.04500000178813934,
+          0.12999999523162842
+        ]
+      },
+      {
+        "name": "Rig_RightToe",
+        "parent": "Rig_RightFoot",
+        "head": [
+          0.11999999731779099,
+          0.04500000178813934,
+          0.12999999523162842
+        ],
+        "tail": [
+          0.11999999731779099,
+          0.04500000178813934,
+          0.19200000166893005
+        ]
+      },
+      {
+        "name": "Rig_Bag",
+        "parent": "Rig_Pelvis",
+        "head": [
+          0.2669999897480011,
+          0.949999988079071,
+          0.004999999888241291
+        ],
+        "tail": [
+          0.2669999897480011,
+          0.800000011920929,
+          0.004999999888241291
+        ]
+      }
+    ],
+    "weightedVertices": 7051,
+    "blendedVertices": 2936,
+    "maxInfluences": 3,
+    "maxWeightSumError": 3.14321368932724e-08,
+    "minimumWeight": 0.0010109934955835342,
+    "boneVertexUsage": {
+      "Rig_Root": 0,
+      "Rig_Pelvis": 1272,
+      "Rig_Spine": 1254,
+      "Rig_Chest": 1298,
+      "Rig_Neck": 96,
+      "Rig_Head": 1517,
+      "Rig_LeftUpperArm": 334,
+      "Rig_LeftForearm": 350,
+      "Rig_LeftHand": 136,
+      "Rig_LeftFingers": 108,
+      "Rig_LeftThumb": 29,
+      "Rig_RightUpperArm": 334,
+      "Rig_RightForearm": 318,
+      "Rig_RightHand": 136,
+      "Rig_RightFingers": 108,
+      "Rig_RightThumb": 29,
+      "Rig_LeftThigh": 447,
+      "Rig_LeftShin": 384,
+      "Rig_LeftFoot": 285,
+      "Rig_LeftToe": 104,
+      "Rig_RightThigh": 447,
+      "Rig_RightShin": 384,
+      "Rig_RightFoot": 285,
+      "Rig_RightToe": 104,
+      "Rig_Bag": 356
+    },
+    "parts": [
+      {
+        "name": "Shirt",
+        "vertices": 340,
+        "blendedVertices": 214,
+        "groups": [
+          "Rig_Chest",
+          "Rig_LeftThigh",
+          "Rig_LeftUpperArm",
+          "Rig_Pelvis",
+          "Rig_RightThigh",
+          "Rig_RightUpperArm",
+          "Rig_Spine"
+        ]
+      },
+      {
+        "name": "Neck",
+        "vertices": 128,
+        "blendedVertices": 80,
+        "groups": [
+          "Rig_Chest",
+          "Rig_Head",
+          "Rig_Neck"
+        ]
+      },
+      {
+        "name": "TrouserSeat",
+        "vertices": 144,
+        "blendedVertices": 96,
+        "groups": [
+          "Rig_LeftThigh",
+          "Rig_Pelvis",
+          "Rig_RightThigh"
+        ]
+      },
+      {
+        "name": "Jacket",
+        "vertices": 900,
+        "blendedVertices": 762,
+        "groups": [
+          "Rig_Chest",
+          "Rig_LeftThigh",
+          "Rig_LeftUpperArm",
+          "Rig_Pelvis",
+          "Rig_RightThigh",
+          "Rig_RightUpperArm",
+          "Rig_Spine"
+        ]
+      },
+      {
+        "name": "JacketOpeningTrim-1",
+        "vertices": 144,
+        "blendedVertices": 104,
+        "groups": [
+          "Rig_Chest",
+          "Rig_LeftThigh",
+          "Rig_Pelvis",
+          "Rig_Spine"
+        ]
+      },
+      {
+        "name": "FrontPocket-1",
+        "vertices": 56,
+        "blendedVertices": 44,
+        "groups": [
+          "Rig_Pelvis",
+          "Rig_Spine"
+        ]
+      },
+      {
+        "name": "PocketFlap-1",
+        "vertices": 56,
+        "blendedVertices": 56,
+        "groups": [
+          "Rig_Pelvis",
+          "Rig_Spine"
+        ]
+      },
+      {
+        "name": "PocketStitch-1",
+        "vertices": 12,
+        "blendedVertices": 12,
+        "groups": [
+          "Rig_Pelvis",
+          "Rig_Spine"
+        ]
+      },
+      {
+        "name": "JacketOpeningTrim1",
+        "vertices": 144,
+        "blendedVertices": 104,
+        "groups": [
+          "Rig_Chest",
+          "Rig_Pelvis",
+          "Rig_RightThigh",
+          "Rig_Spine"
+        ]
+      },
+      {
+        "name": "FrontPocket1",
+        "vertices": 56,
+        "blendedVertices": 44,
+        "groups": [
+          "Rig_Pelvis",
+          "Rig_Spine"
+        ]
+      },
+      {
+        "name": "PocketFlap1",
+        "vertices": 56,
+        "blendedVertices": 56,
+        "groups": [
+          "Rig_Pelvis",
+          "Rig_Spine"
+        ]
+      },
+      {
+        "name": "PocketStitch1",
+        "vertices": 12,
+        "blendedVertices": 12,
+        "groups": [
+          "Rig_Pelvis",
+          "Rig_Spine"
+        ]
+      },
+      {
+        "name": "Collar-1",
+        "vertices": 32,
+        "blendedVertices": 0,
+        "groups": [
+          "Rig_Chest"
+        ]
+      },
+      {
+        "name": "Collar1",
+        "vertices": 32,
+        "blendedVertices": 0,
+        "groups": [
+          "Rig_Chest"
+        ]
+      },
+      {
+        "name": "BackYokeSeam",
+        "vertices": 30,
+        "blendedVertices": 12,
+        "groups": [
+          "Rig_Chest",
+          "Rig_LeftUpperArm",
+          "Rig_RightUpperArm"
+        ]
+      },
+      {
+        "name": "LeftChestTab",
+        "vertices": 56,
+        "blendedVertices": 0,
+        "groups": [
+          "Rig_Chest"
+        ]
+      },
+      {
+        "name": "LeftSleeve",
+        "vertices": 350,
+        "blendedVertices": 146,
+        "groups": [
+          "Rig_Chest",
+          "Rig_LeftForearm",
+          "Rig_LeftUpperArm"
+        ]
+      },
+      {
+        "name": "LeftCuff",
+        "vertices": 28,
+        "blendedVertices": 0,
+        "groups": [
+          "Rig_LeftForearm"
+        ]
+      },
+      {
+        "name": "LeftWrist",
+        "vertices": 60,
+        "blendedVertices": 36,
+        "groups": [
+          "Rig_LeftForearm",
+          "Rig_LeftHand"
+        ]
+      },
+      {
+        "name": "LeftPalm",
+        "vertices": 36,
+        "blendedVertices": 12,
+        "groups": [
+          "Rig_LeftFingers",
+          "Rig_LeftHand"
+        ]
+      },
+      {
+        "name": "LeftFinger0",
+        "vertices": 24,
+        "blendedVertices": 9,
+        "groups": [
+          "Rig_LeftFingers",
+          "Rig_LeftHand"
+        ]
+      },
+      {
+        "name": "LeftFinger1",
+        "vertices": 24,
+        "blendedVertices": 9,
+        "groups": [
+          "Rig_LeftFingers",
+          "Rig_LeftHand"
+        ]
+      },
+      {
+        "name": "LeftFinger2",
+        "vertices": 24,
+        "blendedVertices": 9,
+        "groups": [
+          "Rig_LeftFingers",
+          "Rig_LeftHand"
+        ]
+      },
+      {
+        "name": "LeftFinger3",
+        "vertices": 24,
+        "blendedVertices": 10,
+        "groups": [
+          "Rig_LeftFingers",
+          "Rig_LeftHand"
+        ]
+      },
+      {
+        "name": "LeftThumb",
+        "vertices": 30,
+        "blendedVertices": 14,
+        "groups": [
+          "Rig_LeftHand",
+          "Rig_LeftThumb"
+        ]
+      },
+      {
+        "name": "LeftWristband",
+        "vertices": 32,
+        "blendedVertices": 0,
+        "groups": [
+          "Rig_LeftForearm"
+        ]
+      },
+      {
+        "name": "LeftElbowFold",
+        "vertices": 18,
+        "blendedVertices": 18,
+        "groups": [
+          "Rig_LeftForearm",
+          "Rig_LeftUpperArm"
+        ]
+      },
+      {
+        "name": "LeftTrouserLeg",
+        "vertices": 504,
+        "blendedVertices": 156,
+        "groups": [
+          "Rig_LeftShin",
+          "Rig_LeftThigh",
+          "Rig_Pelvis"
+        ]
+      },
+      {
+        "name": "LeftBootUpper",
+        "vertices": 192,
+        "blendedVertices": 127,
+        "groups": [
+          "Rig_LeftFoot",
+          "Rig_LeftShin",
+          "Rig_LeftToe"
+        ]
+      },
+      {
+        "name": "LeftBootSole",
+        "vertices": 64,
+        "blendedVertices": 12,
+        "groups": [
+          "Rig_LeftFoot",
+          "Rig_LeftToe"
+        ]
+      },
+      {
+        "name": "LeftLace0",
+        "vertices": 18,
+        "blendedVertices": 18,
+        "groups": [
+          "Rig_LeftFoot",
+          "Rig_LeftToe"
+        ]
+      },
+      {
+        "name": "LeftLace1",
+        "vertices": 18,
+        "blendedVertices": 18,
+        "groups": [
+          "Rig_LeftFoot",
+          "Rig_LeftShin",
+          "Rig_LeftToe"
+        ]
+      },
+      {
+        "name": "LeftLace2",
+        "vertices": 18,
+        "blendedVertices": 18,
+        "groups": [
+          "Rig_LeftFoot",
+          "Rig_LeftShin"
+        ]
+      },
+      {
+        "name": "RightSleeve",
+        "vertices": 350,
+        "blendedVertices": 146,
+        "groups": [
+          "Rig_Chest",
+          "Rig_RightForearm",
+          "Rig_RightUpperArm"
+        ]
+      },
+      {
+        "name": "RightCuff",
+        "vertices": 28,
+        "blendedVertices": 0,
+        "groups": [
+          "Rig_RightForearm"
+        ]
+      },
+      {
+        "name": "RightWrist",
+        "vertices": 60,
+        "blendedVertices": 36,
+        "groups": [
+          "Rig_RightForearm",
+          "Rig_RightHand"
+        ]
+      },
+      {
+        "name": "RightPalm",
+        "vertices": 36,
+        "blendedVertices": 12,
+        "groups": [
+          "Rig_RightFingers",
+          "Rig_RightHand"
+        ]
+      },
+      {
+        "name": "RightFinger0",
+        "vertices": 24,
+        "blendedVertices": 9,
+        "groups": [
+          "Rig_RightFingers",
+          "Rig_RightHand"
+        ]
+      },
+      {
+        "name": "RightFinger1",
+        "vertices": 24,
+        "blendedVertices": 9,
+        "groups": [
+          "Rig_RightFingers",
+          "Rig_RightHand"
+        ]
+      },
+      {
+        "name": "RightFinger2",
+        "vertices": 24,
+        "blendedVertices": 9,
+        "groups": [
+          "Rig_RightFingers",
+          "Rig_RightHand"
+        ]
+      },
+      {
+        "name": "RightFinger3",
+        "vertices": 24,
+        "blendedVertices": 10,
+        "groups": [
+          "Rig_RightFingers",
+          "Rig_RightHand"
+        ]
+      },
+      {
+        "name": "RightThumb",
+        "vertices": 30,
+        "blendedVertices": 14,
+        "groups": [
+          "Rig_RightHand",
+          "Rig_RightThumb"
+        ]
+      },
+      {
+        "name": "RightElbowFold",
+        "vertices": 18,
+        "blendedVertices": 18,
+        "groups": [
+          "Rig_RightForearm",
+          "Rig_RightUpperArm"
+        ]
+      },
+      {
+        "name": "RightTrouserLeg",
+        "vertices": 504,
+        "blendedVertices": 156,
+        "groups": [
+          "Rig_Pelvis",
+          "Rig_RightShin",
+          "Rig_RightThigh"
+        ]
+      },
+      {
+        "name": "RightBootUpper",
+        "vertices": 192,
+        "blendedVertices": 127,
+        "groups": [
+          "Rig_RightFoot",
+          "Rig_RightShin",
+          "Rig_RightToe"
+        ]
+      },
+      {
+        "name": "RightBootSole",
+        "vertices": 64,
+        "blendedVertices": 12,
+        "groups": [
+          "Rig_RightFoot",
+          "Rig_RightToe"
+        ]
+      },
+      {
+        "name": "RightLace0",
+        "vertices": 18,
+        "blendedVertices": 18,
+        "groups": [
+          "Rig_RightFoot",
+          "Rig_RightToe"
+        ]
+      },
+      {
+        "name": "RightLace1",
+        "vertices": 18,
+        "blendedVertices": 18,
+        "groups": [
+          "Rig_RightFoot",
+          "Rig_RightShin",
+          "Rig_RightToe"
+        ]
+      },
+      {
+        "name": "RightLace2",
+        "vertices": 18,
+        "blendedVertices": 18,
+        "groups": [
+          "Rig_RightFoot",
+          "Rig_RightShin"
+        ]
+      },
+      {
+        "name": "FaceVolume",
+        "vertices": 216,
+        "blendedVertices": 0,
+        "groups": [
+          "Rig_Head"
+        ]
+      },
+      {
+        "name": "Nose",
+        "vertices": 7,
+        "blendedVertices": 0,
+        "groups": [
+          "Rig_Head"
+        ]
+      },
+      {
+        "name": "LeftEar",
+        "vertices": 36,
+        "blendedVertices": 0,
+        "groups": [
+          "Rig_Head"
+        ]
+      },
+      {
+        "name": "LeftEarFold",
+        "vertices": 18,
+        "blendedVertices": 0,
+        "groups": [
+          "Rig_Head"
+        ]
+      },
+      {
+        "name": "LeftEye",
+        "vertices": 6,
+        "blendedVertices": 0,
+        "groups": [
+          "Rig_Head"
+        ]
+      },
+      {
+        "name": "LeftUpperLid",
+        "vertices": 24,
+        "blendedVertices": 0,
+        "groups": [
+          "Rig_Head"
+        ]
+      },
+      {
+        "name": "LeftEyebrow",
+        "vertices": 18,
+        "blendedVertices": 0,
+        "groups": [
+          "Rig_Head"
+        ]
+      },
+      {
+        "name": "RightEar",
+        "vertices": 36,
+        "blendedVertices": 0,
+        "groups": [
+          "Rig_Head"
+        ]
+      },
+      {
+        "name": "RightEarFold",
+        "vertices": 18,
+        "blendedVertices": 0,
+        "groups": [
+          "Rig_Head"
+        ]
+      },
+      {
+        "name": "RightEye",
+        "vertices": 6,
+        "blendedVertices": 0,
+        "groups": [
+          "Rig_Head"
+        ]
+      },
+      {
+        "name": "RightUpperLid",
+        "vertices": 24,
+        "blendedVertices": 0,
+        "groups": [
+          "Rig_Head"
+        ]
+      },
+      {
+        "name": "RightEyebrow",
+        "vertices": 18,
+        "blendedVertices": 0,
+        "groups": [
+          "Rig_Head"
+        ]
+      },
+      {
+        "name": "Mouth",
+        "vertices": 30,
+        "blendedVertices": 0,
+        "groups": [
+          "Rig_Head"
+        ]
+      },
+      {
+        "name": "HairCap",
+        "vertices": 196,
+        "blendedVertices": 0,
+        "groups": [
+          "Rig_Head"
+        ]
+      },
+      {
+        "name": "FringeLock0",
+        "vertices": 40,
+        "blendedVertices": 0,
+        "groups": [
+          "Rig_Head"
+        ]
+      },
+      {
+        "name": "FringeLock1",
+        "vertices": 40,
+        "blendedVertices": 0,
+        "groups": [
+          "Rig_Head"
+        ]
+      },
+      {
+        "name": "FringeLock2",
+        "vertices": 40,
+        "blendedVertices": 0,
+        "groups": [
+          "Rig_Head"
+        ]
+      },
+      {
+        "name": "FringeLock3",
+        "vertices": 40,
+        "blendedVertices": 0,
+        "groups": [
+          "Rig_Head"
+        ]
+      },
+      {
+        "name": "FringeLock4",
+        "vertices": 40,
+        "blendedVertices": 0,
+        "groups": [
+          "Rig_Head"
+        ]
+      },
+      {
+        "name": "FringeLock5",
+        "vertices": 40,
+        "blendedVertices": 0,
+        "groups": [
+          "Rig_Head"
+        ]
+      },
+      {
+        "name": "FringeLock6",
+        "vertices": 40,
+        "blendedVertices": 0,
+        "groups": [
+          "Rig_Head"
+        ]
+      },
+      {
+        "name": "FringeLock7",
+        "vertices": 40,
+        "blendedVertices": 0,
+        "groups": [
+          "Rig_Head"
+        ]
+      },
+      {
+        "name": "SideLock-1_0",
+        "vertices": 32,
+        "blendedVertices": 0,
+        "groups": [
+          "Rig_Head"
+        ]
+      },
+      {
+        "name": "SideLock-1_1",
+        "vertices": 32,
+        "blendedVertices": 0,
+        "groups": [
+          "Rig_Head"
+        ]
+      },
+      {
+        "name": "SideLock-1_2",
+        "vertices": 32,
+        "blendedVertices": 0,
+        "groups": [
+          "Rig_Head"
+        ]
+      },
+      {
+        "name": "SideLock-1_3",
+        "vertices": 32,
+        "blendedVertices": 0,
+        "groups": [
+          "Rig_Head"
+        ]
+      },
+      {
+        "name": "SideLock1_0",
+        "vertices": 32,
+        "blendedVertices": 0,
+        "groups": [
+          "Rig_Head"
+        ]
+      },
+      {
+        "name": "SideLock1_1",
+        "vertices": 32,
+        "blendedVertices": 0,
+        "groups": [
+          "Rig_Head"
+        ]
+      },
+      {
+        "name": "SideLock1_2",
+        "vertices": 32,
+        "blendedVertices": 0,
+        "groups": [
+          "Rig_Head"
+        ]
+      },
+      {
+        "name": "SideLock1_3",
+        "vertices": 32,
+        "blendedVertices": 0,
+        "groups": [
+          "Rig_Head"
+        ]
+      },
+      {
+        "name": "BackLock0",
+        "vertices": 32,
+        "blendedVertices": 0,
+        "groups": [
+          "Rig_Head"
+        ]
+      },
+      {
+        "name": "BackLock1",
+        "vertices": 32,
+        "blendedVertices": 0,
+        "groups": [
+          "Rig_Head"
+        ]
+      },
+      {
+        "name": "BackLock2",
+        "vertices": 32,
+        "blendedVertices": 0,
+        "groups": [
+          "Rig_Head"
+        ]
+      },
+      {
+        "name": "BackLock3",
+        "vertices": 32,
+        "blendedVertices": 0,
+        "groups": [
+          "Rig_Head"
+        ]
+      },
+      {
+        "name": "BackLock4",
+        "vertices": 32,
+        "blendedVertices": 0,
+        "groups": [
+          "Rig_Head"
+        ]
+      },
+      {
+        "name": "BackLock5",
+        "vertices": 32,
+        "blendedVertices": 0,
+        "groups": [
+          "Rig_Head"
+        ]
+      },
+      {
+        "name": "BackLock6",
+        "vertices": 32,
+        "blendedVertices": 0,
+        "groups": [
+          "Rig_Head"
+        ]
+      },
+      {
+        "name": "SatchelBody",
+        "vertices": 56,
+        "blendedVertices": 0,
+        "groups": [
+          "Rig_Bag"
+        ]
+      },
+      {
+        "name": "SatchelFlap",
+        "vertices": 56,
+        "blendedVertices": 0,
+        "groups": [
+          "Rig_Bag"
+        ]
+      },
+      {
+        "name": "SatchelLowerPatch",
+        "vertices": 56,
+        "blendedVertices": 0,
+        "groups": [
+          "Rig_Bag"
+        ]
+      },
+      {
+        "name": "SatchelFastener",
+        "vertices": 56,
+        "blendedVertices": 0,
+        "groups": [
+          "Rig_Bag"
+        ]
+      },
+      {
+        "name": "SatchelBuckle",
+        "vertices": 56,
+        "blendedVertices": 0,
+        "groups": [
+          "Rig_Bag"
+        ]
+      },
+      {
+        "name": "StrapFront",
+        "vertices": 96,
+        "blendedVertices": 58,
+        "groups": [
+          "Rig_Bag",
+          "Rig_Chest",
+          "Rig_Pelvis",
+          "Rig_Spine"
+        ]
+      },
+      {
+        "name": "StrapBack",
+        "vertices": 96,
+        "blendedVertices": 58,
+        "groups": [
+          "Rig_Bag",
+          "Rig_Chest",
+          "Rig_Pelvis",
+          "Rig_Spine"
+        ]
+      },
+      {
+        "name": "StrapShoulderBridge",
+        "vertices": 32,
+        "blendedVertices": 0,
+        "groups": [
+          "Rig_Chest"
+        ]
+      }
+    ],
+    "semanticNodes": [
+      "Head",
+      "Hair",
+      "LeftBoot",
+      "RightBoot",
+      "RightHipBag",
+      "Jacket",
+      "Shirt",
+      "LeftWristband",
+      "LeftChestTab",
+      "StrapFront",
+      "StrapBack",
+      "Nose"
+    ],
+    "clips": 0
+  },
+  "deformationChecks": {
+    "restMaxError": 1.2293457984924316e-07,
+    "poseResetMaxError": 0.0,
+    "cases": [
+      {
+        "name": "elbow90",
+        "affectedMesh": "LeftSleeve",
+        "maxDisplacement": 0.3428411715713715,
+        "linearSkinMaxError": 2.7314279645418166e-07,
+        "boundsMin": [
+          -0.41200003027915955,
+          -1.862645149230957e-09,
+          -0.13199999928474426
+        ],
+        "boundsMax": [
+          0.41200006008148193,
+          1.7698185443878174,
+          0.41110068559646606
+        ]
+      },
+      {
+        "name": "knee70",
+        "affectedMesh": "LeftTrouserLeg",
+        "maxDisplacement": 0.36171722597224526,
+        "linearSkinMaxError": 1.812804499357408e-07,
+        "boundsMin": [
+          -0.41200006008148193,
+          -1.862645149230957e-09,
+          -0.4679390490055084
+        ],
+        "boundsMax": [
+          0.41200006008148193,
+          1.7698185443878174,
+          0.19499999284744263
+        ]
+      },
+      {
+        "name": "shoulder45",
+        "affectedMesh": "LeftSleeve",
+        "maxDisplacement": 0.3932364338926464,
+        "linearSkinMaxError": 2.691506127743191e-07,
+        "boundsMin": [
+          -0.7863583564758301,
+          -1.862645149230957e-09,
+          -0.13199999928474426
+        ],
+        "boundsMax": [
+          0.41200006008148193,
+          1.7698185443878174,
+          0.19499999284744263
+        ]
+      },
+      {
+        "name": "hip30",
+        "affectedMesh": "RightTrouserLeg",
+        "maxDisplacement": 0.38190413985578037,
+        "linearSkinMaxError": 1.812804499357408e-07,
+        "boundsMin": [
+          -0.41200006008148193,
+          -1.862645149230957e-09,
+          -0.13199999928474426
+        ],
+        "boundsMax": [
+          0.41200006008148193,
+          1.7698185443878174,
+          0.6178134679794312
+        ]
+      },
+      {
+        "name": "neck25",
+        "affectedMesh": "FaceVolume",
+        "maxDisplacement": 0.0406906385883363,
+        "linearSkinMaxError": 1.812804499357408e-07,
+        "boundsMin": [
+          -0.41200006008148193,
+          -1.862645149230957e-09,
+          -0.13243916630744934
+        ],
+        "boundsMax": [
+          0.41200006008148193,
+          1.7698185443878174,
+          0.19499999284744263
+        ]
+      },
+      {
+        "name": "hand25",
+        "affectedMesh": "LeftPalm",
+        "maxDisplacement": 0.041628441779559565,
+        "linearSkinMaxError": 1.9082797281243946e-07,
+        "boundsMin": [
+          -0.41200003027915955,
+          -1.862645149230957e-09,
+          -0.13199999928474426
+        ],
+        "boundsMax": [
+          0.41200006008148193,
+          1.7698185443878174,
+          0.19499999284744263
+        ]
+      },
+      {
+        "name": "finger30",
+        "affectedMesh": "LeftFinger1",
+        "maxDisplacement": 0.027266796426437003,
+        "linearSkinMaxError": 1.9375091230788594e-07,
+        "boundsMin": [
+          -0.41200006008148193,
+          -1.862645149230957e-09,
+          -0.13199999928474426
+        ],
+        "boundsMax": [
+          0.41200006008148193,
+          1.7698185443878174,
+          0.19499999284744263
+        ]
+      },
+      {
+        "name": "thumb20",
+        "affectedMesh": "LeftThumb",
+        "maxDisplacement": 0.0152380948405608,
+        "linearSkinMaxError": 1.812804499357408e-07,
+        "boundsMin": [
+          -0.41200006008148193,
+          -1.862645149230957e-09,
+          -0.13199999928474426
+        ],
+        "boundsMax": [
+          0.41200006008148193,
+          1.7698185443878174,
+          0.19499999284744263
+        ]
+      },
+      {
+        "name": "toe20",
+        "affectedMesh": "LeftBootSole",
+        "maxDisplacement": 0.025494924087079415,
+        "linearSkinMaxError": 1.812804499357408e-07,
+        "boundsMin": [
+          -0.41200006008148193,
+          -0.0008455191855318844,
+          -0.13199999928474426
+        ],
+        "boundsMax": [
+          0.41200006008148193,
+          1.7698185443878174,
+          0.20134061574935913
+        ]
+      },
+      {
+        "name": "bag6",
+        "affectedMesh": "SatchelBody",
+        "maxDisplacement": 0.021348984580356518,
+        "linearSkinMaxError": 2.38999946897409e-07,
+        "boundsMin": [
+          -0.41200006008148193,
+          -1.862645149230957e-09,
+          -0.13199999928474426
+        ],
+        "boundsMax": [
+          0.41200006008148193,
+          1.7698185443878174,
+          0.19499999284744263
+        ]
+      },
+      {
+        "name": "torso15",
+        "affectedMesh": "Jacket",
+        "maxDisplacement": 0.0962801743964691,
+        "linearSkinMaxError": 2.4870323733202393e-07,
+        "boundsMin": [
+          -0.41200006008148193,
+          -1.862645149230957e-09,
+          -0.26420605182647705
+        ],
+        "boundsMax": [
+          0.41200006008148193,
+          1.7476311922073364,
+          0.19499999284744263
+        ]
+      }
+    ],
+    "scope": "Blender linear skin deformation; not Unity import or motion acceptance"
+  }
+}

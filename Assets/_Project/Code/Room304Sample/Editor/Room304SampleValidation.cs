@@ -68,7 +68,8 @@ namespace LostCity.Room304Sample.EditorTools
                 "Player must retain rotation lock and a solid footprint.");
             Require(Mathf.Abs(player.transform.position.z) < .001f && player.GetComponent<TeamMember>().Team == CombatTeam.Player,
                 "Player must stay on the gameplay plane and use the player team.");
-            Require(player.GetComponentsInChildren<MeshRenderer>(true).Length > 0, "Missing real 3D player placeholder.");
+            Require(player.GetComponentsInChildren<Renderer>(true).Any(renderer => renderer is MeshRenderer || renderer is SkinnedMeshRenderer),
+                "Missing real 3D player geometry.");
             var reader = new SerializedObject(player.GetComponent<PlayerInputReader>());
             var move = reader.FindProperty("moveActionReference").objectReferenceValue as InputActionReference;
             var fire = reader.FindProperty("fireActionReference").objectReferenceValue as InputActionReference;
@@ -221,9 +222,22 @@ namespace LostCity.Room304Sample.EditorTools
                 {
                     camera.aspect = aspect;
                     foreach (Component target in targets)
-                        foreach (MeshRenderer renderer in target.GetComponentsInChildren<MeshRenderer>(true))
+                        foreach (Renderer renderer in target.GetComponentsInChildren<Renderer>(true))
                         {
                             Bounds b = renderer.bounds;
+                            if (renderer is SkinnedMeshRenderer skin)
+                            {
+                                Mesh mesh = new Mesh();
+                                try
+                                {
+                                    skin.BakeMesh(mesh);
+                                    Vector3[] points = mesh.vertices.Select(vertex => skin.transform.TransformPoint(vertex)).ToArray();
+                                    Require(points.Length > 0, "Missing posed skin: " + skin.name);
+                                    b = new Bounds(points[0], Vector3.zero);
+                                    foreach (Vector3 point in points.Skip(1)) b.Encapsulate(point);
+                                }
+                                finally { UnityEngine.Object.DestroyImmediate(mesh); }
+                            }
                             foreach (float x in new[] { b.min.x, b.max.x })
                                 foreach (float y in new[] { b.min.y, b.max.y })
                                     foreach (float z in new[] { b.min.z, b.max.z })

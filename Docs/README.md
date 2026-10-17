@@ -14,6 +14,11 @@ The separately authorized [Room 304 2.5D sample](Room30425DSample.md) validates
 spatial investigation and supplied evidence illustrations without replacing the
 Phase 6 loop or adding a chapter.
 
+The [protagonist first pass](ProtagonistFirstPass.md) adds a separately authored
+3D visual model to that sample, preserving its gameplay and physics boundary.
+The approved [skeletal motion follow-up](CharacterMotion.md) adds a Generic skin rig,
+procedural posing and success-only pickup presentation; see [CharacterVisual API](API/CharacterVisual.md).
+
 - [Approved design](superpowers/specs/2026-06-12-phase-6-meta-framework-design.md)
 - [Implementation plan](superpowers/plans/2026-06-12-phase-6-meta-framework.md)
 
@@ -39,6 +44,7 @@ Phase 6 adds Hub, registry, progression, persistence, archive, bestiary, chapter
 
 - [PlayerStats](API/PlayerStats.md)
 - [PlayerControl](API/PlayerControl.md)
+- [CharacterVisual](API/CharacterVisual.md)
 - [EvidencePresentation](API/EvidencePresentation.md)
 - [GameFlowManager](API/GameFlowManager.md)
 - [CombatSystem](API/CombatSystem.md)

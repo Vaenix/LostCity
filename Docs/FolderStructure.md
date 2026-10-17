@@ -10,6 +10,8 @@
 | Assets/ | Unity source, content, prefabs, scenes and metadata |
 | Packages/ | Package manifest and lock file |
 | ProjectSettings/ | Unity project settings, including scene build order |
+| SourceArt/Characters/Protagonist | Editable Blender source and export metrics, outside Unity import |
+| Tools/Art | Reproducible character model generation scripts |
 
 ## Meta Code
 
@@ -57,12 +59,16 @@ Independent sample code:
 | Room304Sample/Editor | Room304SampleCreator, Room304SampleGeometry, Room304SampleValidation |
 | EvidencePresentation/Runtime | EvidenceIllustrationCatalog, IllustratedEvidenceJournal, EvidenceThumbnailRow |
 | EvidencePresentation/Editor | EvidenceArtImporter, EvidencePresentationBuilder |
+| Characters/Runtime | ProtagonistVisualMotion: procedural skeletal posing; ProtagonistCluePresentation and ProtagonistPickupAnchor: success-only clue visuals |
+| Characters/Editor | Scoped character prefab build/install and independent native acceptance/previews |
 
 | Path under Assets/_Project | Contents |
 | --- | --- |
 | Art/CombatSandbox/Generated | Existing graybox circle/square sprites |
 | Art/Room304Sample | Owned primitive meshes and built-in-renderer materials |
 | Art/EvidencePresentation | Unmodified copies of three clue illustrations and required UI sprites |
+| Art/Characters/Protagonist | Exported FBX and persistent character material palette |
+| Prefabs/Characters | Independent ProtagonistVisual, not the old combat Player prefab |
 | Prefabs/CombatSandbox | Player, projectiles, XP orb, four enemies, Warden |
 | Scenes | Hub.unity, shared CombatSandbox.unity, independent Room304Greybox.unity |
 | ScriptableObjects/CombatSandbox | Existing case/clues, boss/enemies, weapons, projectiles, rewards |

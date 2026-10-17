@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using LostCity.CombatSandbox;
+using LostCity.Characters.EditorTools;
 using LostCity.EvidencePresentation.EditorTools;
 using UnityEditor;
 using UnityEditor.Events;
@@ -57,6 +58,9 @@ namespace LostCity.Room304Sample.EditorTools
             SetObject(progress, "caseDefinition", caseDefinition);
             CreatePlayer(root, camera, input, geometry, palette);
             CreateClues(root, progress, bracelet, register, note, geometry, palette);
+            PlayerMotor samplePlayer = root.GetComponentInChildren<PlayerMotor>();
+            ProtagonistPrefabBuilder.WireSamplePresentation(scene, samplePlayer,
+                samplePlayer.GetComponentInChildren<LostCity.Characters.ProtagonistVisualMotion>());
             FrameWorld(camera, root);
             CreateUi(root, progress, input);
 
@@ -226,12 +230,7 @@ namespace LostCity.Room304Sample.EditorTools
             PlayerAim aim = player.AddComponent<PlayerAim>();
             SetObject(aim, "yawRoot", yaw);
             SetObject(aim, "aimCamera", camera);
-            Transform visual = Room304SampleGeometry.VisualRoot(yaw);
-            g.Cylinder("PlayerBody", visual, new Vector3(0f, 0.43f, 0f), new Vector3(0.48f, 0.7f, 0.48f), p.Player);
-            g.Cylinder("PlayerHead", visual, new Vector3(0f, 0.92f, 0f), new Vector3(0.35f, 0.3f, 0.35f), p.Skin);
-            g.Box("FacingMarker", visual, new Vector3(0.26f, 0.64f, 0f), new Vector3(0.22f, 0.1f, 0.12f), p.Brass);
-            g.Box("LeftFoot", visual, new Vector3(0f, 0.06f, -0.14f), new Vector3(0.44f, 0.12f, 0.16f), p.Ink);
-            g.Box("RightFoot", visual, new Vector3(0f, 0.06f, 0.14f), new Vector3(0.44f, 0.12f, 0.16f), p.Ink);
+            ProtagonistPrefabBuilder.AttachToAimRoot(yaw);
         }
 
         private static void CreateClues(Transform root, InvestigationProgress progress, ClueDefinition bracelet,

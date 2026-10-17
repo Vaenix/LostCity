@@ -56,6 +56,35 @@ This sample has no AllRequiredCluesCollected listener that starts deduction/comb
 Collecting all three clues does not complete the case or change player modifiers.
 The optional presentation hook leaves existing text-only journals unchanged.
 
+### Protagonist Visual Motion
+
+```text
+Existing PlayerMotor moves the Rigidbody2D in XY
+  -> ProtagonistVisualMotion observes actual Rigidbody2D velocity
+  -> Update only imported Rig_ bones: in-place gait, feet, arms and constrained head
+  -> Existing PlayerAim rotates the parent AimRoot independently
+```
+
+The character layer emits no gameplay/save events and consumes no input actions.
+Stationary motion blends into a breathing idle; disable restores authored rest.
+Scaled-time pause freezes the current pose. The visual adapter never changes player
+collider, gameplay root or clue triggers. Actual gait feel remains manual acceptance.
+
+```text
+CluePickup requests collection
+  -> InvestigationProgress validates/deduplicates and records the clue
+  -> ClueCollected success event
+  -> ProtagonistCluePresentation checks the authored table contact and reach
+  -> Render-only proxy remains while the original pickup is hidden
+  -> Left hand contacts, retracts, then proxy is removed
+```
+
+Out-of-reach, moving or missing-anchor cases skip the optional visual. Movement,
+destroyed target, component disable or scene departure cancels/cleans it up. The
+original pickup becoming inactive on success does not count as destruction.
+No animation callback grants another clue or repeats a save. See
+[motion timing](CharacterMotion.md) for the data/visual boundary.
+
 ## Deduction And Truth Reconstruction
 
 ```text

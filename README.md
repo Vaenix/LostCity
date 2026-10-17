@@ -12,9 +12,9 @@ The current content is **Room 304**, a graybox architecture prototype, not final
 
 ## Current Development Phase
 
-**Phase 6 integrated; Room 304 spatial sample ready for manual acceptance.** Phase 6
+**Phase 6 integrated; Room 304 spatial/character sample ready for manual acceptance.** Phase 6
 adds case selection, progression, saves, archives, bestiary and return to Hub.
-The latest Unity EditMode suite passes **131/131** (89 existing + 42 sample tests).
+The latest Unity EditMode suite passes **176/176** (131 existing + 45 character tests).
 Migrated scenes and the new sample pass saved-reference validation; sample offline
 world renders pass at three aspect ratios. None is a played end-to-end run:
 see [PhaseReport](Docs/PhaseReport.md).
@@ -29,6 +29,13 @@ An independent **Room 304 2.5D graybox** adds a hospital room and short corridor
 fixed oblique camera, solid 2D footprints and a collected-clue illustration journal.
 It reuses the original three clues and supplied UI images. It has no combat,
 deduction or completion flow and does not replace the full sandbox.
+
+The approved protagonist follow-up adds an editable Blender model, a 25-bone skin
+rig and procedural idle/walk/turn/look/left-hand pickup presentation to that sample.
+It retains 2D physics and the existing clue/save transaction. Native skin, pose,
+saved-reference and event/save regression checks pass; see
+[CharacterMotion](Docs/CharacterMotion.md) and the [actual previews](Docs/Previews/CharacterMotion/README.md)
+for evidence and remaining manual checks. No combat animation library is claimed.
 
 ## Core Gameplay Loop
 
@@ -78,6 +85,9 @@ metadata only and cannot be played.
 For the separate spatial sample, open
 `Assets/_Project/Scenes/Room304Greybox.unity` directly. Use WASD/arrows, mouse
 facing, E pickup, J/toolbar journal and 返回大厅. No weapon fire is expected there.
+The skinned protagonist and three tabletop pickup anchors are already saved in the
+scene. No rebuild is required; stand still facing a reachable left-hand contact to
+see the pickup. Moving/unreachable collection still works and skips that visual.
 `Tools > Lost City > Create Room 304 2.5D Sample` rebuilds only its owned assets;
 `Validate Room 304 2.5D Sample` checks saved wiring and static geometry without
 Play Mode. See [sample setup and acceptance](Docs/Room30425DSample.md).
@@ -98,9 +108,13 @@ flowchart LR
     Player --> Save
     Flow --> Save
     Flow --> Hub
-    Sample["Independent Room304Greybox"] --> Journal["Illustrated collected-clue journal"]
+    Sample["Independent Room304Greybox"] --> Collected["Existing successful clue event"]
+    Collected --> Journal["Illustrated collected-clue journal"]
     Sample --> Save
     Sample --> Hub
+    Sample --> Visual["25-bone procedural character / no root motion"]
+    Collected --> Presentation["Optional visual-only pickup proxy"]
+    Presentation --> Visual
 ```
 
 ## Folder Structure Summary
@@ -111,8 +125,10 @@ Assets/_Project/
   Code/Meta/             Rules, persistence, catalog, runtime, Hub UI
   Code/Room304Sample/    Independent 2.5D graybox generator and validation
   Code/EvidencePresentation/ Optional illustrated evidence journal
+  Code/Characters/       Visual-only skeleton motion, pickup bridge and editor tools
   Tests/EditMode/Meta/   Core and Unity-facing tests
   Prefabs/CombatSandbox/ Generated graybox prefabs
+  Prefabs/Characters/    Independent skinned protagonist
   Scenes/               Hub, CombatSandbox and Room304Greybox
   Art/                  Graybox meshes/materials and supplied UI illustrations
   ScriptableObjects/    Seed content and chapter metadata
@@ -120,6 +136,8 @@ Assets/_Project/
   Settings/Input/       Input Actions and references
 Docs/                   Architecture, APIs, onboarding, phase report
 Tools/Verification/     Managed checks and native verification commands
+Tools/Art/              Reproducible Blender model/rig generators
+SourceArt/Characters/   Editable Blender source and deformation evidence
 ```
 
 Details: [FolderStructure](Docs/FolderStructure.md).
@@ -160,6 +178,8 @@ Richer exploration and emotionally grounded mysteries built on a maintainable da
 - Narrative, visuals, deduction mechanics, and balance remain prototype quality.
 - The 2.5D sample is not integrated into the full case/boss loop; its walking,
   pickup and journal interaction require manual acceptance.
+- Character art is a first pass: coarse garment attachment, simplified fingers,
+  flat-plane gait and 94 skin renderers. It uses procedural bones, not AnimationClips.
 
 ## Documentation
 

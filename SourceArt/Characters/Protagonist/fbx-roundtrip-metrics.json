@@ -1,0 +1,37 @@
+{
+  "scope": "Blender FBX export/import roundtrip; Unity native import remains independent",
+  "armatureCount": 1,
+  "boneCount": 25,
+  "skinnedMeshCount": 94,
+  "vertices": 7051,
+  "triangles": 13692,
+  "boundsMin": [
+    -0.41199991106987,
+    -5.0813191876386554e-08,
+    -0.13199998438358307
+  ],
+  "boundsMax": [
+    0.41199991106987,
+    1.7698184251785278,
+    0.19499991834163666
+  ],
+  "maxJointPositionError": 3.05161310846226e-07,
+  "maxBoundsError": 1.4901161193847656e-07,
+  "maxWeightSumError": 3.14321368932724e-08,
+  "maxInfluences": 3,
+  "allObjectScalesPositive": true,
+  "semanticNodes": [
+    "Head",
+    "Hair",
+    "LeftBoot",
+    "RightBoot",
+    "RightHipBag",
+    "Jacket",
+    "Shirt",
+    "LeftWristband",
+    "LeftChestTab",
+    "StrapFront",
+    "StrapBack",
+    "Nose"
+  ]
+}
